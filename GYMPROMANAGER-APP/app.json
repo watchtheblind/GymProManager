@@ -7,6 +7,11 @@
     "icon": "./assets/images/main-logo.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/images/test.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1D1D1B"
+    },
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
