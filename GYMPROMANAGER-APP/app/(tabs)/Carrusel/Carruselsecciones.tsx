@@ -1,7 +1,7 @@
 import Vistacarrusel1 from './Vistacarrusel1'
 import Vistacarrusel2 from '@/app/(tabs)/Carrusel/Vistacarrusel2'
 import Vistacarrusel3 from '@/app/(tabs)/Carrusel/Vistacarrusel3'
-// import Vistacarrusel4 from '@/app/(tabs)/Carrusel/Vistacarrusel4'
+import Vistacarrusel4 from '@/app/(tabs)/Carrusel/Vistacarrusel4'
 
 export default [
   {
@@ -21,5 +21,11 @@ export default [
     title: 'Title 3',
     image: require('@/assets/images/onboarding-03.jpeg'),
     content: <Vistacarrusel3 />,
+  },
+  {
+    id: '4',
+    title: 'Title 4',
+    image: require('@/assets/images/onboarding-04.jpg'),
+    content: <Vistacarrusel4 />,
   },
 ]
