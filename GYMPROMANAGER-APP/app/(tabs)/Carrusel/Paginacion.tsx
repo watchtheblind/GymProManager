@@ -15,16 +15,14 @@ export default function Paginacion({data, scrollX}: {data: any; scrollX: any}) {
       {data.map((_: any, i: any) => {
         const inputRange = [(i - 1) * width, i * width, (i + 1) * width]
 
-        const dotWidth = scrollX.interpolate({
-          inputRange,
-          outputRange: [10, 20, 10],
-          extrapolate: 'clamp',
-        })
+        // Mantener un ancho fijo para los puntos
+        const dotWidth = 10 // Ancho fijo
         const opacity = scrollX.interpolate({
           inputRange,
           outputRange: [0.3, 1, 0.3],
           extrapolate: 'clamp',
         })
+
         return (
           <Animated.View
             style={[styles.dot, {width: dotWidth, opacity}]}

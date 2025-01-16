@@ -56,11 +56,11 @@ export default function Vistacarrusel1() {
             GIMNASIOS
           </ThemedText>
         </View>
-        <View className='flex flex-row mb-4'>
+        <View className='flex flex-row mb-2'>
           <ThemedText
             className=''
             style={styles.colorWhite}>
-            No te conformes con lo básico,
+            No te conformes con lo básico,{' '}
           </ThemedText>
           <ThemedText
             className='mr-2'
@@ -128,5 +128,8 @@ const styles = StyleSheet.create({
     padding: 4,
     fontSize: 16,
     fontFamily: 'Copperplate',
+  },
+  defaultText: {
+    fontFamily: 'Copperplate', //Default font family
   },
 })
