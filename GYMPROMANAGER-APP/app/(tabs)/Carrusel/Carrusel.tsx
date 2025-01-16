@@ -9,7 +9,7 @@ import {
 import Carruselsecciones from './Carruselsecciones'
 import Carruselitem from '../Carruselitem'
 import React, {useRef, useState} from 'react'
-import Paginator from '../Paginator'
+import Paginacion from './Paginacion'
 import Button from '@/components/ui/Button'
 import {Link, router} from 'expo-router'
 import {ThemedText} from '@/components/ThemedText'
@@ -55,7 +55,7 @@ export default function Carrusel() {
         />
       </View>
       <View style={{flex: 1, backgroundColor: '#1d1d1b'}}>
-        <Paginator
+        <Paginacion
           data={Carruselsecciones}
           scrollX={scrollX}
         />
