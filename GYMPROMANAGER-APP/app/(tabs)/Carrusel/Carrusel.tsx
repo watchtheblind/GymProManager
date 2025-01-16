@@ -30,7 +30,7 @@ export default function Carrusel() {
   return (
     <View style={styles.container}>
       <View
-        className='rounded-xl'
+        className='rounded-xl border border-blue-500 border-dotted'
         style={{flex: 3}}>
         <FlatList
           data={Carruselsecciones}
@@ -60,10 +60,10 @@ export default function Carrusel() {
           scrollX={scrollX}
         />
         <View
-          className='flex flex-row justify-center'
+          className='flex flex-row justify-center '
           style={{backgroundColor: '#1D1D1B'}}>
           <Button
-            title='Acceder'
+            title='Empezar'
             onPress={handleSubmit}
           />
         </View>

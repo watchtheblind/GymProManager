@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     alignItems: 'center',
     backgroundColor: '#000000',
-    borderRadius: 24,
+    borderRadius: 50,
     marginHorizontal: 10,
     padding: 15,
     borderColor: '#fef4c9',

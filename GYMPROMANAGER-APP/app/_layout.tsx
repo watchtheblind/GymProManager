@@ -13,18 +13,18 @@ SplashScreen.preventAutoHideAsync()
 
 export default function RootLayout() {
   const colorScheme = useColorScheme()
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+  const [fontsLoaded] = useFonts({
+    Copperplate: require('../assets/fonts/Copperplate.otf'),
   })
 
   useEffect(() => {
-    if (loaded) {
+    if (fontsLoaded) {
       SplashScreen.hideAsync()
     }
-  }, [loaded])
+  }, [fontsLoaded])
 
-  if (!loaded) {
-    return null
+  if (!fontsLoaded) {
+    return null // or a loading indicator
   }
 
   return (
