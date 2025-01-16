@@ -17,6 +17,7 @@ export default function Vistacarrusel1() {
         <View className='flex flex-row mb-4 leading-3'>
           <ThemedText
             className='text-white mr-2 '
+            style={styles.defaultText}
             type='title'>
             HAZLO
           </ThemedText>
@@ -122,7 +123,10 @@ const styles = StyleSheet.create({
   colorBlue: {
     color: '#6CB0B4',
   },
-  defaultText: {
-    fontFamily: 'Copperplate', //Default font family
+  linkColor: {
+    color: '#B0A462',
+    padding: 4,
+    fontSize: 16,
+    fontFamily: 'Copperplate',
   },
 })

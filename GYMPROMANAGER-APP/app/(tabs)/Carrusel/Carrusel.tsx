@@ -68,12 +68,12 @@ export default function Carrusel() {
           />
         </View>
         <View className='flex flex-row justify-center items-center mt-2'>
-          <ThemedText style={{color: '#ffffff'}}>Ya tienes cuentas?</ThemedText>
+          <ThemedText style={{color: '#ffffff'}}>¿Ya tienes cuenta?</ThemedText>
           <Link
             href='/'
             asChild>
             <Pressable>
-              <Text style={styles.linkColor}>Registrar</Text>
+              <Text style={styles.linkColor}>Acceder</Text>
             </Pressable>
           </Link>
         </View>
@@ -92,6 +92,6 @@ const styles = StyleSheet.create({
     color: '#B0A462',
     padding: 4,
     fontSize: 16,
-    fontFamily: 'Copperplate',
+    fontFamily: 'Myriad Pro',
   },
 })
