@@ -83,7 +83,7 @@ export default function Login() {
             secureTextEntry={true}
             value={formData.password}
           />
-          <View className='flex flex-row justify-center mt-3'>
+          <View className='flex flex-row justify-center mt-2'>
             <Button
               title='Acceder'
               onPress={handleSubmit}
