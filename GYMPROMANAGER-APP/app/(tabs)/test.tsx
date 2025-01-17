@@ -80,7 +80,7 @@ const MultiStepForm: React.FC = () => {
 
   const handleSubmit = () => {
     // Here you would typically send the formData to your backend
-    alert('Form submitted:' + '\n' + formData)
+    alert('Form submitted:' + JSON.stringify(formData))
   }
 
   return (
