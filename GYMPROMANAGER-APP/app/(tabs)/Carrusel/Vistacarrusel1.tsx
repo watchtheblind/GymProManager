@@ -1,5 +1,5 @@
 import {ThemedText} from '@/components/ThemedText'
-import {Image, StyleSheet, View, useWindowDimensions} from 'react-native'
+import {Image, StyleSheet, Text, View, useWindowDimensions} from 'react-native'
 export default function Vistacarrusel1() {
   const {width} = useWindowDimensions()
 
@@ -15,12 +15,11 @@ export default function Vistacarrusel1() {
           />
         </View>
         <View className='flex flex-row mb-4 leading-3'>
-          <ThemedText
-            className='text-white mr-2 '
+          <Text
             style={styles.defaultText}
-            type='title'>
+            className='text-white'>
             HAZLO
-          </ThemedText>
+          </Text>
           <ThemedText
             className=''
             style={[styles.colorYellow, styles.defaultText]}
