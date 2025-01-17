@@ -25,7 +25,7 @@ export default function Login() {
   })
 
   const redirigirRegistro = () => {
-    router.navigate('./Registro') // Asegúrate de que 'Register' sea el nombre correcto de tu ruta
+    router.navigate('./test')
   }
   const redirigirRecuperarContrasena = () => {
     router.navigate('./Recuperarcontrasena') // Asegúrate de que 'Register' sea el nombre correcto de tu ruta
