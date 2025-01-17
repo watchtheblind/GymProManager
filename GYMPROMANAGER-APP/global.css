@@ -1,3 +1,8 @@
+@font-face {
+  font-family: 'copperplate';
+  src: url('/assets/fonts/Copperplate.otf') format('otf');
+}
+
 /* This file adds the requisite utility classes for Tailwind to work. */
 @tailwind base;
 @tailwind components;

@@ -1,4 +1,4 @@
-import Carrusel from './Carrusel/Carrusel'
+import Carrusel from './Carrusel'
 
 export default function HomeScreen() {
   return <Carrusel></Carrusel>

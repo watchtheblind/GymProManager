@@ -6,10 +6,10 @@ import {
   Text,
   Pressable,
 } from 'react-native'
-import Carruselsecciones from './Carruselsecciones'
-import Carruselitem from '../Carruselitem'
+import Carruselsecciones from './Carrusel/Carruselsecciones'
+import Carruselitem from './Carruselitem'
 import React, {useRef, useState} from 'react'
-import Paginacion from './Paginacion'
+import Paginacion from './Carrusel/Paginacion'
 import Button from '@/components/ui/Button'
 import {Link, router} from 'expo-router'
 import {ThemedText} from '@/components/ThemedText'
@@ -24,7 +24,7 @@ export default function Carrusel() {
   ).current
 
   const handleSubmit = async () => {
-    router.navigate('../Registro')
+    router.navigate('./Iniciosesion')
   }
 
   return (
