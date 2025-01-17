@@ -24,8 +24,11 @@ export default function Login() {
     password: 'ePfpoFZN123',
   })
 
-  const handleRegisterPress = () => {
+  const redirigirRegistro = () => {
     router.navigate('./Registro') // Asegúrate de que 'Register' sea el nombre correcto de tu ruta
+  }
+  const redirigirRecuperarContrasena = () => {
+    router.navigate('./Recuperarcontrasena') // Asegúrate de que 'Register' sea el nombre correcto de tu ruta
   }
 
   const handleSubmit = async () => {
@@ -87,15 +90,17 @@ export default function Login() {
             />
           </View>
           <View className='flex flex-row justify-center'>
-            <Text className='text-white text-lg'>
-              ¿Has olvidado tu contraseña?
-            </Text>
+            <TouchableOpacity onPress={redirigirRecuperarContrasena}>
+              <Text className='text-white text-lg underline'>
+                ¿Has olvidado tu contraseña?
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
       <View className='flex flex-row items-center justify-center mt-24'>
         <Text className='text-white text-lg mr-2'>¿No tienes una cuenta?</Text>
-        <TouchableOpacity onPress={handleRegisterPress}>
+        <TouchableOpacity onPress={redirigirRegistro}>
           <Text className='text-[##B0A462] text-lg font-bold underline'>
             Regístrate aquí
           </Text>
