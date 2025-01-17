@@ -59,8 +59,7 @@ export default function Registro() {
     <View className='flex-1 justify-center h-full text-white relative'>
       <View className='flex-1 justify-center items-center absolute inset-0 w-full h-full opacity-70'>
         <Image
-          className='mt-24'
-          style={styles.logo}
+          className='mt-24 h-72 w-96'
           source={require('@/assets/images/logo.png')}
         />
       </View>
@@ -139,10 +138,3 @@ export default function Registro() {
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  logo: {
-    height: 280,
-    width: 380,
-  },
-})
