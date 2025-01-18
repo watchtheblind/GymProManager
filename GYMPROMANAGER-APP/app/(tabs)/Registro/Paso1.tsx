@@ -1,6 +1,7 @@
 import React from 'react'
 import {View, TextInput, Text} from 'react-native'
-
+import Checkbox from 'expo-checkbox'
+import {useState} from 'react'
 import PhoneInput, {PhoneInputProps} from 'react-native-phone-number-input'
 
 // Custom type that extends PhoneInputProps
@@ -30,9 +31,9 @@ const Step1: React.FC<Step1Props> = ({formData, setFormData, phoneInput}) => {
   const handlePhoneChange = (phoneNumber: string) => {
     setFormData({telefono: phoneNumber})
   }
-
+  const [isChecked, setChecked] = useState(false)
   return (
-    <View className='w-full flex flex-col gap-5 mt-6'>
+    <View className='flex flex-col items-center w-11/12 gap-5 mt-6'>
       <TextInput
         className='bg-[#B0A462] border-4 py-3 border-[#FEF4C9] rounded-tr-3xl rounded-bl-3xl p-2 text-white w-full'
         placeholder='Nombre*'
@@ -116,6 +117,17 @@ const Step1: React.FC<Step1Props> = ({formData, setFormData, phoneInput}) => {
         value={formData.password}
         placeholderTextColor='#fff'
       />
+      <View className='flex flex-row w-11/12'>
+        <Checkbox
+          className='mr-2'
+          value={isChecked}
+          onValueChange={setChecked}
+        />
+        <Text className='text-white text-sm'>
+          Al registrarme acepto recibir comunicaciones de Trainingym, así como
+          su Política de Privacidad.
+        </Text>
+      </View>
     </View>
   )
 }
