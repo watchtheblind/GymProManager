@@ -1,10 +1,11 @@
 import React, {useState} from 'react'
-import {View, Text, Button, Image} from 'react-native'
+import {View, Text, Image, StyleSheet} from 'react-native'
+import CustomButton from '@/components/ui/Button2'
 import Step1 from './Registro/Paso1'
 import Step2 from './Registro/Paso2'
 import Step3 from './Registro/Paso3'
 import Step4 from './Registro/Paso4'
-
+import StepProgress from './Registro/StepProgress'
 interface FormData {
   // Step 1
   nombre: string
@@ -82,7 +83,12 @@ const MultiStepForm: React.FC = () => {
     // Here you would typically send the formData to your backend
     alert('Form submitted:' + JSON.stringify(formData))
   }
-
+  const steps = [
+    {number: 1, label: 'Datos Personales'},
+    {number: 2, label: 'Información Básica'},
+    {number: 3, label: 'Perfil'},
+    {number: 4, label: 'Preferencias'},
+  ]
   return (
     <View className='flex-1 justify-center h-full text-white relative'>
       <View className='flex-1 justify-center items-center absolute inset-0 w-full h-full opacity-70'>
@@ -94,7 +100,7 @@ const MultiStepForm: React.FC = () => {
       <View className='absolute inset-0 bg-[#1D1D1B] opacity-90'></View>
       <View className='flex flex-col items-center'>
         <Text className='text-white text-3xl font-Copperplate'>REGISTRO</Text>
-        <Text className='text-white text-xl mt-2'>Paso {step} de 4</Text>
+        <Text className='text-white text-xl mt-6'>Paso {step} de 4</Text>
         {step === 1 && (
           <Step1
             formData={formData}
@@ -119,8 +125,8 @@ const MultiStepForm: React.FC = () => {
             setFormData={updateFormData}
           />
         )}
-        <View className='flex flex-row justify-center mt-6'>
-          <Button
+        <View className='flex flex-row justify-center mt-8'>
+          <CustomButton
             title={step === 4 ? 'Enviar' : 'Siguiente'}
             onPress={handleNext}
             disabled={!validateStep()}

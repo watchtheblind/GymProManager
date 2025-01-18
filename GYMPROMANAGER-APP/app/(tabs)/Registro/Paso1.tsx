@@ -1,6 +1,7 @@
 import React from 'react'
-import {View, Text, TextInput} from 'react-native'
-
+import {useState} from 'react'
+import {View, Text, TextInput, StyleSheet} from 'react-native'
+import Checkbox from 'expo-checkbox'
 interface Step1Props {
   formData: {
     nombre: string
@@ -13,8 +14,8 @@ interface Step1Props {
   }
   setFormData: (newData: Partial<Step1Props['formData']>) => void
 }
-
 const Step1: React.FC<Step1Props> = ({formData, setFormData}) => {
+  const [isChecked, setChecked] = useState(false)
   return (
     <View className='w-10/12 flex flex-col gap-5 mt-6'>
       <TextInput
@@ -67,8 +68,18 @@ const Step1: React.FC<Step1Props> = ({formData, setFormData}) => {
         value={formData.password}
         placeholderTextColor='#fff'
       />
+      <View className='flex flex-row justify-center items-center'>
+        <Checkbox
+          className='mr-2'
+          value={isChecked}
+          onValueChange={setChecked}
+        />
+        <Text className='text-white text-xs'>
+          Acepto recibir comunicaciones de Trainingym y puedo consultar la
+          Política de Privacidad.
+        </Text>
+      </View>
     </View>
   )
 }
-
 export default Step1
