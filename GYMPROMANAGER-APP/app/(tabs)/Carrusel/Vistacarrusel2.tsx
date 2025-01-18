@@ -1,59 +1,44 @@
-import ParallaxScrollView from '@/components/ParallaxScrollView'
 import {ThemedText} from '@/components/ThemedText'
-import {ThemedView} from '@/components/ThemedView'
-import {Image, StyleSheet, View, useWindowDimensions} from 'react-native'
+import {Image, StyleSheet, View, useWindowDimensions, Text} from 'react-native'
 
 export default function Vistacarrusel2() {
   const {width} = useWindowDimensions()
   return (
-    <View
-      className='flex flex-col items-center rounded-xl pt-8'
-      style={[styles.colorBackground, styles.box]}>
+    <View className='flex flex-col items-center rounded-xl pt-8 bg-[#1D1D1B] h-[680px]'>
       <View className='flex flex-col items-center'>
-        <View className='absolute left-0 top-0'>
+        <View className='absolute left-1 top-0'>
           <Image
             style={styles.polygonContainer}
             source={require('@/assets/images/polygon-01.png')}
           />
         </View>
-        <View className='flex flex-row mb-4 leading-3'>
-          <ThemedText
-            className='text-white'
-            type='title'>
+        <View className='flex flex-row mb-2 mt-4'>
+          <Text className='text-white font-Copperplate text-3xl'>
+            {' '}
             CONOCE NUESTRO
-          </ThemedText>
+          </Text>
         </View>
-        <View className='flex flex-row mb-4'>
-          <ThemedText
-            className='mr-2'
-            style={styles.colorRed}
-            type='title'>
+        <View className='flex flex-row mb-2'>
+          <Text className='font-Copperplate text-3xl text-[#DFAA8C]'>
+            {' '}
             SOFTWARE
-          </ThemedText>
-          <ThemedText
-            className='text-white'
-            type='title'>
-            PARA
-          </ThemedText>
+          </Text>
+          <Text className='font-Copperplate text-3xl text-white'> PARA</Text>
         </View>
-        <View className='flex flex-row mb-4'>
-          <ThemedText
-            className=''
-            style={styles.colorYellow}
-            type='title'>
+        <View className='flex flex-row mb-2'>
+          <Text className='font-Copperplate text-3xl text-[#B0A462]'>
             GIMNASIOS
-          </ThemedText>
+          </Text>
         </View>
         <View
-          className='flex flex-row mb-4 p-8'
+          className='flex flex-row px-6 mt-4'
           style={{width}}>
-          <ThemedText style={[styles.colorWhite]}>
+          <Text className='text-lg text-white text-center'>
             Capta más clientes, aumenta tus ingresos, fideliza a tus usuarios y
-            fortalece tu imagen corporativa, todo en un solo lugar con Gym Pro
-            Manager. 
-          </ThemedText>
+            fortalece tu imagen corporativa, todo con nuestra app. 
+          </Text>
         </View>
-        <View className='absolute right-0 bottom-0'>
+        <View className='absolute right-3 bottom-0 top-56'>
           <Image
             style={styles.polygonContainer}
             source={require('@/assets/images/polygon-02.png')}
@@ -65,38 +50,8 @@ export default function Vistacarrusel2() {
 }
 
 const styles = StyleSheet.create({
-  box: {
-    height: 680,
-  },
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  imageContainer: {
-    height: 250,
-    backgroundPosition: 'right',
-  },
   polygonContainer: {
     height: 45,
     width: 42,
-  },
-  colorBackground: {
-    backgroundColor: '#1D1D1B',
-  },
-  colorWhite: {
-    color: '#FFFFFF',
-  },
-  colorYellow: {
-    color: '#B0A462',
-  },
-  colorRed: {
-    color: '#DFAA8C',
-  },
-  colorBlue: {
-    color: '#6CB0B4',
-  },
-  defaultText: {
-    fontFamily: 'Copperplate', //Default font family
   },
 })
