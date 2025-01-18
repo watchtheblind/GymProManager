@@ -30,7 +30,7 @@ export default function Carrusel() {
   return (
     <View style={styles.container}>
       <View
-        className='rounded-xl border border-blue-500 border-dotted'
+        className='rounded-xl'
         style={{flex: 3}}>
         <FlatList
           data={Carruselsecciones}
@@ -67,13 +67,17 @@ export default function Carrusel() {
             onPress={handleSubmit}
           />
         </View>
-        <View className='flex flex-row justify-center items-center mt-2'>
-          <ThemedText style={{color: '#ffffff'}}>¿Ya tienes cuenta?</ThemedText>
+        <View className='flex flex-row justify-center items-center mt-4'>
+          <ThemedText style={{color: '#ffffff'}}>
+            ¿Ya tienes cuenta?{' '}
+          </ThemedText>
           <Link
             href='/'
             asChild>
             <Pressable>
-              <Text style={styles.linkColor}>Acceder</Text>
+              <Text className='text-[#B0A462] text-lg underline font-bold'>
+                Acceder
+              </Text>
             </Pressable>
           </Link>
         </View>

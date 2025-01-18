@@ -14,72 +14,45 @@ export default function Vistacarrusel1() {
             source={require('@/assets/images/polygon-01.png')}
           />
         </View>
-        <View className='flex flex-row mb-4 leading-3'>
-          <Text
-            style={styles.defaultText}
-            className='text-white'>
-            HAZLO
-          </Text>
-          <ThemedText
-            className=''
-            style={[styles.colorYellow, styles.defaultText]}
-            type='title'>
-            SIMPLE:
-          </ThemedText>
+        <View className='flex flex-col items-center'>
+          {[
+            ['HAZLO', 'text-white', 'SIMPLE:', 'text-[#B0A462]'],
+            ['CRECE', 'text-white', 'CON', 'text-white'],
+            ['NUESTRO', 'text-white'],
+            ['SOFTWARE', 'text-[#DFAA8C]', 'PARA', 'text-white'],
+            ['GIMNASIOS', 'text-[#6CB0B4]'],
+          ].map(([text1, color1, text2, color2], index) => (
+            <View
+              key={index}
+              className='flex flex-row'>
+              <Text className={`${color1} font-Copperplate text-3xl`}>
+                {text1}{' '}
+              </Text>
+              {text2 && (
+                <Text className={`${color2} font-Copperplate text-3xl`}>
+                  {text2}
+                </Text>
+              )}
+            </View>
+          ))}
         </View>
-        <View className='flex flex-row mb-4 leading-3'>
-          <ThemedText
-            className='text-white'
-            type='title'>
-            CRECE CON NUESTRO
-          </ThemedText>
-        </View>
-        <View className='flex flex-row mb-4'>
-          <ThemedText
-            className='mr-2'
-            style={styles.colorRed}
-            type='title'>
-            SOFTWARE
-          </ThemedText>
-          <ThemedText
-            className='text-white'
-            type='title'>
-            PARA
-          </ThemedText>
-        </View>
-        <View className='flex flex-row mb-4'>
-          <ThemedText
-            className=''
-            style={styles.colorBlue}
-            type='title'>
-            GIMNASIOS
-          </ThemedText>
-        </View>
-        <View className='flex flex-row mb-2'>
-          <ThemedText
-            className=''
-            style={styles.colorWhite}>
+
+        <View className='flex flex-row mt-4'>
+          <Text className={'text-white text-lg'}>
             No te conformes con lo básico,{' '}
-          </ThemedText>
-          <ThemedText
-            className='mr-2'
-            style={styles.colorBlue}>
-            ve más allá
-          </ThemedText>
-          <ThemedText
-            className=''
-            style={styles.colorWhite}>
-            con
-          </ThemedText>
+          </Text>
+          <View>
+            <Text className={'text-[#6CB0B4] text-lg'}> ve más allá </Text>
+          </View>
         </View>
-        <View className='flex flex-row mb-4'>
-          <ThemedText
-            className=''
-            style={styles.colorYellow}>
-            Gym Pro Manager
-          </ThemedText>
+        <View className='flex flex-row'>
+          <Text className={'text-white text-lg'}> con </Text>
+          <Text className={'text-[#B0A462] text-lg font-bold'}>
+            {' '}
+            Gym Pro Manager{' '}
+          </Text>
         </View>
-        <View className='absolute right-0 bottom-0'>
+        <View className='absolute right-0 bottom-0 top-56'>
           <Image
             style={styles.polygonContainer}
             source={require('@/assets/images/polygon-02.png')}
