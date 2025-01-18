@@ -6,10 +6,10 @@ export default function Vistacarrusel2() {
   return (
     <View className='flex flex-col items-center rounded-xl pt-8 bg-[#1D1D1B] h-[680px]'>
       <View className='flex flex-col items-center'>
-        <View className='absolute left-1 top-0'>
+        <View className='absolute right-80 top-0'>
           <Image
             style={styles.polygonContainer}
-            source={require('@/assets/images/polygon-01.png')}
+            source={require('@/assets/images/polygon-02.png')}
           />
         </View>
         <View className='flex flex-row mb-2 mt-4'>
@@ -30,18 +30,24 @@ export default function Vistacarrusel2() {
             GIMNASIOS
           </Text>
         </View>
-        <View
-          className='flex flex-row px-6 mt-4'
-          style={{width}}>
-          <Text className='text-lg text-white text-center'>
-            Capta más clientes, aumenta tus ingresos, fideliza a tus usuarios y
-            fortalece tu imagen corporativa, todo con nuestra app. 
-          </Text>
+        <View className='flex flex-row mt-2'>
+          <Text className={'text-[#6CB0B4]  text-lg font-bold'}>Capta</Text>
+          <Text className={'text-white text-lg'}> más clientes,</Text>
+          <Text className={'text-[#DFAA8C]  text-lg font-bold'}> aumenta</Text>
+          <Text className={'text-white text-lg'}> tus ingresos,</Text>
         </View>
-        <View className='absolute right-3 bottom-0 top-56'>
+        <View className='flex flex-row'>
+          <Text className={'text-[#B0A462] text-lg font-bold'}>fideliza </Text>
+          <Text className={'text-white text-lg '}>a tus usuarios y </Text>
+          <Text className={'text-[#6CB0B4]  text-lg font-bold'}>fortalece</Text>
+        </View>
+        <View>
+          <Text className={'text-white text-lg '}>tu imagen corporativa.</Text>
+        </View>
+        <View className='absolute right-0 bottom-0 top-56'>
           <Image
             style={styles.polygonContainer}
-            source={require('@/assets/images/polygon-02.png')}
+            source={require('@/assets/images/polygon-01.png')}
           />
         </View>
       </View>
