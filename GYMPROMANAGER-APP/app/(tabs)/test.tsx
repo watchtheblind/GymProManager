@@ -140,7 +140,7 @@ const MultiStepForm: React.FC = () => {
             <CustomButton
               title={step === 4 ? 'Enviar' : 'Siguiente'}
               onPress={handleNext}
-              disabled={!validateStep()}
+              // disabled={validateStep()}
             />
           </View>
         </View>

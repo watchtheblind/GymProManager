@@ -18,16 +18,16 @@ const OpcionesdeGeneros = [
     color: '#6CB0B4',
   },
   {
-    value: 'femenino',
-    label: null,
-    icon: 'gender-female',
-    color: '#CC7751',
-  },
-  {
     value: 'neutral',
     label: 'Neutral',
     icon: 'gender-non-binary',
     color: '#B0A462',
+  },
+  {
+    value: 'femenino',
+    label: null,
+    icon: 'gender-female',
+    color: '#f28cd9',
   },
 ]
 
@@ -41,28 +41,32 @@ const Step2: React.FC<Step2Props> = ({formData, setFormData}) => {
         value={formData.fechaNacimiento}
         placeholderTextColor='#fff'
       />
-      <Text className='text-white text-lg font-bold mb-2'>Género</Text>
-      <View className='flex flex-col gap-4'>
+      <Text className='text-white font-Copperplate text-center text-2xl mb-1'>
+        Escoge tu género
+      </Text>
+      <View className='flex-row flex-wrap justify-around'>
         {OpcionesdeGeneros.map((option) => (
           <TouchableOpacity
             key={option.value}
-            className={`flex-row items-center w-min p-2 rounded-full border-4 ${
-              formData.genero === option.value
-                ? `bg-${option.color} border-white`
-                : `bg-gray-800 border-${option.color}`
-            }`}
+            className='flex flex-row items-center p-2 border-2 rounded-full'
+            style={{
+              borderWidth: 3,
+              backgroundColor:
+                formData.genero === option.value
+                  ? option.color
+                  : `${option.color}80`,
+              borderColor:
+                formData.genero === option.value ? 'white' : option.color,
+            }}
             onPress={() => setFormData({genero: option.value})}
             accessibilityRole='radio'
             accessibilityState={{checked: formData.genero === option.value}}>
             <MaterialCommunityIcons
-              name={option.icon as any}
+              name={option.icon as keyof typeof MaterialCommunityIcons.glyphMap}
               size={32}
               color={formData.genero === option.value ? 'white' : option.color}
             />
-            <Text
-              className={`ml-4 text-lg ${formData.genero === option.value ? 'text-white' : `text-${option.color}`}`}>
-              {option.label}
-            </Text>
+            <Text className={`text-lg text-white`}>{option.label}</Text>
           </TouchableOpacity>
         ))}
       </View>
