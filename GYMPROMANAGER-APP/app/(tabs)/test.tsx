@@ -98,7 +98,7 @@ const MultiStepForm: React.FC = () => {
       <View className='flex-1 justify-center h-full text-white relative'>
         <View className='flex-1 justify-center items-center absolute inset-0 w-full h-full opacity-70'>
           <Image
-            className='mt-24 h-80 w-80'
+            className='mt-24 h-80 w-full'
             source={require('@/assets/images/logo.png')}
           />
         </View>
