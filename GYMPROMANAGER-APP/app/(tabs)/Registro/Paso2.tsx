@@ -73,7 +73,10 @@ const Step2: React.FC<Step2Props> = ({formData, setFormData}) => {
               size={32}
               color={formData.genero === option.value ? 'white' : option.color}
             />
-            <Text className={`text-lg text-white`}>{option.label}</Text>
+            <Text
+              className={`text-lg ${formData.genero === option.value ? 'text-white' : 'text-[#B0A462]'}`}>
+              {option.label}
+            </Text>
           </TouchableOpacity>
         ))}
       </View>
