@@ -1,7 +1,7 @@
 import React from 'react'
 import {View, Text, TextInput, TouchableOpacity} from 'react-native'
 import {MaterialCommunityIcons} from '@expo/vector-icons'
-
+import SelectorFecha from '@/components/Selectorfecha'
 interface Step2Props {
   formData: {
     fechaNacimiento: string
@@ -34,13 +34,20 @@ const OpcionesdeGeneros = [
 const Step2: React.FC<Step2Props> = ({formData, setFormData}) => {
   return (
     <View className='w-11/12 gap-5 mt-6'>
-      <TextInput
+      <Text className='text-white font-Copperplate text-center text-2xl mb-1'>
+        Introduce tu fecha de nacimiento
+      </Text>
+      <SelectorFecha
+        fechaNacimiento={formData.fechaNacimiento}
+        setFechaNacimiento={(fecha) => setFormData({fechaNacimiento: fecha})}
+      />
+      {/* <TextInput
         className='bg-[#B0A462] border-4 py-3 border-[#FEF4C9] rounded-tr-3xl rounded-bl-3xl p-2 text-white'
-        placeholder='Fecha de Nacimiento*'
+        placeholder='Fecha de Nacimientso*'
         onChangeText={(text) => setFormData({fechaNacimiento: text})}
         value={formData.fechaNacimiento}
         placeholderTextColor='#fff'
-      />
+      /> */}
       <Text className='text-white font-Copperplate text-center text-2xl mb-1'>
         Escoge tu género
       </Text>
