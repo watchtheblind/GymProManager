@@ -1,11 +1,7 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import {View, TextInput, TouchableOpacity, Platform} from 'react-native'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import {MaterialCommunityIcons} from '@expo/vector-icons'
-import {Appearance} from 'react-native'
-
-const colorScheme = Appearance.getColorScheme()
-
 interface SelectorFechaProps {
   fechaNacimiento: string // Valor de la fecha en formato de cadena
   setFechaNacimiento: (fecha: string) => void // Función para actualizar la fecha
@@ -15,8 +11,22 @@ const SelectorFecha: React.FC<SelectorFechaProps> = ({
   fechaNacimiento,
   setFechaNacimiento,
 }) => {
-  const [date, setDate] = useState(new Date(fechaNacimiento))
+  const [date, setDate] = useState<Date>(new Date())
   const [show, setShow] = useState(false)
+
+  // Efecto para actualizar la fecha cuando cambia fechaNacimiento
+  useEffect(() => {
+    if (fechaNacimiento) {
+      const parsedDate = new Date(fechaNacimiento)
+      if (!isNaN(parsedDate.getTime())) {
+        setDate(parsedDate)
+      } else {
+        setDate(new Date()) // Establecer la fecha actual si la fecha es inválida
+      }
+    } else {
+      setDate(new Date()) // Establecer la fecha actual si no hay fecha
+    }
+  }, [fechaNacimiento])
 
   const onChange = (event: any, selectedDate?: Date | undefined) => {
     const currentDate = selectedDate || date
