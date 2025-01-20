@@ -1,10 +1,12 @@
-import React, {useState, useEffect} from 'react'
+import type React from 'react'
+import {useState, useEffect} from 'react'
 import {View, TextInput, TouchableOpacity, Platform} from 'react-native'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import {MaterialCommunityIcons} from '@expo/vector-icons'
+
 interface SelectorFechaProps {
-  fechaNacimiento: string // Valor de la fecha en formato de cadena
-  setFechaNacimiento: (fecha: string) => void // Función para actualizar la fecha
+  fechaNacimiento: string
+  setFechaNacimiento: (fecha: string) => void
 }
 
 const SelectorFecha: React.FC<SelectorFechaProps> = ({
@@ -14,32 +16,38 @@ const SelectorFecha: React.FC<SelectorFechaProps> = ({
   const [date, setDate] = useState<Date>(new Date())
   const [show, setShow] = useState(false)
 
-  // Efecto para actualizar la fecha cuando cambia fechaNacimiento
   useEffect(() => {
     if (fechaNacimiento) {
       const parsedDate = new Date(fechaNacimiento)
       if (!isNaN(parsedDate.getTime())) {
         setDate(parsedDate)
       } else {
-        setDate(new Date()) // Establecer la fecha actual si la fecha es inválida
+        setDate(new Date())
       }
     } else {
-      setDate(new Date()) // Establecer la fecha actual si no hay fecha
+      setDate(new Date())
     }
   }, [fechaNacimiento])
 
   const onChange = (event: any, selectedDate?: Date | undefined) => {
     const currentDate = selectedDate || date
-    setShow(Platform.OS === 'ios') // Mantener el selector abierto en iOS
+    setShow(Platform.OS === 'ios')
     setDate(currentDate)
-    setFechaNacimiento(currentDate.toLocaleDateString()) // Actualiza la fecha en el componente padre
+
+    // Formato de fecha: DD/MM/YYYY
+    const formattedDate = `${currentDate.getDate().toString().padStart(2, '0')}/${(currentDate.getMonth() + 1).toString().padStart(2, '0')}/${currentDate.getFullYear()}`
+    setFechaNacimiento(formattedDate)
   }
 
+  const showDatepicker = () => {
+    setShow(true)
+  }
+  const today = new Date()
   return (
     <View>
       <View className='flex flex-row justify-center gap-5'>
         <TouchableOpacity
-          onPress={() => setShow(true)}
+          onPress={showDatepicker}
           className='flex items-center justify-center w-12 h-12 p-2 bg-[#B0A462] border-4 rounded-bl-3xl rounded-br-3xl rounded-tl-3xl border-[#FEF4C9]'>
           <MaterialCommunityIcons
             name='calendar'
@@ -52,17 +60,19 @@ const SelectorFecha: React.FC<SelectorFechaProps> = ({
           placeholder='Tu fecha de nacimiento aquí'
           editable={false}
           placeholderTextColor='#fff'
-          value={date.toLocaleDateString()} // Formato de fecha
-          placeholderClassName='text-center'
+          value={fechaNacimiento}
         />
       </View>
       {show && (
         <DateTimePicker
-          accentColor='#fff'
+          testID='dateTimePicker'
           value={date}
-          mode='date' // Puedes cambiar a 'time' o 'datetime' según sea necesario
+          mode='date'
+          is24Hour={true}
           display='default'
           onChange={onChange}
+          accentColor='#fff'
+          maximumDate={today} //
         />
       )}
     </View>

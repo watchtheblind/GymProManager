@@ -1,5 +1,5 @@
 import React, {useState, useRef} from 'react'
-import {View, Text, Button, Image, ScrollView} from 'react-native'
+import {View, Text, Image, ScrollView} from 'react-native'
 import PhoneInput from 'react-native-phone-number-input'
 import Step1 from './Registro/Paso1'
 import Step2 from './Registro/Paso2'
@@ -7,6 +7,15 @@ import Step3 from './Registro/Paso3'
 import Step4 from './Registro/Paso4'
 import StepProgress from './Registro/StepProgress'
 import CustomButton from '@/components/ui/Button2'
+
+interface Unidad {
+  valor: number
+  unidad: 'kg' | 'lb'
+}
+
+interface Genero {
+  value: 'masculino' | 'femenino' | 'neutral'
+}
 interface FormData {
   // Step 1
   nombre: string
@@ -18,7 +27,10 @@ interface FormData {
   password: string
   // Step 2
   fechaNacimiento: string
-  genero: string
+  genero?: Genero
+  peso: Unidad
+  altura: {valor: number; unidad: 'cm' | 'pulg'}
+
   // Step 3
   ocupacion: string
   nivelEducativo: string
@@ -38,7 +50,9 @@ const MultiStepForm: React.FC = () => {
     email: '',
     password: '',
     fechaNacimiento: '',
-    genero: '',
+    genero: undefined,
+    peso: {valor: 0, unidad: 'kg'},
+    altura: {valor: 0, unidad: 'cm'},
     ocupacion: '',
     nivelEducativo: '',
     intereses: '',
