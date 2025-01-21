@@ -28,8 +28,9 @@ export default function Card03() {
         <View className='flex flex-row'>
           <Text className='text-4xl font-Copperplate text-white'>tu </Text>
           <Text className='text-4xl font-Copperplate text-[#B0A462]'>
-            negocio?
+            negocio
           </Text>
+          <Text className='text-4xl font-Copperplate text-white'>?</Text>
         </View>
         <View
           className='flex flex-row mt-2 mx-1'

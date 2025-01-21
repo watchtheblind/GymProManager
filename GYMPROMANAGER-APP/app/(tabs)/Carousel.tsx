@@ -24,7 +24,7 @@ export default function Carousel() {
   ).current
 
   const handleSubmit = async () => {
-    router.navigate('./Iniciosesion')
+    router.navigate('./Login')
   }
 
   return (
