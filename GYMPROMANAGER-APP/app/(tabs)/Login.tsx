@@ -1,6 +1,6 @@
 import Button from '@/components/ui/Button'
-import {router, useNavigation} from 'expo-router'
-import React, {useState} from 'react'
+import {router} from 'expo-router'
+import React, {useState, useCallback} from 'react'
 import {
   View,
   Text,
@@ -12,45 +12,36 @@ import {
 } from 'react-native'
 import Fetch from '@/hooks/FetchData'
 
-type FormData = {
-  name: string
-  email: string
-  password: string
-}
-
 export default function Login() {
   const [formData, setFormData] = useState({
     email: 'yop@alexcd2000.com',
     password: 'ePfpoFZN123',
   })
 
-  const redirigirRegistro = () => {
-    router.navigate('./test')
-  }
-  const redirigirRecuperarContrasena = () => {
-    router.navigate('./Recuperarcontrasena') // Asegúrate de que 'Register' sea el nombre correcto de tu ruta
-  }
+  const redirectToRegister = useCallback(() => {
+    router.navigate('./Signup')
+  }, [])
 
-  const handleSubmit = async () => {
-    Fetch('https://gympromanager.com/wp-json/api/v2/suscription')
-      .post('', formData)
-      .then((user: any) => {
-        const response: any = user
-        if (response.user_email) {
-          router.navigate('./home')
-          return
-        }
-        if (response.error) {
-          Alert.alert('Info', response.error)
-        } else {
-          Alert.alert('Error', 'Error de red')
-        }
-      })
-      .catch((error: any) => {
-        console.error(error)
-        Alert.alert('Error', 'Error de red')
-      })
-  }
+  const handleSubmit = useCallback(async () => {
+    try {
+      const user = await Fetch(
+        'https://gympromanager.com/wp-json/api/v2/suscription',
+      ).post('', formData)
+      const response = user
+      if (response.user_email) {
+        router.navigate('./home')
+        return
+      }
+      if (response.error) {
+        Alert.alert('Info', response.error)
+      } else {
+        Alert.alert('Error', 'Network error')
+      }
+    } catch (error) {
+      console.error(error)
+      Alert.alert('Error', 'Network error')
+    }
+  }, [formData])
 
   return (
     <View className='bg-[#1D1D1B] h-full text-white relative'>
@@ -90,7 +81,10 @@ export default function Login() {
             />
           </View>
           <View className='flex flex-row justify-center'>
-            <TouchableOpacity onPress={redirigirRecuperarContrasena}>
+            <TouchableOpacity
+              onPress={() =>
+                Alert.alert('Info', 'Funcionalidad no implementada')
+              }>
               <Text className='text-white text-lg underline'>
                 ¿Has olvidado tu contraseña?
               </Text>
@@ -100,7 +94,7 @@ export default function Login() {
       </View>
       <View className='flex flex-row items-center justify-center mt-24'>
         <Text className='text-white text-lg mr-2'>¿No tienes una cuenta?</Text>
-        <TouchableOpacity onPress={redirigirRegistro}>
+        <TouchableOpacity onPress={redirectToRegister}>
           <Text className='text-[##B0A462] text-lg font-bold underline'>
             Regístrate aquí
           </Text>

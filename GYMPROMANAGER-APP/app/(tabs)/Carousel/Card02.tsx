@@ -1,7 +1,6 @@
-import {ThemedText} from '@/components/ThemedText'
 import {Image, StyleSheet, View, useWindowDimensions, Text} from 'react-native'
 
-export default function Vistacarrusel2() {
+export default function Card02() {
   const {width} = useWindowDimensions()
   return (
     <View className='flex flex-col items-center rounded-xl pt-8 bg-[#1D1D1B] h-[680px]'>

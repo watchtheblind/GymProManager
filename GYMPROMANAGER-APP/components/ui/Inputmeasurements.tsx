@@ -9,36 +9,36 @@ import {
 } from 'react-native'
 
 interface MeasurementInputsProps {
-  peso: {
-    valor: number
-    unidad: 'kg' | 'lb'
+  weight: {
+    value: number
+    unit: 'kg' | 'lb'
   }
-  altura: {
-    valor: number
-    unidad: 'cm' | 'pulg'
+  height: {
+    value: number
+    unit: 'cm' | 'pulg'
   }
-  setPeso: (peso: {valor: number; unidad: 'kg' | 'lb'}) => void
-  setAltura: (altura: {valor: number; unidad: 'cm' | 'pulg'}) => void
+  setWeight: (weight: {value: number; unit: 'kg' | 'lb'}) => void
+  setHeight: (height: {value: number; unit: 'cm' | 'pulg'}) => void
 }
 
 export default function MeasurementInputs({
-  peso,
-  altura,
-  setPeso,
-  setAltura,
+  weight,
+  height,
+  setWeight,
+  setHeight,
 }: MeasurementInputsProps) {
-  const [height, setHeight] = useState(altura.valor.toString())
-  const [weight, setWeight] = useState(peso.valor.toString())
+  const [heightValue, setHeightValue] = useState(height.value.toString())
+  const [weightValue, setWeightValue] = useState(weight.value.toString())
   const [isMetric, setIsMetric] = useState({
-    height: altura.unidad === 'cm',
-    weight: peso.unidad === 'kg',
+    height: height.unit === 'cm',
+    weight: weight.unit === 'kg',
   })
 
   const [heightToggleAnim] = useState(
-    new Animated.Value(altura.unidad === 'cm' ? 0 : 1),
+    new Animated.Value(height.unit === 'cm' ? 0 : 1),
   )
   const [weightToggleAnim] = useState(
-    new Animated.Value(peso.unidad === 'kg' ? 0 : 1),
+    new Animated.Value(weight.unit === 'kg' ? 0 : 1),
   )
 
   const animateToggle = useCallback(
@@ -54,7 +54,7 @@ export default function MeasurementInputs({
   )
 
   const convertHeight = useCallback(
-    (value: number, fromUnit: 'cm' | 'pulg', toUnit: 'cm' | 'pulg'): number => {
+    (value: number, fromUnit: 'cm' | 'in', toUnit: 'cm' | 'in'): number => {
       if (fromUnit === toUnit) return Math.round(value)
       return Math.round(fromUnit === 'cm' ? value / 2.54 : value * 2.54)
     },
@@ -76,28 +76,28 @@ export default function MeasurementInputs({
         animateToggle(type, newValue ? 0 : 1)
 
         if (type === 'height') {
-          const currentValue = Number.parseFloat(height)
+          const currentValue = Number.parseFloat(heightValue)
           const newHeight = convertHeight(
             currentValue,
-            prev.height ? 'cm' : 'pulg',
-            newValue ? 'cm' : 'pulg',
+            prev.height ? 'cm' : 'in',
+            newValue ? 'cm' : 'in',
           ).toString()
-          setHeight(newHeight)
-          setAltura({
-            valor: Number.parseInt(newHeight, 10),
-            unidad: newValue ? 'cm' : 'pulg',
+          setHeightValue(newHeight)
+          setHeight({
+            value: Number.parseInt(newHeight, 10),
+            unit: newValue ? 'cm' : 'pulg',
           })
         } else {
-          const currentValue = Number.parseFloat(weight)
+          const currentValue = Number.parseFloat(weightValue)
           const newWeight = convertWeight(
             currentValue,
             prev.weight ? 'kg' : 'lb',
             newValue ? 'kg' : 'lb',
           ).toString()
-          setWeight(newWeight)
-          setPeso({
-            valor: Number.parseInt(newWeight, 10),
-            unidad: newValue ? 'kg' : 'lb',
+          setWeightValue(newWeight)
+          setWeight({
+            value: Number.parseInt(newWeight, 10),
+            unit: newValue ? 'kg' : 'lb',
           })
         }
 
@@ -105,12 +105,12 @@ export default function MeasurementInputs({
       })
     },
     [
-      height,
-      weight,
+      heightValue,
+      weightValue,
       convertHeight,
       convertWeight,
-      setAltura,
-      setPeso,
+      setHeight,
+      setWeight,
       animateToggle,
     ],
   )
@@ -118,31 +118,31 @@ export default function MeasurementInputs({
   const handleHeightChange = useCallback(
     (value: string) => {
       const numValue = Math.round(Number.parseFloat(value) || 0)
-      setHeight(numValue.toString())
-      setAltura({valor: numValue, unidad: isMetric.height ? 'cm' : 'pulg'})
+      setHeightValue(numValue.toString())
+      setHeight({value: numValue, unit: isMetric.height ? 'cm' : 'pulg'})
     },
-    [setAltura, isMetric.height],
+    [setHeight, isMetric.height],
   )
 
   const handleWeightChange = useCallback(
     (value: string) => {
       const numValue = Math.round(Number.parseFloat(value) || 0)
-      setWeight(numValue.toString())
-      setPeso({valor: numValue, unidad: isMetric.weight ? 'kg' : 'lb'})
+      setWeightValue(numValue.toString())
+      setWeight({value: numValue, unit: isMetric.weight ? 'kg' : 'lb'})
     },
-    [setPeso, isMetric.weight],
+    [setWeight, isMetric.weight],
   )
 
   useEffect(() => {
-    setHeight(altura.valor.toString())
-    setWeight(peso.valor.toString())
+    setHeightValue(height.value.toString())
+    setWeightValue(weight.value.toString())
     setIsMetric({
-      height: altura.unidad === 'cm',
-      weight: peso.unidad === 'kg',
+      height: height.unit === 'cm',
+      weight: weight.unit === 'kg',
     })
-    heightToggleAnim.setValue(altura.unidad === 'cm' ? 0 : 1)
-    weightToggleAnim.setValue(peso.unidad === 'kg' ? 0 : 1)
-  }, [altura, peso, heightToggleAnim, weightToggleAnim])
+    heightToggleAnim.setValue(height.unit === 'cm' ? 0 : 1)
+    weightToggleAnim.setValue(weight.unit === 'kg' ? 0 : 1)
+  }, [height, weight, heightToggleAnim, weightToggleAnim])
 
   return (
     <View style={styles.container}>
@@ -201,7 +201,7 @@ export default function MeasurementInputs({
             <TextInput
               className='font-Copperplate'
               style={styles.valueInput}
-              value={height}
+              value={heightValue}
               onChangeText={handleHeightChange}
               keyboardType='numeric'
             />
@@ -267,7 +267,7 @@ export default function MeasurementInputs({
             <TextInput
               className='font-Copperplate'
               style={styles.valueInput}
-              value={weight}
+              value={weightValue}
               onChangeText={handleWeightChange}
               keyboardType='numeric'
             />

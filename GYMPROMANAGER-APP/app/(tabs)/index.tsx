@@ -1,5 +1,5 @@
-import Carrusel from './Carrusel'
+import Carousel from './Carousel'
 
 export default function HomeScreen() {
-  return <Carrusel></Carrusel>
+  return <Carousel></Carousel>
 }

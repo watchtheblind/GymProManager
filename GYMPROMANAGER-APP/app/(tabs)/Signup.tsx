@@ -1,64 +1,64 @@
 import React, {useState, useRef} from 'react'
 import {View, Text, Image, ScrollView} from 'react-native'
 import PhoneInput from 'react-native-phone-number-input'
-import Step1 from './Registro/Paso1'
-import Step2 from './Registro/Paso2'
-import Step3 from './Registro/Paso3'
-import Step4 from './Registro/Paso4'
-import StepProgress from './Registro/StepProgress'
+import Step1 from './Register/Step1'
+import Step2 from './Register/Step2'
+import Step3 from './Register/Step3'
+import Step4 from './Register/Step4'
+import StepProgress from './Register/StepProgress'
 import CustomButton from '@/components/ui/Button2'
 
-interface Unidad {
-  valor: number
-  unidad: 'kg' | 'lb'
+interface Unit {
+  value: number
+  unit: 'kg' | 'lb'
 }
 
-interface Genero {
+interface Gender {
   value: 'masculino' | 'femenino' | 'neutral'
 }
 interface FormData {
   // Step 1
-  nombre: string
-  apellidos: string
-  nif: string
-  domicilio: string
-  telefono: string
+  firstName: string
+  lastName: string
+  idNumber: string
+  address: string
+  phone: string
   email: string
   password: string
   // Step 2
-  fechaNacimiento: string
-  genero?: Genero
-  peso: Unidad
-  altura: {valor: number; unidad: 'cm' | 'pulg'}
+  birthDate: string
+  gender?: Gender
+  weight: Unit
+  height: {value: number; unit: 'cm' | 'pulg'}
 
   // Step 3
-  ocupacion: string
-  nivelEducativo: string
-  fotoPerfil: string
+  occupation: string
+  educationLevel: string
+  profilePicture: string
   // Step 4
-  intereses: string
-  objetivos: string
+  interests: string
+  goals: string
 }
 
 const MultiStepForm: React.FC = () => {
   const [step, setStep] = useState(1)
   const [formData, setFormData] = useState<FormData>({
-    nombre: '',
-    apellidos: '',
-    nif: '',
-    domicilio: '',
-    telefono: '',
+    firstName: '',
+    lastName: '',
+    idNumber: '',
+    address: '',
+    phone: '',
     email: '',
     password: '',
-    fechaNacimiento: '',
-    fotoPerfil: '',
-    genero: undefined,
-    peso: {valor: 0, unidad: 'kg'},
-    altura: {valor: 0, unidad: 'cm'},
-    ocupacion: '',
-    nivelEducativo: '',
-    intereses: '',
-    objetivos: '',
+    birthDate: '',
+    profilePicture: '',
+    gender: undefined,
+    weight: {value: 0, unit: 'kg'},
+    height: {value: 0, unit: 'cm'},
+    occupation: '',
+    educationLevel: '',
+    interests: '',
+    goals: '',
   })
 
   const phoneInput = useRef<PhoneInput>(null)
@@ -71,25 +71,25 @@ const MultiStepForm: React.FC = () => {
     switch (step) {
       case 1:
         return (
-          formData.nombre &&
-          formData.apellidos &&
-          formData.nif &&
-          formData.domicilio &&
-          phoneInput.current?.isValidNumber(formData.telefono) &&
+          formData.firstName &&
+          formData.lastName &&
+          formData.idNumber &&
+          formData.address &&
+          phoneInput.current?.isValidNumber(formData.phone) &&
           formData.email &&
           formData.password
         )
       case 2:
         return (
-          formData.fechaNacimiento &&
-          formData.genero &&
-          formData.peso &&
-          formData.altura
+          formData.birthDate &&
+          formData.gender &&
+          formData.weight &&
+          formData.height
         )
       case 3:
-        return formData.fotoPerfil
+        return formData.profilePicture
       case 4:
-        return formData.intereses && formData.objetivos
+        return formData.interests && formData.goals
       default:
         return false
     }

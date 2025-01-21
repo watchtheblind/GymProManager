@@ -1,7 +1,5 @@
 import {
   StyleSheet,
-  View,
-  FlatList,
   Animated,
   Text,
   Pressable,
@@ -14,7 +12,6 @@ export default function Button({title, onPress = () => {}}) {
   // 1. Animated value
   const backgroundColorRef = new Animated.Value(0)
 
-  // 2. The handlers
   const handlePress = () => {
     Animated.timing(backgroundColorRef, {
       toValue: 1,

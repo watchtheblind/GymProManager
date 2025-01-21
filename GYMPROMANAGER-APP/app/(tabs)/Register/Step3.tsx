@@ -5,7 +5,7 @@ import * as ImagePicker from 'expo-image-picker'
 
 interface Step3Props {
   formData: {
-    fotoPerfil: string
+    profilePicture: string
   }
   setFormData: (newData: Partial<Step3Props['formData']>) => void
 }
@@ -50,7 +50,7 @@ const Step3: React.FC<Step3Props> = ({formData, setFormData}) => {
 
         if (base64.length * 0.75 <= 256 * 1024) {
           setFormData({
-            fotoPerfil: `data:image/jpeg;base64,${base64}`,
+            profilePicture: `data:image/jpeg;base64,${base64}`,
           })
           setError(null)
         } else {
@@ -75,9 +75,9 @@ const Step3: React.FC<Step3Props> = ({formData, setFormData}) => {
         onPress={handleImagePick}
         style={styles.imageContainer}>
         <View style={styles.circle}>
-          {formData.fotoPerfil ? (
+          {formData.profilePicture ? (
             <Image
-              source={{uri: formData.fotoPerfil}}
+              source={{uri: formData.profilePicture}}
               style={styles.image}
             />
           ) : (
@@ -92,10 +92,10 @@ const Step3: React.FC<Step3Props> = ({formData, setFormData}) => {
 
       {error ? (
         <Text style={styles.errorText}>{error}</Text>
-      ) : formData.fotoPerfil ? (
+      ) : formData.profilePicture ? (
         <Text style={styles.successText}>
           Imagen subida correctamente (tamaño:{' '}
-          {Math.round((formData.fotoPerfil.length * 0.75) / 1024)} KB)
+          {Math.round((formData.profilePicture.length * 0.75) / 1024)} KB)
         </Text>
       ) : null}
     </View>

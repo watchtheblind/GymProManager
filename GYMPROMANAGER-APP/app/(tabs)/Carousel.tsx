@@ -6,15 +6,15 @@ import {
   Text,
   Pressable,
 } from 'react-native'
-import Carruselsecciones from './Carrusel/Carruselsecciones'
-import Carruselitem from './Carruselitem'
+import CarouselSections from './Carousel/Cardsexport'
+import Carouselcardformat from './Carouselcardformat'
 import React, {useRef, useState} from 'react'
-import Paginacion from './Carrusel/Paginacion'
+import Pagination from './Carousel/Paginator'
 import Button from '@/components/ui/Button'
 import {router} from 'expo-router'
 import {ThemedText} from '@/components/ThemedText'
 
-export default function Carrusel() {
+export default function Carousel() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const scrollX = useRef(new Animated.Value(0)).current
   const slideRef = useRef(null)
@@ -33,8 +33,8 @@ export default function Carrusel() {
         className='rounded-xl'
         style={{flex: 3}}>
         <FlatList
-          data={Carruselsecciones}
-          renderItem={({item}) => <Carruselitem item={item} />}
+          data={CarouselSections}
+          renderItem={({item}) => <Carouselcardformat item={item} />}
           horizontal
           showsHorizontalScrollIndicator={false}
           pagingEnabled
@@ -55,8 +55,8 @@ export default function Carrusel() {
         />
       </View>
       <View style={{flex: 1, backgroundColor: '#1d1d1b'}}>
-        <Paginacion
-          data={Carruselsecciones}
+        <Pagination
+          data={CarouselSections}
           scrollX={scrollX}
         />
         <View
@@ -73,7 +73,7 @@ export default function Carrusel() {
           </ThemedText>
           <Pressable
             onPress={() => {
-              router.navigate('./test')
+              router.navigate('./Signup')
             }}>
             <Text className='text-[#B0A462] text-lg underline font-bold'>
               Regístrate

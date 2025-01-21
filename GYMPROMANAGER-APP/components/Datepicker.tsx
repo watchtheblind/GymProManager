@@ -4,21 +4,18 @@ import {View, TextInput, TouchableOpacity, Platform} from 'react-native'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import {MaterialCommunityIcons} from '@expo/vector-icons'
 
-interface SelectorFechaProps {
-  fechaNacimiento: string
-  setFechaNacimiento: (fecha: string) => void
+interface DatePickerProps {
+  birthDate: string
+  setBirthDate: (date: string) => void
 }
 
-const SelectorFecha: React.FC<SelectorFechaProps> = ({
-  fechaNacimiento,
-  setFechaNacimiento,
-}) => {
+const DatePicker: React.FC<DatePickerProps> = ({birthDate, setBirthDate}) => {
   const [date, setDate] = useState<Date>(new Date())
   const [show, setShow] = useState(false)
 
   useEffect(() => {
-    if (fechaNacimiento) {
-      const parsedDate = new Date(fechaNacimiento)
+    if (birthDate) {
+      const parsedDate = new Date(birthDate)
       if (!isNaN(parsedDate.getTime())) {
         setDate(parsedDate)
       } else {
@@ -27,7 +24,7 @@ const SelectorFecha: React.FC<SelectorFechaProps> = ({
     } else {
       setDate(new Date())
     }
-  }, [fechaNacimiento])
+  }, [birthDate])
 
   const onChange = (event: any, selectedDate?: Date | undefined) => {
     const currentDate = selectedDate || date
@@ -36,7 +33,7 @@ const SelectorFecha: React.FC<SelectorFechaProps> = ({
 
     // Formato de fecha: DD/MM/YYYY
     const formattedDate = `${currentDate.getDate().toString().padStart(2, '0')}/${(currentDate.getMonth() + 1).toString().padStart(2, '0')}/${currentDate.getFullYear()}`
-    setFechaNacimiento(formattedDate)
+    setBirthDate(formattedDate)
   }
 
   const showDatepicker = () => {
@@ -60,7 +57,7 @@ const SelectorFecha: React.FC<SelectorFechaProps> = ({
           placeholder='Tu fecha de nacimiento aquí'
           editable={false}
           placeholderTextColor='#fff'
-          value={fechaNacimiento}
+          value={birthDate}
         />
       </View>
       {show && (
@@ -79,4 +76,4 @@ const SelectorFecha: React.FC<SelectorFechaProps> = ({
   )
 }
 
-export default SelectorFecha
+export default DatePicker

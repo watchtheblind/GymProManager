@@ -19,7 +19,7 @@ export default function TabLayout() {
           display: 'none',
         },
       }}>
-      {/* Add your Tab Screens here */}
+      {' '}
     </Tabs>
   )
 }

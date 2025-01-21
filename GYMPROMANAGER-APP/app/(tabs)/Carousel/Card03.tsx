@@ -1,7 +1,7 @@
 import {ThemedText} from '@/components/ThemedText'
 import {Image, StyleSheet, View, useWindowDimensions, Text} from 'react-native'
 
-export default function Vistacarrusel3() {
+export default function Card03() {
   const {width} = useWindowDimensions()
 
   return (

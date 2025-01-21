@@ -2,7 +2,7 @@ import React from 'react'
 import {View, useWindowDimensions, Text, ScrollView} from 'react-native'
 import {MaterialCommunityIcons} from '@expo/vector-icons'
 
-export default function Vistacarrusel4() {
+export default function Card04() {
   const {width} = useWindowDimensions()
   const plans = [
     {

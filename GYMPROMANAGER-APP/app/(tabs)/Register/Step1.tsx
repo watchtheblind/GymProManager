@@ -4,7 +4,6 @@ import Checkbox from 'expo-checkbox'
 import {useState} from 'react'
 import PhoneInput, {PhoneInputProps} from 'react-native-phone-number-input'
 
-// Custom type that extends PhoneInputProps
 type CustomPhoneInputProps = PhoneInputProps & {
   translation?: {
     search: string
@@ -15,11 +14,11 @@ type CustomPhoneInputProps = PhoneInputProps & {
 }
 interface Step1Props {
   formData: {
-    nombre: string
-    apellidos: string
-    nif: string
-    domicilio: string
-    telefono: string
+    firstName: string
+    lastName: string
+    idNumber: string
+    address: string
+    phone: string
     email: string
     password: string
   }
@@ -29,7 +28,7 @@ interface Step1Props {
 
 const Step1: React.FC<Step1Props> = ({formData, setFormData, phoneInput}) => {
   const handlePhoneChange = (phoneNumber: string) => {
-    setFormData({telefono: phoneNumber})
+    setFormData({phone: phoneNumber})
   }
   const [isChecked, setChecked] = useState(false)
   return (
@@ -37,34 +36,34 @@ const Step1: React.FC<Step1Props> = ({formData, setFormData, phoneInput}) => {
       <TextInput
         className='bg-[#B0A462] border-4 py-3 border-[#FEF4C9] rounded-tr-3xl rounded-bl-3xl p-2 text-white w-full'
         placeholder='Nombre*'
-        onChangeText={(text) => setFormData({nombre: text})}
-        value={formData.nombre}
+        onChangeText={(text) => setFormData({firstName: text})}
+        value={formData.firstName}
         placeholderTextColor='#fff'
       />
       <TextInput
         className='bg-[#6CB0B4] border-4 py-3 border-[#518893] rounded-tl-3xl rounded-br-3xl p-2 text-white w-full'
         placeholder='Apellidos*'
-        onChangeText={(text) => setFormData({apellidos: text})}
-        value={formData.apellidos}
+        onChangeText={(text) => setFormData({lastName: text})}
+        value={formData.lastName}
         placeholderTextColor='#fff'
       />
       <TextInput
         className='bg-[#CC7751] border-4 py-3 border-[#DFAA8C] rounded-tr-3xl rounded-bl-3xl p-2 text-white w-full'
         placeholder='NIF/CUI/RUT/CI/CC/CURP'
-        onChangeText={(text) => setFormData({nif: text})}
-        value={formData.nif}
+        onChangeText={(text) => setFormData({idNumber: text})}
+        value={formData.idNumber}
         placeholderTextColor='#fff'
       />
       <TextInput
         className='bg-[#B0A462] border-4 py-3 border-[#FEF4C9] rounded-tl-3xl rounded-br-3xl p-2 text-white w-full'
         placeholder='Domicilio/Dirección'
-        onChangeText={(text) => setFormData({domicilio: text})}
-        value={formData.domicilio}
+        onChangeText={(text) => setFormData({address: text})}
+        value={formData.address}
         placeholderTextColor='#fff'
       />
       <PhoneInput
         ref={phoneInput}
-        defaultValue={formData.telefono}
+        defaultValue={formData.phone}
         defaultCode='ES'
         layout='first'
         onChangeFormattedText={handlePhoneChange}

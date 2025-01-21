@@ -1,6 +1,6 @@
 import {View, Image, StyleSheet, useWindowDimensions} from 'react-native'
 
-export default function Carruselitem({item}: {item: any}) {
+export default function Carouselcardformat({item}: {item: any}) {
   const {width} = useWindowDimensions()
 
   return (
@@ -9,12 +9,12 @@ export default function Carruselitem({item}: {item: any}) {
         style={{
           flex: 1.2,
           backgroundColor: 'skyblue',
-          width: width, // Asegúrate de que el contenedor tenga el ancho de la pantalla
+          width: width,
         }}>
         <Image
           source={item.image}
           style={[styles.image, {width: '100%', height: '100%'}]}
-          resizeMode='cover' // Cambia a 'contain' si no quieres que se recorte
+          resizeMode='cover'
         />
       </View>
       <View
