@@ -11,7 +11,7 @@ import Carruselitem from './Carruselitem'
 import React, {useRef, useState} from 'react'
 import Paginacion from './Carrusel/Paginacion'
 import Button from '@/components/ui/Button'
-import {Link, router} from 'expo-router'
+import {router} from 'expo-router'
 import {ThemedText} from '@/components/ThemedText'
 
 export default function Carrusel() {
