@@ -34,6 +34,7 @@ interface FormData {
   // Step 3
   ocupacion: string
   nivelEducativo: string
+  fotoPerfil: string
   // Step 4
   intereses: string
   objetivos: string
@@ -50,6 +51,7 @@ const MultiStepForm: React.FC = () => {
     email: '',
     password: '',
     fechaNacimiento: '',
+    fotoPerfil: '',
     genero: undefined,
     peso: {valor: 0, unidad: 'kg'},
     altura: {valor: 0, unidad: 'cm'},
@@ -78,9 +80,14 @@ const MultiStepForm: React.FC = () => {
           formData.password
         )
       case 2:
-        return formData.fechaNacimiento && formData.genero
+        return (
+          formData.fechaNacimiento &&
+          formData.genero &&
+          formData.peso &&
+          formData.altura
+        )
       case 3:
-        return formData.ocupacion && formData.nivelEducativo
+        return formData.fotoPerfil
       case 4:
         return formData.intereses && formData.objetivos
       default:
