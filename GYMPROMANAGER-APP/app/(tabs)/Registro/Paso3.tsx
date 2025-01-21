@@ -23,27 +23,41 @@ const Step3: React.FC<Step3Props> = ({formData, setFormData}) => {
         return
       }
 
-      const result = await ImagePicker.launchImageLibraryAsync({
+      let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [1, 1],
-        quality: 0.8,
+        quality: 1,
         base64: true,
       })
 
-      if (!result.canceled) {
-        const base64Size = result.assets[0].base64?.length ?? 0
-        const fileSizeInMB = (base64Size * 0.75) / (1024 * 1024)
+      if (!result.canceled && result.assets[0].base64) {
+        let base64 = result.assets[0].base64
+        let compressionQuality = 1
 
-        if (fileSizeInMB > 5) {
-          setError('La imagen no debe superar los 5MB')
-          return
+        while (base64.length * 0.75 > 256 * 1024 && compressionQuality > 0.1) {
+          compressionQuality -= 0.1
+          result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: compressionQuality,
+            base64: true,
+          })
+          if (result.canceled || !result.assets[0].base64) break
+          base64 = result.assets[0].base64
         }
 
-        setFormData({
-          fotoPerfil: `data:image/jpeg;base64,${result.assets[0].base64}`,
-        })
-        setError(null)
+        if (base64.length * 0.75 <= 256 * 1024) {
+          setFormData({
+            fotoPerfil: `data:image/jpeg;base64,${base64}`,
+          })
+          setError(null)
+        } else {
+          setError(
+            'No se pudo comprimir la imagen a menos de 256KB. Por favor, intenta con una imagen más pequeña.',
+          )
+        }
       }
     } catch (err) {
       console.error('Error al seleccionar imagen:', err)
@@ -53,7 +67,7 @@ const Step3: React.FC<Step3Props> = ({formData, setFormData}) => {
 
   return (
     <View style={styles.container}>
-      <Text className='font-Copperplate text-white text-center text-2xl'>
+      <Text className='font-Copperplate text-2xl text-white'>
         FOTO DE PERFIL
       </Text>
 
@@ -67,7 +81,11 @@ const Step3: React.FC<Step3Props> = ({formData, setFormData}) => {
               style={styles.image}
             />
           ) : (
-            <Text style={styles.placeholderText}>Toca para subir</Text>
+            <Text
+              style={styles.placeholderText}
+              className='font-Copperplate'>
+              Toca para subir
+            </Text>
           )}
         </View>
       </TouchableOpacity>
@@ -75,7 +93,10 @@ const Step3: React.FC<Step3Props> = ({formData, setFormData}) => {
       {error ? (
         <Text style={styles.errorText}>{error}</Text>
       ) : formData.fotoPerfil ? (
-        <Text style={styles.successText}>Imagen subida correctamente</Text>
+        <Text style={styles.successText}>
+          Imagen subida correctamente (tamaño:{' '}
+          {Math.round((formData.fotoPerfil.length * 0.75) / 1024)} KB)
+        </Text>
       ) : null}
     </View>
   )
@@ -87,20 +108,23 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     gap: 20,
-    marginBlock: 50,
+    marginBlock: 100,
+  },
+  title: {
+    fontSize: 24,
+    textAlign: 'center',
   },
   imageContainer: {
-    marginTop: 50,
     width: 150,
     height: 150,
     justifyContent: 'center',
     alignItems: 'center',
   },
   circle: {
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-    borderWidth: 3,
+    width: 150,
+    height: 150,
+    borderRadius: 80,
+    borderWidth: 4,
     borderColor: '#CC7751',
     justifyContent: 'center',
     alignItems: 'center',
@@ -111,7 +135,6 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   placeholderText: {
-    fontFamily: 'Copperplate',
     color: '#CC7751',
     textAlign: 'center',
   },
