@@ -1,7 +1,5 @@
 import {
   StyleSheet,
-  View,
-  FlatList,
   Animated,
   Text,
   Pressable,
@@ -14,7 +12,6 @@ export default function Button({title, onPress = () => {}}) {
   // 1. Animated value
   const backgroundColorRef = new Animated.Value(0)
 
-  // 2. The handlers
   const handlePress = () => {
     Animated.timing(backgroundColorRef, {
       toValue: 1,
@@ -43,7 +40,8 @@ export default function Button({title, onPress = () => {}}) {
       onPressOut={handleRelease}
       onPress={onPress}>
       <Animated.View
-        style={[styles.buttonContainer, {backgroundColor, width: width - 32}]}>
+        style={[styles.buttonContainer, {backgroundColor, width: 270}]} // Cambia el ancho a un valor fijo
+      >
         <Text style={styles.buttonText}> {title} </Text>
       </Animated.View>
     </Pressable>
@@ -59,16 +57,16 @@ const styles = StyleSheet.create({
   buttonContainer: {
     alignItems: 'center',
     backgroundColor: '#000000',
-    borderRadius: 24,
+    borderRadius: 50,
     marginHorizontal: 10,
-    padding: 15,
+    padding: 10,
     borderColor: '#fef4c9',
     borderStyle: 'solid',
-    borderWidth: 2,
+    borderWidth: 3,
   },
   buttonText: {
     color: '#ffffff',
-    fontSize: 20,
+    fontSize: 17,
     userSelect: 'none',
   },
 })

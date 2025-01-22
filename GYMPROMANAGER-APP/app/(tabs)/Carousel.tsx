@@ -6,15 +6,15 @@ import {
   Text,
   Pressable,
 } from 'react-native'
-import Carruselsecciones from './Carruselsecciones'
-import Carruselitem from '../Carruselitem'
+import CarouselSections from './Carousel/Cardsexport'
+import Carouselcardformat from './Carouselcardformat'
 import React, {useRef, useState} from 'react'
-import Paginator from '../Paginator'
+import Pagination from './Carousel/Paginator'
 import Button from '@/components/ui/Button'
-import {Link, router} from 'expo-router'
+import {router} from 'expo-router'
 import {ThemedText} from '@/components/ThemedText'
 
-export default function Carrusel() {
+export default function Carousel() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const scrollX = useRef(new Animated.Value(0)).current
   const slideRef = useRef(null)
@@ -24,7 +24,7 @@ export default function Carrusel() {
   ).current
 
   const handleSubmit = async () => {
-    router.navigate('./login')
+    router.navigate('./Login')
   }
 
   return (
@@ -33,8 +33,8 @@ export default function Carrusel() {
         className='rounded-xl'
         style={{flex: 3}}>
         <FlatList
-          data={Carruselsecciones}
-          renderItem={({item}) => <Carruselitem item={item} />}
+          data={CarouselSections}
+          renderItem={({item}) => <Carouselcardformat item={item} />}
           horizontal
           showsHorizontalScrollIndicator={false}
           pagingEnabled
@@ -55,27 +55,30 @@ export default function Carrusel() {
         />
       </View>
       <View style={{flex: 1, backgroundColor: '#1d1d1b'}}>
-        <Paginator
-          data={Carruselsecciones}
+        <Pagination
+          data={CarouselSections}
           scrollX={scrollX}
         />
         <View
-          className='flex flex-row justify-center'
+          className='flex flex-row justify-center '
           style={{backgroundColor: '#1D1D1B'}}>
           <Button
-            title='Acceder'
+            title='Empezar'
             onPress={handleSubmit}
           />
         </View>
-        <View className='flex flex-row justify-center items-center mt-2'>
-          <ThemedText style={{color: '#ffffff'}}>Ya tienes cuentas?</ThemedText>
-          <Link
-            href='/'
-            asChild>
-            <Pressable>
-              <Text style={styles.linkColor}>Registrar</Text>
-            </Pressable>
-          </Link>
+        <View className='flex flex-row justify-center items-center mt-4'>
+          <ThemedText style={{color: '#ffffff'}}>
+            ¿Aún no tienes cuenta?{' '}
+          </ThemedText>
+          <Pressable
+            onPress={() => {
+              router.navigate('./Signup')
+            }}>
+            <Text className='text-[#B0A462] text-lg underline font-bold'>
+              Regístrate
+            </Text>
+          </Pressable>
         </View>
       </View>
     </View>
@@ -92,6 +95,6 @@ const styles = StyleSheet.create({
     color: '#B0A462',
     padding: 4,
     fontSize: 16,
-    fontFamily: 'Copperplate',
+    fontFamily: 'Myriad Pro',
   },
 })
