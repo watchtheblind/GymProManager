@@ -94,6 +94,35 @@ const MultiStepForm: React.FC = () => {
       paymentValidated: false, // Reset payment validation when a new plan is selected
     }))
   }
+  const validateStep = () => {
+    switch (step) {
+      case 1:
+        return (
+          formData.firstName &&
+          formData.lastName &&
+          formData.idNumber &&
+          formData.address &&
+          phoneInput.current?.isValidNumber(formData.phone) &&
+          formData.email &&
+          formData.password
+        )
+      case 2:
+        return (
+          formData.birthDate &&
+          formData.gender &&
+          formData.weight &&
+          formData.height
+        )
+      case 3:
+        return formData.profilePicture
+      case 4:
+        return formData.interests && formData.goals
+      case 5:
+        return formData.selectedPlan && formData.paymentValidated
+      default:
+        return false
+    }
+  }
 
   const steps = [
     {number: 1, label: 'Datos Personales'},
@@ -150,7 +179,7 @@ const MultiStepForm: React.FC = () => {
             <CustomButton
               title={step === 4 ? 'Enviar' : 'Siguiente'}
               onPress={handleNext}
-              // disabled={!validateStep()}
+              disabled={!validateStep()}
             />
           </View>
         </View>
