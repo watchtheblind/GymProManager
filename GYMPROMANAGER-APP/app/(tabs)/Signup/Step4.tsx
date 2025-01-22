@@ -10,14 +10,16 @@ import {
 } from 'react-native'
 import {MaterialCommunityIcons} from '@expo/vector-icons'
 
+interface SelectedPlan {
+  id: number
+  description: string
+  price: number
+}
+
 interface Step4Props {
   onPlanSelected: (plan: Plan | null) => void
   formData: {
-    selectedPlan: {
-      id: number
-      description: string
-      price: number
-    } | null
+    selectedPlan: SelectedPlan | null
   }
   setFormData: (newData: Partial<Step4Props['formData']>) => void // Cambiado aquí
 }
@@ -74,21 +76,16 @@ export default function Step4({onPlanSelected, setFormData}: Step4Props) {
     setSelectedPlan(plan)
     onPlanSelected(plan)
 
+    // Actualizar formData con el plan seleccionado
+    const {id, description, price} = plan
+    setFormData({selectedPlan: {id, description, price}}) // Solo los campos necesarios
+
     // Open payment URL
     const supported = await Linking.canOpenURL(plan.paymentUrl)
     if (supported) {
       await Linking.openURL(plan.paymentUrl)
     } else {
       console.error(`Don't know how to open URL: ${plan.paymentUrl}`)
-    }
-  }
-
-  const handleSubmit = () => {
-    if (selectedPlan) {
-      setFormData({selectedPlan}) // Cambiado aquí para pasar el objeto completo
-      alert('Formulario enviado con éxito')
-    } else {
-      alert('Por favor, completa todos los campos requeridos.')
     }
   }
 
