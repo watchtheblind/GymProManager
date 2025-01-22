@@ -19,7 +19,9 @@ interface Step4Props {
       price: number
     } | null
   }
-  setFormData: (newData: Partial<Step4Props['formData']>) => void
+  setFormData: (
+    newData: Partial<Step4Props['formData']['selectedPlan']>,
+  ) => void
 }
 
 interface Plan {
@@ -85,7 +87,7 @@ export default function Step4({onPlanSelected, setFormData}: Step4Props) {
 
   const handleSubmit = () => {
     if (selectedPlan) {
-      setFormData({selectedPlan})
+      setFormData(selectedPlan) // Solo pasamos selectedPlan
       alert('Formulario enviado con éxito')
     } else {
       alert('Por favor, completa todos los campos requeridos.')

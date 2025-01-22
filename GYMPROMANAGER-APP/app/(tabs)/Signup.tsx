@@ -31,14 +31,9 @@ interface FormData {
   gender?: Gender
   weight: Unit
   height: {value: number; unit: 'cm' | 'pulg'}
-
   // Step 3
-  occupation: string
-  educationLevel: string
   profilePicture: string
   // Step 4
-  interests: string
-  goals: string
   selectedPlan: {
     id: number
     description: string
@@ -62,10 +57,6 @@ const MultiStepForm: React.FC = () => {
     gender: undefined,
     weight: {value: 0, unit: 'kg'},
     height: {value: 0, unit: 'cm'},
-    occupation: '',
-    educationLevel: '',
-    interests: '',
-    goals: '',
     selectedPlan: null,
     paymentValidated: false,
   })
@@ -76,7 +67,7 @@ const MultiStepForm: React.FC = () => {
     setFormData((prevData) => ({...prevData, ...newData}))
   }
   const handleNext = () => {
-    if (step < 5) {
+    if (step < 4) {
       setStep(step + 1)
     } else {
       handleSubmit()
@@ -116,9 +107,7 @@ const MultiStepForm: React.FC = () => {
       case 3:
         return formData.profilePicture
       case 4:
-        return formData.interests && formData.goals
-      case 5:
-        return formData.selectedPlan && formData.paymentValidated
+        return formData.selectedPlan
       default:
         return false
     }
