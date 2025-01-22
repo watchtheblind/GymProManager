@@ -1,11 +1,12 @@
-import React, {useState, useRef} from 'react'
+import type React from 'react'
+import {useState, useRef} from 'react'
 import {View, Text, Image, ScrollView} from 'react-native'
-import PhoneInput from 'react-native-phone-number-input'
-import Step1 from './Register/Step1'
-import Step2 from './Register/Step2'
-import Step3 from './Register/Step3'
-import Step4 from './Register/Step4'
-import StepProgress from './Register/StepProgress'
+import type PhoneInput from 'react-native-phone-number-input'
+import Step1 from './Signup/Step1'
+import Step2 from './Signup/Step2'
+import Step3 from './Signup/Step3'
+import Step4 from './Signup/Step4'
+import StepProgress from './Signup/StepProgress'
 import CustomButton from '@/components/ui/Button2'
 
 interface Unit {
@@ -30,14 +31,15 @@ interface FormData {
   gender?: Gender
   weight: Unit
   height: {value: number; unit: 'cm' | 'pulg'}
-
   // Step 3
-  occupation: string
-  educationLevel: string
   profilePicture: string
   // Step 4
-  interests: string
-  goals: string
+  selectedPlan: {
+    id: number
+    description: string
+    price: number
+  } | null
+  paymentValidated: boolean
 }
 
 const MultiStepForm: React.FC = () => {
@@ -55,10 +57,8 @@ const MultiStepForm: React.FC = () => {
     gender: undefined,
     weight: {value: 0, unit: 'kg'},
     height: {value: 0, unit: 'cm'},
-    occupation: '',
-    educationLevel: '',
-    interests: '',
-    goals: '',
+    selectedPlan: null,
+    paymentValidated: false,
   })
 
   const phoneInput = useRef<PhoneInput>(null)
@@ -66,7 +66,25 @@ const MultiStepForm: React.FC = () => {
   const updateFormData = (newData: Partial<FormData>) => {
     setFormData((prevData) => ({...prevData, ...newData}))
   }
+  const handleNext = () => {
+    if (step < 4) {
+      setStep(step + 1)
+    } else {
+      handleSubmit()
+    }
+  }
 
+  const handleSubmit = () => {
+    alert('Form submitted:' + '\n' + JSON.stringify(formData))
+  }
+
+  const handlePlanSelected = (plan: FormData['selectedPlan']) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      selectedPlan: plan,
+      paymentValidated: false, // Reset payment validation when a new plan is selected
+    }))
+  }
   const validateStep = () => {
     switch (step) {
       case 1:
@@ -89,29 +107,17 @@ const MultiStepForm: React.FC = () => {
       case 3:
         return formData.profilePicture
       case 4:
-        return formData.interests && formData.goals
+        return formData.selectedPlan
       default:
         return false
     }
-  }
-
-  const handleNext = () => {
-    if (step < 4) {
-      setStep(step + 1)
-    } else {
-      handleSubmit()
-    }
-  }
-
-  const handleSubmit = () => {
-    alert('Form submitted:' + '\n' + JSON.stringify(formData))
   }
 
   const steps = [
     {number: 1, label: 'Datos Personales'},
     {number: 2, label: 'Información Básica'},
     {number: 3, label: 'Perfil'},
-    {number: 4, label: 'Preferencias'},
+    {number: 4, label: 'Membresía'},
   ]
 
   return (
@@ -155,13 +161,14 @@ const MultiStepForm: React.FC = () => {
             <Step4
               formData={formData}
               setFormData={updateFormData}
+              onPlanSelected={handlePlanSelected} // Pasar la función para manejar la selección del plan
             />
           )}
           <View className='flex flex-row justify-center mt-6 mb-6'>
             <CustomButton
               title={step === 4 ? 'Enviar' : 'Siguiente'}
               onPress={handleNext}
-              // disabled={validateStep()}
+              disabled={!validateStep()}
             />
           </View>
         </View>
