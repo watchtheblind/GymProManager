@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     height: 80, // Ajusta la altura según sea necesario
     backgroundColor: '#B0A462',
     transform: [{rotate: '-2deg'}],
-    bottom: -14, // Ajusta la posición vertical
+    bottom: -12, // Ajusta la posición vertical
     left: 2,
     right: 0,
     zIndex: 1, // Asegúrate de que esté por encima de otros componentes
