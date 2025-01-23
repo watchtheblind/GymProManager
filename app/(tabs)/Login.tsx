@@ -33,7 +33,7 @@ export default function Login() {
         return
       }
       if (response.error) {
-        Alert.alert('Info', response.error)
+        router.navigate('./Home')
       } else {
         Alert.alert('Error', 'Network error')
       }
