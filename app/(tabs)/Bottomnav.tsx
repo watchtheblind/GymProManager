@@ -1,20 +1,14 @@
 import React from 'react'
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
-import {View, Text, StyleSheet, Platform} from 'react-native'
-import {MaterialCommunityIcons} from '@expo/vector-icons'
+import {View, Text, StyleSheet, Platform, TouchableOpacity} from 'react-native'
+import Home from './Home'
+import Profile from './Profile'
 import {
   Dumbbellicon,
   Profileicon,
   Goalicon,
 } from '@/components/ui/Bottomnav/Icons'
 const Tab = createBottomTabNavigator()
-
-// Placeholder screens
-const MiCentroScreen = () => (
-  <View style={styles.screen}>
-    <Text className='text-white'>Mi Centros</Text>
-  </View>
-)
 
 const HoyTienesScreen = () => (
   <View style={styles.screen}>
@@ -32,7 +26,6 @@ export default function BottomTabs() {
   return (
     <>
       <View style={styles.rotatedView}></View>
-      <View style={styles.rotatedView}></View>
       <Tab.Navigator
         screenOptions={{
           tabBarStyle: styles.tabBar,
@@ -44,7 +37,7 @@ export default function BottomTabs() {
         }}>
         <Tab.Screen
           name='MiCentro'
-          component={MiCentroScreen}
+          component={Home}
           options={{
             tabBarLabel: 'Mi centro',
             tabBarIcon: ({color, size}) => (
@@ -70,7 +63,7 @@ export default function BottomTabs() {
         />
         <Tab.Screen
           name='Perfil'
-          component={PerfilScreen}
+          component={Profile}
           options={{
             tabBarLabel: 'Perfil',
             tabBarIcon: ({color, size}) => (
