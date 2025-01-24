@@ -116,8 +116,8 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   profileImage: {
-    width: 130,
-    height: 130,
+    width: 100,
+    height: 100,
     borderRadius: 65,
     backgroundColor: '#333',
   },
