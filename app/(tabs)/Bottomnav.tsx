@@ -3,6 +3,7 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
 import {View, Text, StyleSheet, Platform, TouchableOpacity} from 'react-native'
 import Home from './Home'
 import Profile from './Profile'
+import Progress from './ProfileTabs/Progress'
 import {
   Dumbbellicon,
   Profileicon,
