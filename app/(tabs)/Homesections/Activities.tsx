@@ -160,19 +160,18 @@ const App: React.FC = () => {
   )
 
   return (
-    <SafeAreaView
-      style={styles.container}
-      className='mt-10'>
-      <StatusBar barStyle='light-content' />
-      <View style={styles.header}>
+    <SafeAreaView style={styles.container}>
+      <View
+        style={styles.header}
+        className='mt-12'>
         <Text style={styles.title}>ACTIVIDADES</Text>
         <Settingsbutton></Settingsbutton>
       </View>
 
       <TextInput
-        style={styles.searchInput}
         placeholder='Buscar'
-        placeholderTextColor='rgba(255, 255, 255, 0.7)'
+        placeholderTextColor={'#fff'}
+        className='pl-12 pr-10 py-2 text-white rounded-bl-3xl rounded-tr-3xl bg-[#B0A462] border-2 border-solid border-[#FEF4C9]'
         value={searchQuery}
         onChangeText={setSearchQuery}
       />
@@ -227,7 +226,7 @@ const App: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#1D1D1B',
     padding: 16,
   },
   header: {
@@ -249,13 +248,7 @@ const styles = StyleSheet.create({
   searchButtonText: {
     fontSize: 20,
   },
-  searchInput: {
-    backgroundColor: 'rgba(197, 179, 88, 0.2)',
-    color: 'white',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 16,
-  },
+  searchInput: {},
   favoritesToggle: {
     flexDirection: 'row',
     alignItems: 'center',
