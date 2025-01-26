@@ -11,18 +11,18 @@ import {
 } from 'react-native'
 import Settingsbutton from '@/components/ui/Settingsbutton'
 import SearchBar from '@/components/ui/SearchBar'
+import moment from 'moment' // Importar moment.js para manejar fechas
 
 type ActivityType = 'yoga' | 'cardio' | 'pilates' | 'strength' | 'dance'
 
 interface Activity {
   id: string
   name: string
-  time: string
-  date: string
-  instructor: string
+  time: string // Formato: "Jan 27, 2025 7:40 PM"
+  type: ActivityType
   capacity: number
   available: number
-  type: ActivityType
+  Instructor: string // Nota: El campo en la API es "Instructor" (con mayúscula)
 }
 
 interface DateButton {
@@ -31,8 +31,7 @@ interface DateButton {
   month: string
 }
 
-const API_TOKEN = 'gym_manager_2024_token'
-const API_URL = 'http://localhost:8081/api/activities' // Replace with your actual API URL
+const API_URL = 'https://retoolapi.dev/ugkMJ5/GYMACTIVITIESAPP' // Endpoint de la API
 
 const getNextTwoWeeks = (): DateButton[] => {
   const dates = []
@@ -52,20 +51,26 @@ const getNextTwoWeeks = (): DateButton[] => {
 }
 
 const fetchActivities = async (date: string): Promise<Activity[]> => {
-  const url = `${API_URL}?date=${date}`
-  const response = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${API_TOKEN}`,
-      'Content-Type': 'application/json',
-    },
-  })
+  try {
+    const response = await fetch(API_URL)
+    if (!response.ok) {
+      throw new Error('Failed to fetch activities')
+    }
+    const data = await response.json()
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch activities')
+    // Filtrar actividades por fecha
+    const filteredData = data.filter((activity: Activity) => {
+      const activityDate = moment(activity.time, 'MMM DD, YYYY h:mm A').format(
+        'YYYY-MM-DD',
+      )
+      return activityDate === date
+    })
+
+    return filteredData
+  } catch (error) {
+    console.error('Error fetching activities:', error)
+    throw error
   }
-
-  const data = await response.json()
-  return data.activities
 }
 
 const App: React.FC = () => {
@@ -78,20 +83,20 @@ const App: React.FC = () => {
   const [favorites, setFavorites] = useState<string[]>([])
   const [dates] = useState<DateButton[]>(getNextTwoWeeks())
   const [error, setError] = useState<string | null>(null)
+
   // Cargar actividades cuando cambia la fecha seleccionada
   useEffect(() => {
     const loadActivities = async () => {
       try {
         setLoading(true)
-        setError(null) //Added to clear error message on new fetch
-        const data = await fetchActivities(
-          selectedDate.toISOString().split('T')[0],
-        )
+        setError(null)
+        const formattedDate = moment(selectedDate).format('YYYY-MM-DD') // Formatear fecha seleccionada
+        const data = await fetchActivities(formattedDate)
         setActivities(data)
-        setFilteredActivities(data) // Inicialmente, las actividades filtradas son todas
+        setFilteredActivities(data)
       } catch (error) {
         console.error('Error fetching activities:', error)
-        setError('Failed to load activities. Please try again.') //Set error message
+        setError('Failed to load activities. Please try again.')
       } finally {
         setLoading(false)
       }
@@ -104,19 +109,19 @@ const App: React.FC = () => {
   const searchClass = (text: string) => {
     setSearchQuery(text)
     if (text.trim() === '') {
-      setFilteredActivities(activities) // Si no hay texto, mostrar todas las actividades
+      setFilteredActivities(activities)
     } else {
       const filtered = activities.filter((activity) =>
         activity.name.toLowerCase().includes(text.toLowerCase()),
       )
-      setFilteredActivities(filtered) // Filtrar por nombre
+      setFilteredActivities(filtered)
     }
   }
 
   // Función para limpiar la búsqueda
   const clearSearch = () => {
     setSearchQuery('')
-    setFilteredActivities(activities) // Restablecer a todas las actividades
+    setFilteredActivities(activities)
   }
 
   // Filtrar actividades por favoritos si está activado
@@ -154,28 +159,35 @@ const App: React.FC = () => {
     </TouchableOpacity>
   )
 
-  const renderActivity = ({item}: {item: Activity}) => (
-    <View
-      style={[
-        styles.activityCard,
-        {backgroundColor: `${getActivityTypeColor(item.type)}20`},
-      ]}>
-      <View>
-        <Text style={styles.activityName}>{item.name}</Text>
-        <Text style={styles.activityDetails}>
-          {item.time} - {item.instructor}
-        </Text>
-        <Text style={styles.activityDetails}>
-          Disponibles: {item.available}/{item.capacity}
-        </Text>
+  const renderActivity = ({item}: {item: Activity}) => {
+    // Separar fecha y hora
+    const activityDateTime = moment(item.time, 'MMM DD, YYYY h:mm A')
+    const activityDate = activityDateTime.format('YYYY-MM-DD')
+    const activityTime = activityDateTime.format('h:mm A')
+
+    return (
+      <View
+        style={[
+          styles.activityCard,
+          {backgroundColor: `${getActivityTypeColor(item.type)}20`},
+        ]}>
+        <View>
+          <Text style={styles.activityName}>{item.name}</Text>
+          <Text style={styles.activityDetails}>
+            {activityTime} - {item.Instructor} {/* Usar item.Instructor */}
+          </Text>
+          <Text style={styles.activityDetails}>
+            Disponibles: {item.available}/{item.capacity}
+          </Text>
+        </View>
+        <TouchableOpacity onPress={() => toggleFavorite(item.id)}>
+          <Text style={styles.favoriteIcon}>
+            {favorites.includes(item.id) ? '★' : '☆'}
+          </Text>
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity onPress={() => toggleFavorite(item.id)}>
-        <Text style={styles.favoriteIcon}>
-          {favorites.includes(item.id) ? '★' : '☆'}
-        </Text>
-      </TouchableOpacity>
-    </View>
-  )
+    )
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -249,6 +261,7 @@ const App: React.FC = () => {
   )
 }
 
+// Estilos (sin cambios)
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -342,9 +355,9 @@ const styles = StyleSheet.create({
   noActivities: {
     color: 'rgba(255, 255, 255, 0.5)',
     textAlign: 'center',
-    fontSize: 18, // Texto más grande
-    flex: 1, // Ocupa todo el espacio disponible
-    textAlignVertical: 'center', // Centra verticalmente
+    fontSize: 18,
+    flex: 1,
+    textAlignVertical: 'center',
   },
   footer: {
     color: 'rgba(255, 255, 255, 0.2)',
@@ -353,16 +366,9 @@ const styles = StyleSheet.create({
     fontFamily: 'MyriadPro',
   },
   error: {
-    //Added error style
     color: 'red',
     textAlign: 'center',
     marginTop: 32,
-  },
-  errorText: {
-    color: 'red',
-    textAlign: 'center',
-    fontSize: 18,
-    marginTop: 20,
   },
 })
 
