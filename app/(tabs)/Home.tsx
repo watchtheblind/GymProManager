@@ -84,7 +84,7 @@ export default function Home() {
           <Animated.View
             entering={FadeInDown.delay(700).duration(500)}
             className='flex flex-col justify-center mt-4'>
-            <ButtonImage href='/activities'>
+            <ButtonImage href='/Homesections/Activities'>
               <Image
                 style={[styles.boderLeft]}
                 className='h-36 w-full'
