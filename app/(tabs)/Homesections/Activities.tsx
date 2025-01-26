@@ -32,7 +32,7 @@ interface DateButton {
 }
 
 const API_TOKEN = 'gym_manager_2024_token'
-const API_URL = 'https://your-api-url.com/api/activities' // Reemplaza con tu URL real
+const API_URL = 'http://localhost:8081/api/activities' // Replace with your actual API URL
 
 const getNextTwoWeeks = (): DateButton[] => {
   const dates = []
@@ -77,12 +77,13 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState(true)
   const [favorites, setFavorites] = useState<string[]>([])
   const [dates] = useState<DateButton[]>(getNextTwoWeeks())
-
+  const [error, setError] = useState<string | null>(null)
   // Cargar actividades cuando cambia la fecha seleccionada
   useEffect(() => {
     const loadActivities = async () => {
       try {
         setLoading(true)
+        setError(null) //Added to clear error message on new fetch
         const data = await fetchActivities(
           selectedDate.toISOString().split('T')[0],
         )
@@ -90,6 +91,7 @@ const App: React.FC = () => {
         setFilteredActivities(data) // Inicialmente, las actividades filtradas son todas
       } catch (error) {
         console.error('Error fetching activities:', error)
+        setError('Failed to load activities. Please try again.') //Set error message
       } finally {
         setLoading(false)
       }
@@ -219,7 +221,9 @@ const App: React.FC = () => {
         style={styles.dateList}
       />
 
-      {loading ? (
+      {error ? (
+        <Text style={styles.error}>{error}</Text>
+      ) : loading ? (
         <ActivityIndicator
           size='large'
           color='#14b8a6'
@@ -347,6 +351,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 16,
     fontFamily: 'MyriadPro',
+  },
+  error: {
+    //Added error style
+    color: 'red',
+    textAlign: 'center',
+    marginTop: 32,
+  },
+  errorText: {
+    color: 'red',
+    textAlign: 'center',
+    fontSize: 18,
+    marginTop: 20,
   },
 })
 
