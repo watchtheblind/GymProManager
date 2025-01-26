@@ -108,39 +108,41 @@ export default function Classes() {
           </View>
         </KeyboardAvoidingView>
         <View className='flex flex-row w-full'>
-          <View className='flex flex-row w-full flex-wrap'>
+          <View className='flex flex-row w-full flex-wrap mb-20'>
             {searchedClasess &&
-              searchedClasess.map((item: any, index: number) => {
-                return (
-                  <View
-                    className='flex flex-col items-left w-[50%] px-2 py-4'
-                    key={index.toString()}>
-                    <Image
-                      className='rounded-lg'
-                      style={{height: 150, width: '100%'}}
-                      source={{
-                        uri: item.imagen,
-                      }}
-                      resizeMode='cover'
-                    />
-                    <ThemedText
-                      type='subtitle'
-                      className='w-full'>
-                      {item.titulo}
-                    </ThemedText>
-                    <View className='flex flex-row w-full'>
-                      <Text
-                        className='inline-flex '
-                        style={{color: colorNivel(item.nivel)}}>
-                        {TextNivel(item.nivel)}
-                      </Text>
-                      <Text className='inline-flex ml-2 text-white'>
-                        {item.time}
-                      </Text>
+              Array.from({length: 3}).map((_, outerIndex) =>
+                searchedClasess.map((item: any, index: number) => {
+                  return (
+                    <View
+                      className='flex flex-col items-left w-[50%] px-2 py-4'
+                      key={`${outerIndex}-${index}`}>
+                      <Image
+                        className='rounded-lg'
+                        style={{height: 150, width: '100%'}}
+                        source={{
+                          uri: item.imagen,
+                        }}
+                        resizeMode='cover'
+                      />
+                      <ThemedText
+                        type='subtitle'
+                        className='w-full font-MyriadPro'>
+                        {item.titulo}
+                      </ThemedText>
+                      <View className='flex flex-row w-full'>
+                        <Text
+                          className='inline-flex '
+                          style={{color: colorNivel(item.nivel)}}>
+                          {TextNivel(item.nivel)}
+                        </Text>
+                        <Text className='inline-flex ml-2 text-white'>
+                          {item.time}
+                        </Text>
+                      </View>
                     </View>
-                  </View>
-                )
-              })}
+                  )
+                }),
+              )}
           </View>
         </View>
       </SafeAreaView>

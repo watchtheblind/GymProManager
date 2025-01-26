@@ -3,7 +3,6 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
 import {View, Text, StyleSheet, Platform, TouchableOpacity} from 'react-native'
 import Home from './Home'
 import Profile from './Profile'
-import Progress from './ProfileTabs/Progress'
 import {
   Dumbbellicon,
   Profileicon,
@@ -14,12 +13,6 @@ const Tab = createBottomTabNavigator()
 const HoyTienesScreen = () => (
   <View style={styles.screen}>
     <Text className='text-white'>Hoy Tienes</Text>
-  </View>
-)
-
-const PerfilScreen = () => (
-  <View style={styles.screen}>
-    <Text className='text-white'>Perfil</Text>
   </View>
 )
 

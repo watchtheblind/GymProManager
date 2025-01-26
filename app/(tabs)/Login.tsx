@@ -1,6 +1,7 @@
 import Button from '@/components/ui/Button'
 import {router} from 'expo-router'
 import React, {useState, useCallback} from 'react'
+import Bottomnav from './Bottomnav'
 import {
   View,
   Text,
@@ -77,7 +78,9 @@ export default function Login() {
           <View className='flex flex-row justify-center mt-2'>
             <Button
               title='Acceder'
-              onPress={handleSubmit}
+              onPress={() => {
+                router.navigate('./Bottomnav')
+              }}
             />
           </View>
           <View className='flex flex-row justify-center'>

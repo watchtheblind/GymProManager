@@ -15,6 +15,7 @@ export default function RootLayout() {
   const colorScheme = useColorScheme()
   const [fontsLoaded] = useFonts({
     Copperplate: require('../assets/fonts/Copperplate.otf'),
+    MyriadPro: require('../assets/fonts/MyriadPro.otf'),
   })
 
   useEffect(() => {
@@ -36,7 +37,10 @@ export default function RootLayout() {
         />
         <Stack.Screen name='+not-found' />
       </Stack>
-      <StatusBar style='auto' />
+      <StatusBar
+        style='auto'
+        backgroundColor='#1D1D1B'
+      />
     </ThemeProvider>
   )
 }
