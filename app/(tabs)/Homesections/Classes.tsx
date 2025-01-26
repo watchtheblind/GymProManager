@@ -108,7 +108,7 @@ export default function Classes() {
               placeholderTextColor={'#fff'}
               value={search}
               onChangeText={debounceSearchClass}
-              className='pl-12 pr-10 py-2 rounded-bl-3xl rounded-tr-3xl bg-[#B0A462] border-2 border-solid border-[#FEF4C9]'
+              className='pl-12 pr-10 py-2 text-white rounded-bl-3xl rounded-tr-3xl bg-[#B0A462] border-2 border-solid border-[#FEF4C9]'
               style={{
                 fontSize: 16,
                 fontFamily: 'Myriad Pro',
