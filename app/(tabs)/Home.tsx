@@ -6,9 +6,7 @@ import {
   Image,
   ScrollView,
   useWindowDimensions,
-  TouchableOpacity,
 } from 'react-native'
-import {Settingsicon} from '@/components/ui/Bottomnav/Icons'
 import ButtonImage from '@/components/ui/ButtonImage'
 import Animated, {
   FadeInDown,
@@ -19,19 +17,7 @@ import Animated, {
   withTiming,
   withDelay,
 } from 'react-native-reanimated'
-
-const AnimatedTouchableOpacity =
-  Animated.createAnimatedComponent(TouchableOpacity)
-
-const Settingsbutton = () => {
-  return (
-    <AnimatedTouchableOpacity
-      entering={FadeInDown.delay(300).duration(500)}
-      className='flex items-center justify-center mt-10 h-12 w-12 rounded-xl bg-[#518893] border-4 border-[#6CB0B4]'>
-      <Settingsicon size={22} />
-    </AnimatedTouchableOpacity>
-  )
-}
+import Settingsbutton from '@/components/ui/Settingsbutton'
 
 export default function Home() {
   const {width} = useWindowDimensions()
@@ -59,7 +45,10 @@ export default function Home() {
               source={require('@/assets/images/polygon-01.png')}
             />
           </Animated.View>
-          <Settingsbutton />
+          <View className='mt-10'>
+            <Settingsbutton />
+          </View>
+
           <Animated.View
             entering={FadeInRight.delay(200).duration(500)}
             className='absolute right-7 top-56'>
@@ -81,7 +70,7 @@ export default function Home() {
           <Animated.View
             entering={FadeInDown.delay(600).duration(500)}
             className='flex flex-col justify-center'>
-            <ButtonImage href='/classes'>
+            <ButtonImage href='/Homesections/Classes'>
               <Image
                 style={[styles.boderLeft]}
                 className='h-36 w-full'
