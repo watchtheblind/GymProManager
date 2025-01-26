@@ -4,17 +4,16 @@ import {
   StyleSheet,
   Text,
   Image,
-  TouchableOpacity,
   SafeAreaView,
   ScrollView,
   KeyboardAvoidingView,
   TextInput,
 } from 'react-native'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
-import {router, Stack} from 'expo-router'
+import {Stack} from 'expo-router'
 import {useFetchAPI} from '@/hooks/useFetchAPI'
 import {ThemedText} from '@/components/ThemedText'
-
+import Settingsbutton from '@/components/ui/Settingsbutton'
 export default function Classes() {
   const [search, setSearch] = useState('')
   const {data, loading, error} = useFetchAPI('/clases', {})
@@ -75,10 +74,11 @@ export default function Classes() {
             headerShown: false,
           }}
         />
-        <View className='flex flex-row items-center'>
-          <Text className=' text-white text-xl font-Copperplate'>
+        <View className='flex flex-row items-center justify-between'>
+          <Text className=' text-white text-xl font-Copperplate '>
             CLASES VIRTUALES
           </Text>
+          <Settingsbutton></Settingsbutton>
         </View>
         <KeyboardAvoidingView
           style={{

@@ -9,7 +9,7 @@ const Settingsbutton = () => {
   return (
     <AnimatedTouchableOpacity
       entering={FadeInDown.delay(300).duration(500)}
-      className='flex items-center justify-center mt-10 h-12 w-12 rounded-xl bg-[#518893] border-4 border-[#6CB0B4]'>
+      className='flex items-center justify-center h-12 w-12 p-2 rounded-xl bg-[#518893]  border-4 border-[#6CB0B4]'>
       <Settingsicon size={22} />
     </AnimatedTouchableOpacity>
   )

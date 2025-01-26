@@ -6,7 +6,6 @@ import {
   Image,
   ScrollView,
   useWindowDimensions,
-  TouchableOpacity,
 } from 'react-native'
 import ButtonImage from '@/components/ui/ButtonImage'
 import Animated, {
@@ -46,7 +45,10 @@ export default function Home() {
               source={require('@/assets/images/polygon-01.png')}
             />
           </Animated.View>
-          <Settingsbutton />
+          <View className='mt-10'>
+            <Settingsbutton />
+          </View>
+
           <Animated.View
             entering={FadeInRight.delay(200).duration(500)}
             className='absolute right-7 top-56'>
