@@ -34,7 +34,7 @@ const SearchBar: React.FC<SearchBarProps> = ({onSearch, onClear}) => {
           placeholderTextColor='#fff'
           value={searchText}
           onChangeText={handleSearch}
-          className='pl-12 pr-10 py-2 px-2 w-full text-white rounded-bl-3xl rounded-tr-3xl bg-[#B0A462] border-2 border-solid border-[#FEF4C9]'
+          className='pl-12 pr-10 py-2 px-2 w-full text-xl text-white rounded-bl-3xl rounded-tr-3xl bg-[#B0A462] border-2 border-solid border-[#FEF4C9]'
         />
         <View style={{position: 'absolute', left: 10}}>
           <MaterialIcons
