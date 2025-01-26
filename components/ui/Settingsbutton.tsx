@@ -7,7 +7,7 @@ const AnimatedTouchableOpacity =
 
 const Settingsbutton = () => {
   return (
-    <TouchableOpacity className='flex items-center justify-center h-12 w-12 p-2 rounded-xl bg-[#518893] border-4 border-[#6CB0B4]'>
+    <TouchableOpacity className='flex items-center justify-center h-12 w-12 p-2 rounded-xl '>
       <Settingsicon size={22} />
     </TouchableOpacity>
   )
