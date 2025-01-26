@@ -9,12 +9,14 @@ import {
   KeyboardAvoidingView,
   TextInput,
   TouchableOpacity,
+  BackHandler,
 } from 'react-native'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import {Stack} from 'expo-router'
 import {useFetchAPI} from '@/hooks/useFetchAPI'
 import {ThemedText} from '@/components/ThemedText'
 import Settingsbutton from '@/components/ui/Settingsbutton'
+import {useFocusEffect, useNavigation} from '@react-navigation/native'
 
 export default function Classes() {
   const [search, setSearch] = useState('')
@@ -78,6 +80,22 @@ export default function Classes() {
       clearTimeout(timeout)
     }
   }, [timeout]) // Added timeout to the dependency array
+
+  const navigation = useNavigation()
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        // Navigate to the desired component
+        navigation.navigate('Home' as never)
+        return true // Prevent default behavior
+      }
+      BackHandler.addEventListener('hardwareBackPress', onBackPress)
+
+      return () =>
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress)
+    }, [navigation]),
+  )
 
   return (
     <ScrollView
