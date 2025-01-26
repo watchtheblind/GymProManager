@@ -163,7 +163,11 @@ export default function Classes() {
                           style={{color: colorNivel(item.nivel)}}>
                           {TextNivel(item.nivel)}
                         </Text>
-                        <Text className='inline-flex ml-2 text-white'>
+                        <View className='flex items-center px-2'>
+                          <Text className='text-white '>•</Text>
+                        </View>
+
+                        <Text className='inline-flex ml-1 text-white'>
                           {item.time}
                         </Text>
                       </View>
