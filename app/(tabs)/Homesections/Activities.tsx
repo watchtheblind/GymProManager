@@ -177,7 +177,9 @@ const App: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
+      <View
+        style={styles.header}
+        className='mt-10'>
         <Text style={styles.title}>ACTIVIDADES</Text>
         <Settingsbutton />
       </View>
