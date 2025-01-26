@@ -9,8 +9,8 @@ import {
   SafeAreaView,
 } from 'react-native'
 import {Portrait} from '@/components/ui/Bottomnav/Icons'
-import Activity from './ProfileTabs/Activity'
-import Progress from './ProfileTabs/Progress'
+import Activity from '../../components/ProfileTabs/Activity'
+import Progress from '../../components/ProfileTabs/Progress'
 export default function Profile() {
   const [activeTab, setActiveTab] = useState('progress')
 
