@@ -194,15 +194,21 @@ const App: React.FC = () => {
         <Switch
           value={showFavorites}
           onValueChange={setShowFavorites}
-          trackColor={{false: '#767577', true: '#81b0ff'}}
-          thumbColor={showFavorites ? '#f5dd4b' : '#f4f3f4'}
+          trackColor={{false: '#767577', true: '#FEF4C9'}}
+          thumbColor={showFavorites ? '#B0A462' : '#f4f3f4'}
         />
-        <Text style={styles.favoritesText}>Ver mis favoritas</Text>
+        <Text
+          style={styles.favoritesText}
+          className='text-lg'>
+          Ver mis favoritas
+        </Text>
       </View>
 
-      <Text style={styles.dateInstructions}>
+      <Text
+        style={styles.dateInstructions}
+        className='text-xl'>
         Seleccione una <Text style={styles.highlightText}>fecha</Text> y{' '}
-        <Text style={styles.highlightText}>hora</Text>
+        <Text style={styles.highlightText2}>hora</Text>
       </Text>
 
       <FlatList
@@ -220,7 +226,9 @@ const App: React.FC = () => {
           style={styles.loader}
         />
       ) : finalActivities.length === 0 ? (
-        <Text style={styles.noActivities}>
+        <Text
+          style={styles.noActivities}
+          className='mb-60'>
           No hay actividades disponibles para esta fecha
         </Text>
       ) : (
@@ -259,15 +267,20 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   favoritesText: {
+    fontFamily: 'MyriadPro',
     color: 'white',
     marginLeft: 8,
   },
   dateInstructions: {
     color: 'white',
     marginBottom: 16,
+    fontFamily: 'MyriadPro',
   },
   highlightText: {
-    color: '#14b8a6',
+    color: '#6CB0B4',
+  },
+  highlightText2: {
+    color: '#DFAA8C',
   },
   dateList: {
     marginBottom: 24,
@@ -275,14 +288,14 @@ const styles = StyleSheet.create({
   dateButton: {
     width: 64,
     height: 64,
-    backgroundColor: 'rgba(20, 184, 166, 0.2)',
+    backgroundColor: '#6CB0B4',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 8,
     marginRight: 8,
   },
   selectedDateButton: {
-    backgroundColor: '#14b8a6',
+    backgroundColor: '#2C4A5D',
   },
   dateButtonDay: {
     color: 'white',
@@ -325,12 +338,15 @@ const styles = StyleSheet.create({
   noActivities: {
     color: 'rgba(255, 255, 255, 0.5)',
     textAlign: 'center',
-    marginTop: 32,
+    fontSize: 18, // Texto más grande
+    flex: 1, // Ocupa todo el espacio disponible
+    textAlignVertical: 'center', // Centra verticalmente
   },
   footer: {
     color: 'rgba(255, 255, 255, 0.2)',
     textAlign: 'center',
     marginTop: 16,
+    fontFamily: 'MyriadPro',
   },
 })
 
