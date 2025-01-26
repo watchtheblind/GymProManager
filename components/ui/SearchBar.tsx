@@ -34,24 +34,12 @@ const SearchBar: React.FC<SearchBarProps> = ({onSearch, onClear}) => {
           placeholderTextColor='#fff'
           value={searchText}
           onChangeText={handleSearch}
-          style={{
-            paddingLeft: 40,
-            paddingRight: 40,
-            paddingVertical: 10,
-            color: '#fff',
-            borderRadius: 16,
-            backgroundColor: '#B0A462',
-            borderWidth: 2,
-            borderColor: '#FEF4C9',
-            width: '100%',
-            fontSize: 16,
-            fontFamily: 'Myriad Pro',
-          }}
+          className='pl-12 pr-10 py-2 px-2 w-full text-white rounded-bl-3xl rounded-tr-3xl bg-[#B0A462] border-2 border-solid border-[#FEF4C9]'
         />
         <View style={{position: 'absolute', left: 10}}>
           <MaterialIcons
             name='search'
-            size={24}
+            size={28}
             color='white'
           />
         </View>
