@@ -1,18 +1,17 @@
-import type React from 'react'
-import {useState, useEffect} from 'react'
+import React, {useState, useEffect} from 'react'
 import {
   View,
   Text,
-  TextInput,
   FlatList,
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
   Switch,
   SafeAreaView,
-  StatusBar,
 } from 'react-native'
 import Settingsbutton from '@/components/ui/Settingsbutton'
+import SearchBar from '@/components/ui/SearchBar'
+
 type ActivityType = 'yoga' | 'cardio' | 'pilates' | 'strength' | 'dance'
 
 interface Activity {
@@ -33,7 +32,7 @@ interface DateButton {
 }
 
 const API_TOKEN = 'gym_manager_2024_token'
-const API_URL = 'https://your-api-url.com/api/activities' // Replace with your actual API URL
+const API_URL = 'https://your-api-url.com/api/activities' // Reemplaza con tu URL real
 
 const getNextTwoWeeks = (): DateButton[] => {
   const dates = []
@@ -74,10 +73,12 @@ const App: React.FC = () => {
   const [showFavorites, setShowFavorites] = useState(false)
   const [selectedDate, setSelectedDate] = useState<Date>(new Date())
   const [activities, setActivities] = useState<Activity[]>([])
+  const [filteredActivities, setFilteredActivities] = useState<Activity[]>([])
   const [loading, setLoading] = useState(true)
   const [favorites, setFavorites] = useState<string[]>([])
   const [dates] = useState<DateButton[]>(getNextTwoWeeks())
 
+  // Cargar actividades cuando cambia la fecha seleccionada
   useEffect(() => {
     const loadActivities = async () => {
       try {
@@ -86,6 +87,7 @@ const App: React.FC = () => {
           selectedDate.toISOString().split('T')[0],
         )
         setActivities(data)
+        setFilteredActivities(data) // Inicialmente, las actividades filtradas son todas
       } catch (error) {
         console.error('Error fetching activities:', error)
       } finally {
@@ -96,15 +98,29 @@ const App: React.FC = () => {
     loadActivities()
   }, [selectedDate])
 
-  const filteredActivities = activities.filter((activity) => {
-    const matchesSearch = activity.name
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase())
-    const matchesFavorites = showFavorites
-      ? favorites.includes(activity.id)
-      : true
-    return matchesSearch && matchesFavorites
-  })
+  // Función para buscar actividades
+  const searchClass = (text: string) => {
+    setSearchQuery(text)
+    if (text.trim() === '') {
+      setFilteredActivities(activities) // Si no hay texto, mostrar todas las actividades
+    } else {
+      const filtered = activities.filter((activity) =>
+        activity.name.toLowerCase().includes(text.toLowerCase()),
+      )
+      setFilteredActivities(filtered) // Filtrar por nombre
+    }
+  }
+
+  // Función para limpiar la búsqueda
+  const clearSearch = () => {
+    setSearchQuery('')
+    setFilteredActivities(activities) // Restablecer a todas las actividades
+  }
+
+  // Filtrar actividades por favoritos si está activado
+  const finalActivities = showFavorites
+    ? filteredActivities.filter((activity) => favorites.includes(activity.id))
+    : filteredActivities
 
   const toggleFavorite = (id: string) => {
     setFavorites((prev) =>
@@ -161,19 +177,15 @@ const App: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View
-        style={styles.header}
-        className='mt-12'>
+      <View style={styles.header}>
         <Text style={styles.title}>ACTIVIDADES</Text>
-        <Settingsbutton></Settingsbutton>
+        <Settingsbutton />
       </View>
 
-      <TextInput
-        placeholder='Buscar'
-        placeholderTextColor={'#fff'}
-        className='pl-12 pr-10 py-2 text-white rounded-bl-3xl rounded-tr-3xl bg-[#B0A462] border-2 border-solid border-[#FEF4C9]'
-        value={searchQuery}
-        onChangeText={setSearchQuery}
+      {/* Barra de búsqueda */}
+      <SearchBar
+        onSearch={searchClass}
+        onClear={clearSearch}
       />
 
       <View style={styles.favoritesToggle}>
@@ -205,13 +217,13 @@ const App: React.FC = () => {
           color='#14b8a6'
           style={styles.loader}
         />
-      ) : filteredActivities.length === 0 ? (
+      ) : finalActivities.length === 0 ? (
         <Text style={styles.noActivities}>
           No hay actividades disponibles para esta fecha
         </Text>
       ) : (
         <FlatList
-          data={filteredActivities}
+          data={finalActivities}
           renderItem={renderActivity}
           keyExtractor={(item) => item.id}
           style={styles.activityList}
@@ -240,15 +252,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontFamily: 'Copperplate',
   },
-  searchButton: {
-    backgroundColor: 'rgba(20, 184, 166, 0.2)',
-    padding: 8,
-    borderRadius: 8,
-  },
-  searchButtonText: {
-    fontSize: 20,
-  },
-  searchInput: {},
   favoritesToggle: {
     flexDirection: 'row',
     alignItems: 'center',
