@@ -1,7 +1,3 @@
-import React, {useEffect, useState} from 'react'
-import {useFocusEffect, useNavigation} from '@react-navigation/native'
-import {View, Text, FlatList, StyleSheet, BackHandler} from 'react-native'
-
 // Simulación de una API ficticia con más datos
 const getNotifications = () => {
   return Promise.resolve([
@@ -23,8 +19,55 @@ const getNotifications = () => {
   ])
 }
 
+interface Notification {
+  id: number
+  title: string
+  type: string
+}
+
+import React, {useEffect, useState} from 'react'
+import {useFocusEffect, useNavigation} from '@react-navigation/native'
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  BackHandler,
+  Image,
+  TouchableOpacity,
+} from 'react-native'
+import {Ionicons} from '@expo/vector-icons'
+
+// Helper function to get background color based on type
+const getBackgroundColor = (type: string) => {
+  switch (type.toLowerCase()) {
+    case 'yoga':
+      return '#68A7AB'
+    case 'plates':
+      return '#E8927C'
+    case 'gym':
+      return '#9B9B9B'
+    default:
+      return '#68A7AB'
+  }
+}
+
+// Helper function to get image based on type
+const getImage = (type: string) => {
+  switch (type.toLowerCase()) {
+    case 'yoga':
+      return 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-8MepBEPIBCwkATgSuhSEhAsom3VThV.png'
+    case 'plates':
+      return 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-8MepBEPIBCwkATgSuhSEhAsom3VThV.png'
+    default:
+      return 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-8MepBEPIBCwkATgSuhSEhAsom3VThV.png'
+  }
+}
+
 const NotificationsScreen = () => {
   const navigation = useNavigation()
+  const [notifications, setNotifications] = useState<Notification[]>([])
+
   useFocusEffect(
     React.useCallback(() => {
       const onBackPress = () => {
@@ -32,37 +75,77 @@ const NotificationsScreen = () => {
         return true
       }
       BackHandler.addEventListener('hardwareBackPress', onBackPress)
-
       return () =>
         BackHandler.removeEventListener('hardwareBackPress', onBackPress)
     }, [navigation]),
   )
-  const [notifications, setNotifications] = useState<Notification[]>([])
 
   useEffect(() => {
-    getNotifications().then((data) => setNotifications(data))
+    const loadNotifications = async () => {
+      try {
+        const data = await getNotifications()
+        setNotifications(data)
+      } catch (error) {
+        console.error('Error loading notifications:', error)
+      }
+    }
+
+    loadNotifications()
   }, [])
 
-  interface Notification {
-    id: number
-    title: string
-    type: string
-  }
-
   const renderItem = ({item}: {item: Notification}) => (
-    <View style={styles.notificationItem}>
-      <Text style={styles.title}>{item.title}</Text>
-      <Text style={styles.type}>{item.type}</Text>
-    </View>
+    <TouchableOpacity
+      style={[
+        styles.notificationItem,
+        {backgroundColor: getBackgroundColor(item.type)},
+      ]}>
+      <View style={styles.leftContent}>
+        <Image
+          source={{uri: getImage(item.type)}}
+          style={styles.thumbnail}
+        />
+        <View style={styles.textContainer}>
+          <Text style={styles.title}>{item.title}</Text>
+          <Text style={styles.time}>08:30</Text>
+        </View>
+      </View>
+      <Ionicons
+        name='chevron-forward'
+        size={24}
+        color='white'
+      />
+    </TouchableOpacity>
   )
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>NOTIFICACIONES</Text>
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Bottomnav' as never)}
+          style={styles.backButton}>
+          <Ionicons
+            name='arrow-back'
+            size={24}
+            color='white'
+          />
+        </TouchableOpacity>
+        <Text style={styles.headerText}>NOTIFICACIONES</Text>
+      </View>
+      <View style={styles.dateContainer}>
+        <Text style={styles.dateText}>Fecha</Text>
+      </View>
       <FlatList
         data={notifications}
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderItem}
+        contentContainerStyle={styles.listContainer}
+      />
+      <Image
+        source={{
+          uri: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-8MepBEPIBCwkATgSuhSEhAsom3VThV.png',
+        }}
+        style={styles.watermark}
+        resizeMode='contain'
       />
     </View>
   )
@@ -71,26 +154,70 @@ const NotificationsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: '#1E1E1E',
   },
   header: {
-    fontSize: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    paddingTop: 48,
+  },
+  backButton: {
+    marginRight: 16,
+  },
+  headerText: {
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 16,
+    color: 'white',
+  },
+  dateContainer: {
+    paddingHorizontal: 16,
+    paddingBottom: 8,
+  },
+  dateText: {
+    fontSize: 14,
+    color: '#888',
+  },
+  listContainer: {
+    padding: 16,
   },
   notificationItem: {
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 12,
+    borderRadius: 12,
+    marginBottom: 12,
+  },
+  leftContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  thumbnail: {
+    width: 50,
+    height: 50,
+    borderRadius: 8,
+    marginRight: 12,
+  },
+  textContainer: {
+    flex: 1,
   },
   title: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 16,
+    fontWeight: '600',
+    color: 'white',
+    marginBottom: 4,
   },
-  type: {
+  time: {
     fontSize: 14,
-    color: '#666',
+    color: 'rgba(255, 255, 255, 0.8)',
+  },
+  watermark: {
+    width: '100%',
+    height: 60,
+    opacity: 0.2,
+    position: 'absolute',
+    bottom: 20,
   },
 })
 
