@@ -91,9 +91,9 @@ const App: React.FC = () => {
         setLoading(true)
         setError(null)
         const formattedDate = moment(selectedDate).format('YYYY-MM-DD') // Formatear fecha seleccionada
-        const data = await fetchActivities(formattedDate)
-        setActivities(data)
-        setFilteredActivities(data)
+        const data = await fetchActivities(formattedDate) // Obtener actividades filtradas por fecha
+        setActivities(data) // Guardar actividades filtradas por fecha
+        setFilteredActivities(data) // Inicializar actividades filtradas para la búsqueda
       } catch (error) {
         console.error('Error fetching activities:', error)
         setError('Failed to load activities. Please try again.')
@@ -109,8 +109,10 @@ const App: React.FC = () => {
   const searchClass = (text: string) => {
     setSearchQuery(text)
     if (text.trim() === '') {
+      // Si no hay texto, mostrar todas las actividades de la fecha seleccionada
       setFilteredActivities(activities)
     } else {
+      // Filtrar por nombre dentro de las actividades de la fecha seleccionada
       const filtered = activities.filter((activity) =>
         activity.name.toLowerCase().includes(text.toLowerCase()),
       )
@@ -121,7 +123,7 @@ const App: React.FC = () => {
   // Función para limpiar la búsqueda
   const clearSearch = () => {
     setSearchQuery('')
-    setFilteredActivities(activities)
+    setFilteredActivities(activities) // Restablecer a todas las actividades de la fecha seleccionada
   }
 
   // Filtrar actividades por favoritos si está activado
@@ -352,7 +354,6 @@ const styles = StyleSheet.create({
     fontFamily: 'MyriadPro',
     textTransform: 'capitalize',
   },
-
   activityDetails: {
     color: 'rgba(255, 255, 255, 0.7)',
     fontSize: 15,
