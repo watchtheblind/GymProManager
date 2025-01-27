@@ -7,8 +7,7 @@ import Step2 from './Signup/Step2'
 import Step3 from './Signup/Step3'
 import Step4 from './Signup/Step4'
 import StepProgress from './Signup/StepProgress'
-import CustomButton from '@/components/ui/Button2'
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons' // Importar Material Icons
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 
 interface Unit {
   value: number
