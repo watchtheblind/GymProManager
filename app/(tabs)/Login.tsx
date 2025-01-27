@@ -77,7 +77,7 @@ export default function Login() {
           />
           <View className='flex flex-row justify-center mt-2'>
             <Button
-              title='Acceder'
+              title='Entrar'
               onPress={() => {
                 router.navigate('./Bottomnav')
               }}
