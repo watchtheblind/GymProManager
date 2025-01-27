@@ -92,7 +92,8 @@ const Step2: React.FC<Step2Props> = ({formData, setFormData}) => {
               }
             />
             <Text
-              className={`text-lg ${formData.gender?.value === option.value ? 'text-white' : 'text-[#B0A462]'}`}>
+              className={`text-lg ${formData.gender?.value === option.value ? 'text-white' : 'text-[#B0A462]'}`}
+              style={[{fontFamily: 'MyriadPro'}]}>
               {option.label}
             </Text>
           </TouchableOpacity>
