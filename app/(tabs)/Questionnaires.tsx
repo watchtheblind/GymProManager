@@ -1,5 +1,4 @@
-import React, {useEffect, useState} from 'react'
-import {useFocusEffect, useNavigation} from '@react-navigation/native'
+import React, {useEffect, useState, useRef} from 'react'
 import {
   View,
   Text,
@@ -10,7 +9,11 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  Modal,
+  TextInput,
+  Animated,
 } from 'react-native'
+import {useFocusEffect, useNavigation} from '@react-navigation/native'
 import {GestureHandlerRootView} from 'react-native-gesture-handler'
 import {Ionicons} from '@expo/vector-icons'
 import {Swipeable} from 'react-native-gesture-handler'
@@ -60,6 +63,10 @@ const Questionnaires = () => {
   const navigation = useNavigation()
   const [quizzes, setQuizzes] = useState<GymQuiz[]>([])
   const [loading, setLoading] = useState(true)
+  const [modalVisible, setModalVisible] = useState(false)
+  const [newQuizTitle, setNewQuizTitle] = useState('')
+  const [newQuizType, setNewQuizType] = useState('')
+  const scaleValue = useRef(new Animated.Value(1)).current
 
   useFocusEffect(
     React.useCallback(() => {
@@ -116,6 +123,46 @@ const Questionnaires = () => {
         return {backgroundColor: '#9B9B9B', borderColor: '#C0C0C0'}
       default:
         return {backgroundColor: '#1E1E1E', borderColor: '#333'}
+    }
+  }
+
+  // Efecto de palpitar
+  const startPulseAnimation = () => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(scaleValue, {
+          toValue: 1.2,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+        Animated.timing(scaleValue, {
+          toValue: 1,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+      ]),
+    ).start()
+  }
+
+  useEffect(() => {
+    startPulseAnimation()
+  }, [])
+
+  // Crear un nuevo cuestionario
+  const createNewQuiz = () => {
+    if (newQuizTitle && newQuizType) {
+      const newQuiz: GymQuiz = {
+        id: quizzes.length + 1,
+        title: newQuizTitle,
+        type: newQuizType,
+        completed: false,
+      }
+      setQuizzes([...quizzes, newQuiz])
+      setModalVisible(false)
+      setNewQuizTitle('')
+      setNewQuizType('')
+    } else {
+      Alert.alert('Error', 'Por favor, completa todos los campos.')
     }
   }
 
@@ -217,6 +264,60 @@ const Questionnaires = () => {
           </View>
         )}
       </View>
+
+      {/* Botón flotante para agregar nuevo cuestionario */}
+      <Animated.View
+        style={[
+          styles.floatingButton,
+          {
+            transform: [{scale: scaleValue}],
+          },
+        ]}>
+        <TouchableOpacity
+          style={styles.floatingButtonInner}
+          onPress={() => setModalVisible(true)}>
+          <Ionicons
+            name='add'
+            size={30}
+            color='white'
+          />
+        </TouchableOpacity>
+      </Animated.View>
+
+      {/* Modal para crear un nuevo cuestionario */}
+      <Modal
+        animationType='slide'
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Nuevo Cuestionario</Text>
+            <TextInput
+              style={styles.input}
+              placeholder='Título'
+              value={newQuizTitle}
+              onChangeText={setNewQuizTitle}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder='Tipo'
+              value={newQuizType}
+              onChangeText={setNewQuizType}
+            />
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={createNewQuiz}>
+              <Text style={styles.modalButtonText}>Crear</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => setModalVisible(false)}>
+              <Text style={styles.modalButtonText}>Cancelar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   )
 }
@@ -321,6 +422,61 @@ const styles = StyleSheet.create({
     backgroundColor: '#1D1D1B',
     opacity: 0.9,
     zIndex: 10, // Overlay por encima del fondo pero debajo del contenido
+  },
+  floatingButton: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#14b8a6',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 30,
+  },
+  floatingButtonInner: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: '80%',
+    backgroundColor: '#1E1E1E',
+    borderRadius: 12,
+    padding: 20,
+  },
+  modalTitle: {
+    fontSize: 20,
+    color: 'white',
+    fontFamily: 'MyriadPro',
+    marginBottom: 20,
+  },
+  input: {
+    backgroundColor: '#333',
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 10,
+    color: 'white',
+  },
+  modalButton: {
+    backgroundColor: '#14b8a6',
+    borderRadius: 8,
+    padding: 10,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  modalButtonText: {
+    color: 'white',
+    fontFamily: 'MyriadPro',
+    fontSize: 16,
   },
 })
 
