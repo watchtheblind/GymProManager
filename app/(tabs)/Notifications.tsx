@@ -8,28 +8,33 @@ import {
   BackHandler,
   Image,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native'
 import {Ionicons} from '@expo/vector-icons'
 
 // Simulación de una API ficticia con más datos
-const getNotifications = () => {
-  return Promise.resolve([
-    {id: 1, title: 'Full Body Yoga', type: 'yoga'},
-    {id: 2, title: 'Full Body Plates', type: 'plates'},
-    {id: 3, title: 'GYM', type: 'gym'},
-    {id: 4, title: 'Morning Stretch', type: 'yoga'},
-    {id: 5, title: 'Cardio Blast', type: 'gym'},
-    {id: 6, title: 'Strength Training', type: 'plates'},
-    {id: 7, title: 'Evening Relaxation', type: 'yoga'},
-    {id: 8, title: 'Core Workout', type: 'plates'},
-    {id: 9, title: 'HIIT Session', type: 'gym'},
-    {id: 10, title: 'Balance and Flexibility', type: 'yoga'},
-    {id: 11, title: 'Upper Body Strength', type: 'plates'},
-    {id: 12, title: 'Lower Body Strength', type: 'plates'},
-    {id: 13, title: 'Meditation and Breathing', type: 'yoga'},
-    {id: 14, title: 'Endurance Training', type: 'gym'},
-    {id: 15, title: 'Pilates Fusion', type: 'yoga'},
-  ])
+const getNotifications = (): Promise<Notification[]> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve([
+        {id: 1, title: 'Full Body Yoga', type: 'yoga'},
+        {id: 2, title: 'Full Body Plates', type: 'plates'},
+        {id: 3, title: 'GYM', type: 'gym'},
+        {id: 4, title: 'Morning Stretch', type: 'yoga'},
+        {id: 5, title: 'Cardio Blast', type: 'gym'},
+        {id: 6, title: 'Strength Training', type: 'plates'},
+        {id: 7, title: 'Evening Relaxation', type: 'yoga'},
+        {id: 8, title: 'Core Workout', type: 'plates'},
+        {id: 9, title: 'HIIT Session', type: 'gym'},
+        {id: 10, title: 'Balance and Flexibility', type: 'yoga'},
+        {id: 11, title: 'Upper Body Strength', type: 'plates'},
+        {id: 12, title: 'Lower Body Strength', type: 'plates'},
+        {id: 13, title: 'Meditation and Breathing', type: 'yoga'},
+        {id: 14, title: 'Endurance Training', type: 'gym'},
+        {id: 15, title: 'Pilates Fusion', type: 'yoga'},
+      ])
+    }, 2000) // Simulamos un retardo de 2 segundos
+  })
 }
 
 interface Notification {
@@ -67,6 +72,7 @@ const getImage = (type: string) => {
 const NotificationsScreen = () => {
   const navigation = useNavigation()
   const [notifications, setNotifications] = useState<Notification[]>([])
+  const [loading, setLoading] = useState(true) // Estado para controlar la carga
 
   useFocusEffect(
     React.useCallback(() => {
@@ -87,6 +93,8 @@ const NotificationsScreen = () => {
         setNotifications(data)
       } catch (error) {
         console.error('Error loading notifications:', error)
+      } finally {
+        setLoading(false) // Finalizamos la carga
       }
     }
 
@@ -145,21 +153,38 @@ const NotificationsScreen = () => {
         className='z-10'>
         {/* <Text style={styles.dateText}>Fecha</Text> */}
       </View>
-      <FlatList
-        data={notifications}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderItem}
-        contentContainerStyle={styles.listContainer}
-        className='z-10'
-      />
+      {/* Mostrar ActivityIndicator si loading es true */}
+      {loading ? (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator
+            size='large'
+            color='#14b8a6'
+            style={styles.loader}
+          />
+        </View>
+      ) : // Mostrar FlatList si hay notificaciones, o un mensaje si no hay
+      notifications.length > 0 ? (
+        <FlatList
+          data={notifications}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderItem}
+          contentContainerStyle={styles.listContainer}
+          className='z-10'
+        />
+      ) : (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>No hay notificaciones</Text>
+        </View>
+      )}
+      {/* Fondo y logo */}
       <View className='flex-1 justify-center items-center absolute -z-0 w-full h-full opacity-70'>
         <Image
-          className='mt-24 h-80 -z-20 w-full'
+          className='mt-24 h-40 -z-20 w-full'
           source={require('@/assets/images/logo.png')}
           style={{zIndex: 0}} // Imagen con zIndex: 0
         />
       </View>
-      <View className='absolute inset-0 bg-[#1D1D1B] opacity-90 -z-0'></View>{' '}
+      <View className='absolute inset-0 bg-[#1D1D1B] opacity-90 -z-0'></View>
       {/* Fondo oscuro con zIndex: 1 */}
     </View>
   )
@@ -232,12 +257,24 @@ const styles = StyleSheet.create({
     fontFamily: 'MyriadPro',
     color: 'rgba(255, 255, 255, 0.8)',
   },
-  watermark: {
-    width: '100%',
-    height: 60,
-    opacity: 0.2,
-    position: 'absolute',
-    bottom: 20,
+  loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10, // Asegurar que esté por encima de otros elementos
+  },
+  loader: {
+    marginTop: 20,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontSize: 18,
+    color: 'white',
+    fontFamily: 'MyriadPro',
   },
 })
 
