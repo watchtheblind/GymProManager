@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
+  Image,
 } from 'react-native'
 import {GestureHandlerRootView} from 'react-native-gesture-handler'
 import {Ionicons} from '@expo/vector-icons'
@@ -167,38 +168,55 @@ const Questionnaires = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Bottomnav' as never)}
-          style={styles.backButton}>
-          <Ionicons
-            name='arrow-back'
-            size={24}
-            color='white'
-          />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>CUESTIONARIOS DEL GIMNASIO</Text>
-      </View>
-      {loading ? (
-        <View style={styles.loaderContainer}>
-          <ActivityIndicator
-            size='large'
-            color='#14b8a6'
-            style={styles.loader}
-          />
-        </View>
-      ) : quizzes.length > 0 ? (
-        <FlatList
-          data={quizzes}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={renderItem}
-          contentContainerStyle={styles.listContainer}
+      {/* Fondo y logo */}
+      <View style={styles.backgroundContainer}>
+        <Image
+          source={require('@/assets/images/logo.png')} // Asegúrate de tener la ruta correcta
+          style={styles.logo}
         />
-      ) : (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>No hay cuestionarios disponibles</Text>
+      </View>
+      <View style={styles.overlay}></View>
+
+      {/* Contenedor del contenido principal */}
+      <View style={styles.contentContainer}>
+        {/* Encabezado */}
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Bottomnav' as never)}
+            style={styles.backButton}>
+            <Ionicons
+              name='arrow-back'
+              size={24}
+              color='white'
+            />
+          </TouchableOpacity>
+          <Text style={styles.headerText}>MIS CUESTIONARIOS</Text>
         </View>
-      )}
+
+        {/* Contenido principal */}
+        {loading ? (
+          <View style={styles.loaderContainer}>
+            <ActivityIndicator
+              size='large'
+              color='#14b8a6'
+              style={styles.loader}
+            />
+          </View>
+        ) : quizzes.length > 0 ? (
+          <FlatList
+            data={quizzes}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={renderItem}
+            contentContainerStyle={styles.listContainer}
+          />
+        ) : (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>
+              No hay cuestionarios disponibles
+            </Text>
+          </View>
+        )}
+      </View>
     </View>
   )
 }
@@ -208,15 +226,19 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#1E1E1E',
   },
+  contentContainer: {
+    flex: 1,
+    zIndex: 20, // Asegura que el contenido esté por encima del fondo y el logo
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     padding: 16,
     paddingTop: 60,
   },
   backButton: {
-    marginRight: 16,
+    marginRight: 20,
   },
   headerText: {
     fontSize: 20,
@@ -277,6 +299,28 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'white',
     fontFamily: 'MyriadPro',
+  },
+  backgroundContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    opacity: 0.7,
+    zIndex: 0, // Fondo detrás de todo
+  },
+  logo: {
+    width: '100%',
+    height: 160,
+    resizeMode: 'contain',
+  },
+  overlay: {
+    position: 'absolute',
+    inset: 0,
+    backgroundColor: '#1D1D1B',
+    opacity: 0.9,
+    zIndex: 10, // Overlay por encima del fondo pero debajo del contenido
   },
 })
 
