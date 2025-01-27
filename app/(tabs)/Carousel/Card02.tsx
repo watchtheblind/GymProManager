@@ -31,17 +31,35 @@ export default function Card02() {
         </View>
         <View className='flex flex-row mt-2'>
           <Text className={'text-[#6CB0B4]  text-lg font-bold'}>Capta</Text>
-          <Text className={'text-white text-lg'}> más clientes,</Text>
+          <Text
+            className={'text-white text-xl'}
+            style={[{fontFamily: 'MyriadPro'}]}>
+            {' '}
+            más clientes,
+          </Text>
           <Text className={'text-[#DFAA8C]  text-lg font-bold'}> aumenta</Text>
-          <Text className={'text-white text-lg'}> tus ingresos,</Text>
+          <Text
+            className={'text-white text-xl'}
+            style={[{fontFamily: 'MyriadPro'}]}>
+            {' '}
+            tus ingresos,
+          </Text>
         </View>
         <View className='flex flex-row'>
           <Text className={'text-[#B0A462] text-lg font-bold'}>fideliza </Text>
-          <Text className={'text-white text-lg '}>a tus usuarios y </Text>
+          <Text
+            className={'text-white text-xl'}
+            style={[{fontFamily: 'MyriadPro'}]}>
+            a tus usuarios y{' '}
+          </Text>
           <Text className={'text-[#6CB0B4]  text-lg font-bold'}>fortalece</Text>
         </View>
         <View>
-          <Text className={'text-white text-lg '}>tu imagen corporativa.</Text>
+          <Text
+            className={'text-white text-xl'}
+            style={[{fontFamily: 'MyriadPro'}]}>
+            tu imagen corporativa.
+          </Text>
         </View>
         <View className='absolute right-0 bottom-0 top-56'>
           <Image
