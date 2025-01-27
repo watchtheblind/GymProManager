@@ -8,11 +8,12 @@ import {
   ActivityIndicator,
   Switch,
   SafeAreaView,
+  BackHandler,
 } from 'react-native'
 import Settingsbutton from '@/components/ui/Settingsbutton'
 import SearchBar from '@/components/ui/SearchBar'
 import moment from 'moment' // Importar moment.js para manejar fechas
-
+import {useFocusEffect, useNavigation} from '@react-navigation/native'
 type ActivityType = 'yoga' | 'cardio' | 'pilates' | 'strength' | 'dance'
 
 interface Activity {
@@ -195,7 +196,19 @@ const App: React.FC = () => {
       </View>
     )
   }
+  const navigation = useNavigation()
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        navigation.navigate('Home' as never)
+        return true
+      }
+      BackHandler.addEventListener('hardwareBackPress', onBackPress)
 
+      return () =>
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress)
+    }, [navigation]),
+  )
   return (
     <SafeAreaView style={styles.container}>
       <View
