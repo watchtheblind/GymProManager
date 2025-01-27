@@ -116,11 +116,13 @@ export default function Home() {
             className='flex flex-col justify-center items-center mt-4'>
             <View className='flex flex-row w-full gap-2'>
               <View className='flex flex-col items-center w-1/2'>
-                <Image
-                  style={[styles.minibox, styles.boderLeft]}
-                  source={require('@/assets/images/notifications.jpeg')}
-                  className='bg-red-500'
-                />
+                <ButtonImage href='/Notifications'>
+                  <Image
+                    style={[styles.minibox, styles.boderLeft]}
+                    source={require('@/assets/images/notifications.jpeg')}
+                    className='bg-red-500'
+                  />
+                </ButtonImage>
                 <Text className='mt-4 text-white uppercase font-Copperplate'>
                   Notificaciones
                 </Text>
