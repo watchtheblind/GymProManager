@@ -20,6 +20,7 @@ import Animated, {
 import Settingsbutton from '@/components/ui/Settingsbutton'
 
 export default function Home() {
+  const AnimatedView = Animated.createAnimatedComponent(View)
   const {width} = useWindowDimensions()
   const logoOpacity = useSharedValue(0)
 
@@ -45,10 +46,11 @@ export default function Home() {
               source={require('@/assets/images/polygon-01.png')}
             />
           </Animated.View>
-          <View className='mt-10'>
+          <AnimatedView
+            entering={FadeInDown.delay(300).duration(500)}
+            className='mt-10'>
             <Settingsbutton />
-          </View>
-
+          </AnimatedView>
           <Animated.View
             entering={FadeInRight.delay(200).duration(500)}
             className='absolute right-7 top-56'>
@@ -84,7 +86,7 @@ export default function Home() {
           <Animated.View
             entering={FadeInDown.delay(700).duration(500)}
             className='flex flex-col justify-center mt-4'>
-            <ButtonImage href='/activities'>
+            <ButtonImage href='/Homesections/Activities'>
               <Image
                 style={[styles.boderLeft]}
                 className='h-36 w-full'
