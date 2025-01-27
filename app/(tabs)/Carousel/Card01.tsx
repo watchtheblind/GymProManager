@@ -37,15 +37,27 @@ export default function Card01() {
         </View>
 
         <View className='flex flex-row mt-4'>
-          <Text className={'text-white text-lg'}>
+          <Text
+            className={'text-white text-xl'}
+            style={[{fontFamily: 'MyriadPro'}]}>
             No te conformes con lo básico,{' '}
           </Text>
           <View>
-            <Text className={'text-[#6CB0B4] text-lg'}> ve más allá </Text>
+            <Text
+              className={'text-[#6CB0B4] text-xl'}
+              style={[{fontFamily: 'MyriadPro'}]}>
+              {' '}
+              ve más allá{' '}
+            </Text>
           </View>
         </View>
         <View className='flex flex-row'>
-          <Text className={'text-white text-lg'}> con </Text>
+          <Text
+            className={'text-white text-xl'}
+            style={[{fontFamily: 'MyriadPro'}]}>
+            {' '}
+            con{' '}
+          </Text>
           <Text className={'text-[#B0A462] text-lg font-bold'}>
             {' '}
             Gym Pro Manager{' '}
