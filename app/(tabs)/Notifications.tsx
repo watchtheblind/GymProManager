@@ -57,15 +57,41 @@ const getBackgroundColor = (type: string) => {
   }
 }
 
-// Helper function to get image based on type
-const getImage = (type: string) => {
-  switch (type.toLowerCase()) {
-    case 'yoga':
-      return 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-8MepBEPIBCwkATgSuhSEhAsom3VThV.png'
-    case 'plates':
-      return 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-8MepBEPIBCwkATgSuhSEhAsom3VThV.png'
+// Helper function to get image based on title
+const getImage = (title: string) => {
+  switch (title.toLowerCase()) {
+    case 'full body yoga':
+      return 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
+    case 'full body plates':
+      return 'https://images.unsplash.com/photo-1576678927484-cc907957088c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
+    case 'gym':
+      return 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
+    case 'morning stretch':
+      return 'https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
+    case 'cardio blast':
+      return 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
+    case 'strength training':
+      return 'https://images.unsplash.com/photo-1581009137042-c552e485697a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
+    case 'evening relaxation':
+      return 'https://images.unsplash.com/photo-1593810450967-f9c42742e326?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
+    case 'core workout':
+      return 'https://images.unsplash.com/photo-1596357395217-80de13130e92?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
+    case 'hiit session':
+      return 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
+    case 'balance and flexibility':
+      return 'https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
+    case 'upper body strength':
+      return 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
+    case 'lower body strength':
+      return 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
+    case 'meditation and breathing':
+      return 'https://images.unsplash.com/photo-1593810451137-5dc55105dace?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
+    case 'endurance training':
+      return 'https://images.unsplash.com/photo-1534258936925-c58bed479fcb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
+    case 'pilates fusion':
+      return 'https://images.unsplash.com/photo-1593810451158-9f1a8d4d5c8f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
     default:
-      return 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-8MepBEPIBCwkATgSuhSEhAsom3VThV.png'
+      return 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80' // Imagen por defecto (yoga)
   }
 }
 
@@ -115,7 +141,7 @@ const NotificationsScreen = () => {
         ]}>
         <View style={styles.leftContent}>
           <Image
-            source={{uri: getImage(item.type)}}
+            source={{uri: getImage(item.title)}} // Usamos el título para obtener la imagen
             style={styles.thumbnail}
           />
           <View style={styles.textContainer}>
