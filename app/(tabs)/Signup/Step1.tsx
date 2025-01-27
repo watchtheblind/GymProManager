@@ -35,20 +35,23 @@ const Step1: React.FC<Step1Props> = ({formData, setFormData, phoneInput}) => {
     <View className='flex flex-col items-center w-11/12 gap-5 mt-6'>
       <TextInput
         className='bg-[#B0A462] border-4 py-3 border-[#FEF4C9] rounded-tr-3xl rounded-bl-3xl p-2 text-white w-full'
-        placeholder='Nombre*'
+        style={[{fontFamily: 'MyriadPro'}]}
+        placeholder='Nombre'
         onChangeText={(text) => setFormData({firstName: text})}
         value={formData.firstName}
         placeholderTextColor='#fff'
       />
       <TextInput
         className='bg-[#6CB0B4] border-4 py-3 border-[#518893] rounded-tl-3xl rounded-br-3xl p-2 text-white w-full'
-        placeholder='Apellidos*'
+        style={[{fontFamily: 'MyriadPro'}]}
+        placeholder='Apellidos'
         onChangeText={(text) => setFormData({lastName: text})}
         value={formData.lastName}
         placeholderTextColor='#fff'
       />
       <TextInput
         className='bg-[#CC7751] border-4 py-3 border-[#DFAA8C] rounded-tr-3xl rounded-bl-3xl p-2 text-white w-full'
+        style={[{fontFamily: 'MyriadPro'}]}
         placeholder='NIF/CUI/RUT/CI/CC/CURP'
         onChangeText={(text) => setFormData({idNumber: text})}
         value={formData.idNumber}
@@ -56,6 +59,7 @@ const Step1: React.FC<Step1Props> = ({formData, setFormData, phoneInput}) => {
       />
       <TextInput
         className='bg-[#B0A462] border-4 py-3 border-[#FEF4C9] rounded-tl-3xl rounded-br-3xl p-2 text-white w-full'
+        style={[{fontFamily: 'MyriadPro'}]}
         placeholder='Domicilio/Dirección'
         onChangeText={(text) => setFormData({address: text})}
         value={formData.address}
@@ -77,10 +81,11 @@ const Step1: React.FC<Step1Props> = ({formData, setFormData, phoneInput}) => {
           borderTopRightRadius: 20,
           borderBottomLeftRadius: 20,
           backgroundColor: '#CC7751',
+          paddingBlock: 0,
           borderWidth: 4,
           borderColor: '#DFAA8C',
         }}
-        textInputStyle={{color: '#ffff'}}
+        textInputStyle={{color: '#ffff', fontSize: 16, fontFamily: 'MyriadPro'}}
         codeTextStyle={{color: '#fff'}}
         countryPickerButtonStyle={{
           backgroundColor: '#CC7751',
@@ -103,6 +108,7 @@ const Step1: React.FC<Step1Props> = ({formData, setFormData, phoneInput}) => {
       />
       <TextInput
         className='bg-[#B0A462] border-4 py-3 border-[#FEF4C9] rounded-tl-3xl rounded-br-3xl p-2 text-white w-full'
+        style={[{fontFamily: 'MyriadPro'}]}
         placeholder='Email'
         onChangeText={(text) => setFormData({email: text})}
         value={formData.email}
@@ -111,18 +117,13 @@ const Step1: React.FC<Step1Props> = ({formData, setFormData, phoneInput}) => {
       <TextInput
         className='bg-[#6CB0B4] border-4 py-3 border-[#518893] rounded-tl-3xl rounded-br-3xl p-2 text-white w-full'
         placeholder='Contraseña'
+        style={[{fontFamily: 'MyriadPro'}]}
         onChangeText={(text) => setFormData({password: text})}
-        secureTextEntry={true}
         value={formData.password}
         placeholderTextColor='#fff'
       />
       <View className='flex flex-row w-11/12'>
-        <Checkbox
-          className='mr-2'
-          value={isChecked}
-          onValueChange={setChecked}
-        />
-        <Text className='text-white text-sm'>
+        <Text className='text-white text-sm text-center mb-3'>
           Al registrarme acepto recibir comunicaciones de Trainingym, así como
           su Política de Privacidad.
         </Text>
