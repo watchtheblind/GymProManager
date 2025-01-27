@@ -33,9 +33,11 @@ export default function Card03() {
           <Text className='text-4xl font-Copperplate text-white'>?</Text>
         </View>
         <View
-          className='flex flex-row mt-2 mx-1'
+          className='flex flex-row mt-2 mx-1 px-3'
           style={{width}}>
-          <Text className='text-white text-center text-lg'>
+          <Text
+            className='text-white text-center text-lg'
+            style={[{fontFamily: 'MyriadPro'}]}>
             Con Gym Pro Manager, tendrás acceso a un software de gestión
             avanzado que te permitirá optimizar la administración, la
             comunicación, el cobro y el control de tus operaciones.  
