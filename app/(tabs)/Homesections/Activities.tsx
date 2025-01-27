@@ -226,7 +226,7 @@ const App: React.FC = () => {
       <Text
         style={styles.dateInstructions}
         className='text-xl'>
-        Seleccione una <Text style={styles.highlightText}>fecha</Text>
+        Selecciona una <Text style={styles.highlightText}>fecha</Text>
       </Text>
 
       <FlatList
@@ -310,6 +310,7 @@ const styles = StyleSheet.create({
     marginVertical: 0,
     minHeight: 0, // Asegura que el height no sea más grande que el contenido
     flexGrow: 0, // Evita que el contenedor crezca más allá de su contenido
+    fontFamily: 'MyriadPro',
   },
   dateButton: {
     width: 64,
@@ -325,12 +326,13 @@ const styles = StyleSheet.create({
   },
   dateButtonDay: {
     color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 19,
+    fontFamily: 'MyriadPro',
   },
   dateButtonMonth: {
     color: 'white',
-    fontSize: 12,
+    fontSize: 14,
+    fontFamily: 'MyriadPro',
   },
   activityList: {
     flex: 1,
@@ -346,12 +348,15 @@ const styles = StyleSheet.create({
   },
   activityName: {
     color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 19,
+    fontFamily: 'MyriadPro',
+    textTransform: 'capitalize',
   },
+
   activityDetails: {
     color: 'rgba(255, 255, 255, 0.7)',
-    fontSize: 14,
+    fontSize: 15,
+    fontFamily: 'MyriadPro',
   },
   favoriteIcon: {
     fontSize: 24,
@@ -380,6 +385,7 @@ const styles = StyleSheet.create({
     color: 'red',
     textAlign: 'center',
     marginTop: 32,
+    fontFamily: 'MyriadPro',
   },
 })
 
