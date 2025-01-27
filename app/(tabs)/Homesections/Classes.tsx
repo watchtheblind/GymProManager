@@ -51,7 +51,7 @@ export default function Classes() {
   useFocusEffect(
     React.useCallback(() => {
       const onBackPress = () => {
-        navigation.navigate('Home' as never)
+        navigation.navigate('Bottomnav' as never)
         return true
       }
       BackHandler.addEventListener('hardwareBackPress', onBackPress)
