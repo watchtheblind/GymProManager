@@ -1,3 +1,16 @@
+import React, {useEffect, useState} from 'react'
+import {useFocusEffect, useNavigation} from '@react-navigation/native'
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  BackHandler,
+  Image,
+  TouchableOpacity,
+} from 'react-native'
+import {Ionicons} from '@expo/vector-icons'
+
 // Simulación de una API ficticia con más datos
 const getNotifications = () => {
   return Promise.resolve([
@@ -25,30 +38,17 @@ interface Notification {
   type: string
 }
 
-import React, {useEffect, useState} from 'react'
-import {useFocusEffect, useNavigation} from '@react-navigation/native'
-import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
-  BackHandler,
-  Image,
-  TouchableOpacity,
-} from 'react-native'
-import {Ionicons} from '@expo/vector-icons'
-
-// Helper function to get background color based on type
+// Helper function to get background color and border color based on type
 const getBackgroundColor = (type: string) => {
   switch (type.toLowerCase()) {
     case 'yoga':
-      return '#68A7AB'
+      return {backgroundColor: '#518893', borderColor: '#6CB0B4'}
     case 'plates':
-      return '#E8927C'
+      return {backgroundColor: '#CC7751', borderColor: '#DFAA8C'}
     case 'gym':
-      return '#9B9B9B'
+      return {backgroundColor: '#B0A462', borderColor: '#FEF4C9'}
     default:
-      return '#68A7AB'
+      return {backgroundColor: '#9B9B9B', borderColor: '#C0C0C0'}
   }
 }
 
@@ -93,29 +93,36 @@ const NotificationsScreen = () => {
     loadNotifications()
   }, [])
 
-  const renderItem = ({item}: {item: Notification}) => (
-    <TouchableOpacity
-      style={[
-        styles.notificationItem,
-        {backgroundColor: getBackgroundColor(item.type)},
-      ]}>
-      <View style={styles.leftContent}>
-        <Image
-          source={{uri: getImage(item.type)}}
-          style={styles.thumbnail}
-        />
-        <View style={styles.textContainer}>
-          <Text style={styles.title}>{item.title}</Text>
-          <Text style={styles.time}>08:30</Text>
+  const renderItem = ({item}: {item: Notification}) => {
+    const colors = getBackgroundColor(item.type)
+    return (
+      <TouchableOpacity
+        style={[
+          styles.notificationItem,
+          {
+            backgroundColor: colors.backgroundColor,
+            borderColor: colors.borderColor,
+            borderWidth: 2, // Grosor del borde
+          },
+        ]}>
+        <View style={styles.leftContent}>
+          <Image
+            source={{uri: getImage(item.type)}}
+            style={styles.thumbnail}
+          />
+          <View style={styles.textContainer}>
+            <Text style={styles.title}>{item.title}</Text>
+            <Text style={styles.time}>08:30</Text>
+          </View>
         </View>
-      </View>
-      <Ionicons
-        name='chevron-forward'
-        size={24}
-        color='white'
-      />
-    </TouchableOpacity>
-  )
+        <Ionicons
+          name='chevron-forward'
+          size={24}
+          color='white'
+        />
+      </TouchableOpacity>
+    )
+  }
 
   return (
     <View style={styles.container}>
@@ -132,7 +139,7 @@ const NotificationsScreen = () => {
         <Text style={styles.headerText}>NOTIFICACIONES</Text>
       </View>
       <View style={styles.dateContainer}>
-        <Text style={styles.dateText}>Fecha</Text>
+        {/* <Text style={styles.dateText}>Fecha</Text> */}
       </View>
       <FlatList
         data={notifications}
@@ -159,15 +166,17 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     padding: 16,
-    paddingTop: 48,
+    paddingRight: 70,
+    paddingTop: 60,
   },
   backButton: {
     marginRight: 16,
   },
   headerText: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontFamily: 'Copperplate',
     color: 'white',
   },
   dateContainer: {
@@ -177,6 +186,7 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: 14,
     color: '#888',
+    fontFamily: 'MyriadPro',
   },
   listContainer: {
     padding: 16,
@@ -192,6 +202,7 @@ const styles = StyleSheet.create({
   leftContent: {
     flexDirection: 'row',
     alignItems: 'center',
+    flex: 1,
   },
   thumbnail: {
     width: 50,
@@ -203,13 +214,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    fontSize: 16,
+    fontFamily: 'MyriadPro',
+    fontSize: 18,
     fontWeight: '600',
     color: 'white',
     marginBottom: 4,
   },
   time: {
-    fontSize: 14,
+    fontSize: 16,
+    fontFamily: 'MyriadPro',
     color: 'rgba(255, 255, 255, 0.8)',
   },
   watermark: {
