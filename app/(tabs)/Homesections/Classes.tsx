@@ -85,7 +85,7 @@ export default function Classes() {
           onClear={clearSearch}
         />
         <View
-          style={{flexDirection: 'row', flexWrap: 'wrap', marginBottom: 20}}>
+          style={{flexDirection: 'row', flexWrap: 'wrap', marginBottom: 80}}>
           {searchedClasses &&
             Array.from({length: 3}).map((_, outerIndex) =>
               searchedClasses.map((item: any, index: number) => (
