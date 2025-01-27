@@ -76,6 +76,7 @@ const Step1: React.FC<Step1Props> = ({formData, setFormData, phoneInput}) => {
         containerStyle={{
           width: '100%',
           backgroundColor: 'transparent',
+          paddingBlock: 0,
         }}
         textContainerStyle={{
           borderTopRightRadius: 20,
@@ -94,6 +95,7 @@ const Step1: React.FC<Step1Props> = ({formData, setFormData, phoneInput}) => {
           borderBottomRightRadius: 20,
           borderBottomLeftRadius: 20,
           borderWidth: 4,
+          paddingBlock: 0,
           borderColor: '#DFAA8C',
         }}
         placeholder='Número de teléfono'
