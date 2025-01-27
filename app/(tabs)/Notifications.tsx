@@ -9,29 +9,32 @@ import {
   Image,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from 'react-native'
+import {GestureHandlerRootView} from 'react-native-gesture-handler'
 import {Ionicons} from '@expo/vector-icons'
+import {Swipeable} from 'react-native-gesture-handler'
 
 // Simulación de una API ficticia con más datos
 const getNotifications = (): Promise<Notification[]> => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve([
-        {id: 1, title: 'Full Body Yoga', type: 'yoga'},
-        {id: 2, title: 'Full Body Plates', type: 'plates'},
-        {id: 3, title: 'GYM', type: 'gym'},
-        {id: 4, title: 'Morning Stretch', type: 'yoga'},
-        {id: 5, title: 'Cardio Blast', type: 'gym'},
-        {id: 6, title: 'Strength Training', type: 'plates'},
-        {id: 7, title: 'Evening Relaxation', type: 'yoga'},
-        {id: 8, title: 'Core Workout', type: 'plates'},
-        {id: 9, title: 'HIIT Session', type: 'gym'},
-        {id: 10, title: 'Balance and Flexibility', type: 'yoga'},
-        {id: 11, title: 'Upper Body Strength', type: 'plates'},
-        {id: 12, title: 'Lower Body Strength', type: 'plates'},
-        {id: 13, title: 'Meditation and Breathing', type: 'yoga'},
-        {id: 14, title: 'Endurance Training', type: 'gym'},
-        {id: 15, title: 'Pilates Fusion', type: 'yoga'},
+        {id: 1, title: 'Full Body Yoga', type: 'yoga', read: false},
+        {id: 2, title: 'Full Body Plates', type: 'plates', read: false},
+        {id: 3, title: 'GYM', type: 'gym', read: false},
+        {id: 4, title: 'Morning Stretch', type: 'yoga', read: false},
+        {id: 5, title: 'Cardio Blast', type: 'gym', read: false},
+        {id: 6, title: 'Strength Training', type: 'plates', read: false},
+        {id: 7, title: 'Evening Relaxation', type: 'yoga', read: false},
+        {id: 8, title: 'Core Workout', type: 'plates', read: false},
+        {id: 9, title: 'HIIT Session', type: 'gym', read: false},
+        {id: 10, title: 'Balance and Flexibility', type: 'yoga', read: false},
+        {id: 11, title: 'Upper Body Strength', type: 'plates', read: false},
+        {id: 12, title: 'Lower Body Strength', type: 'plates', read: false},
+        {id: 13, title: 'Meditation and Breathing', type: 'yoga', read: false},
+        {id: 14, title: 'Endurance Training', type: 'gym', read: false},
+        {id: 15, title: 'Pilates Fusion', type: 'yoga', read: false},
       ])
     }, 2000) // Simulamos un retardo de 2 segundos
   })
@@ -41,6 +44,7 @@ interface Notification {
   id: number
   title: string
   type: string
+  read: boolean
 }
 
 // Helper function to get background color and border color based on type
@@ -98,7 +102,7 @@ const getImage = (title: string) => {
 const NotificationsScreen = () => {
   const navigation = useNavigation()
   const [notifications, setNotifications] = useState<Notification[]>([])
-  const [loading, setLoading] = useState(true) // Estado para controlar la carga
+  const [loading, setLoading] = useState(true)
 
   useFocusEffect(
     React.useCallback(() => {
@@ -120,41 +124,79 @@ const NotificationsScreen = () => {
       } catch (error) {
         console.error('Error loading notifications:', error)
       } finally {
-        setLoading(false) // Finalizamos la carga
+        setLoading(false)
       }
     }
 
     loadNotifications()
   }, [])
 
+  // Marcar todas como leídas
+  const markAllAsRead = () => {
+    const updatedNotifications = notifications.map((notification) => ({
+      ...notification,
+      read: true,
+    }))
+    setNotifications(updatedNotifications)
+    Alert.alert(
+      'Éxito',
+      'Todas las notificaciones han sido marcadas como leídas.',
+    )
+  }
+
+  // Eliminar una notificación
+  const deleteNotification = (id: number) => {
+    const updatedNotifications = notifications.filter(
+      (notification) => notification.id !== id,
+    )
+    setNotifications(updatedNotifications)
+  }
+
   const renderItem = ({item}: {item: Notification}) => {
     const colors = getBackgroundColor(item.type)
+
+    // Función para manejar el deslizamiento y eliminar la notificación
+    const handleSwipeableOpen = (direction: 'left' | 'right') => {
+      if (direction === 'left') {
+        deleteNotification(item.id)
+      }
+    }
+
     return (
-      <TouchableOpacity
-        style={[
-          styles.notificationItem,
-          {
-            backgroundColor: colors.backgroundColor,
-            borderColor: colors.borderColor,
-            borderWidth: 2, // Grosor del borde
-          },
-        ]}>
-        <View style={styles.leftContent}>
-          <Image
-            source={{uri: getImage(item.title)}} // Usamos el título para obtener la imagen
-            style={styles.thumbnail}
-          />
-          <View style={styles.textContainer}>
-            <Text style={styles.title}>{item.title}</Text>
-            <Text style={styles.time}>08:30</Text>
-          </View>
-        </View>
-        <Ionicons
-          name='chevron-forward'
-          size={24}
-          color='white'
-        />
-      </TouchableOpacity>
+      <GestureHandlerRootView>
+        <Swipeable
+          onSwipeableOpen={handleSwipeableOpen} // Elimina la notificación al deslizar
+          friction={2} // Ajusta la sensibilidad del deslizamiento
+          leftThreshold={80} // Distancia necesaria para activar el deslizamiento
+        >
+          <TouchableOpacity
+            style={[
+              styles.notificationItem,
+              {
+                backgroundColor: colors.backgroundColor,
+                borderColor: colors.borderColor,
+                borderWidth: 2,
+                opacity: item.read ? 0.6 : 1, // Opacidad reducida si está marcada como leída
+              },
+            ]}>
+            <View style={styles.leftContent}>
+              <Image
+                source={{uri: getImage(item.title)}}
+                style={styles.thumbnail}
+              />
+              <View style={styles.textContainer}>
+                <Text style={styles.title}>{item.title}</Text>
+                <Text style={styles.time}>08:30</Text>
+              </View>
+            </View>
+            <Ionicons
+              name='chevron-forward'
+              size={24}
+              color='white'
+            />
+          </TouchableOpacity>
+        </Swipeable>
+      </GestureHandlerRootView>
     )
   }
 
@@ -162,7 +204,7 @@ const NotificationsScreen = () => {
     <View style={styles.container}>
       <View
         style={styles.header}
-        className='z-10'>
+        className='z-20'>
         <TouchableOpacity
           onPress={() => navigation.navigate('Bottomnav' as never)}
           style={styles.backButton}>
@@ -176,26 +218,30 @@ const NotificationsScreen = () => {
       </View>
       <View
         style={styles.dateContainer}
-        className='z-10'>
-        {/* <Text style={styles.dateText}>Fecha</Text> */}
+        className='z-20'>
+        <TouchableOpacity
+          onPress={markAllAsRead}
+          style={styles.markAllButton}>
+          <Text style={styles.markAllText}>Marcar todas como leídas</Text>
+        </TouchableOpacity>
       </View>
-      {/* Mostrar ActivityIndicator si loading es true */}
       {loading ? (
-        <View style={styles.loaderContainer}>
+        <View
+          style={styles.loaderContainer}
+          className='z-20'>
           <ActivityIndicator
             size='large'
             color='#14b8a6'
             style={styles.loader}
           />
         </View>
-      ) : // Mostrar FlatList si hay notificaciones, o un mensaje si no hay
-      notifications.length > 0 ? (
+      ) : notifications.length > 0 ? (
         <FlatList
+          className='z-20'
           data={notifications}
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderItem}
           contentContainerStyle={styles.listContainer}
-          className='z-10'
         />
       ) : (
         <View style={styles.emptyContainer}>
@@ -203,15 +249,13 @@ const NotificationsScreen = () => {
         </View>
       )}
       {/* Fondo y logo */}
-      <View className='flex-1 justify-center items-center absolute -z-0 w-full h-full opacity-70'>
+      <View style={styles.backgroundContainer}>
         <Image
-          className='mt-24 h-40 -z-20 w-full'
           source={require('@/assets/images/logo.png')}
-          style={{zIndex: 0}} // Imagen con zIndex: 0
+          style={styles.logo}
         />
       </View>
-      <View className='absolute inset-0 bg-[#1D1D1B] opacity-90 -z-0'></View>
-      {/* Fondo oscuro con zIndex: 1 */}
+      <View style={styles.overlay}></View>
     </View>
   )
 }
@@ -237,14 +281,17 @@ const styles = StyleSheet.create({
     fontFamily: 'Copperplate',
     color: 'white',
   },
+  markAllButton: {
+    padding: 8,
+  },
+  markAllText: {
+    color: '#14b8a6',
+    fontSize: 16,
+    fontFamily: 'MyriadPro',
+  },
   dateContainer: {
     paddingHorizontal: 16,
     paddingBottom: 8,
-  },
-  dateText: {
-    fontSize: 14,
-    color: '#888',
-    fontFamily: 'MyriadPro',
   },
   listContainer: {
     padding: 16,
@@ -287,7 +334,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 10, // Asegurar que esté por encima de otros elementos
   },
   loader: {
     marginTop: 20,
@@ -301,6 +347,27 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'white',
     fontFamily: 'MyriadPro',
+  },
+  backgroundContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    opacity: 0.7,
+    zIndex: 0,
+  },
+  logo: {
+    width: '100%',
+    height: 160,
+    resizeMode: 'contain',
+  },
+  overlay: {
+    position: 'absolute',
+    inset: 0,
+    backgroundColor: '#1D1D1B',
+    opacity: 0.9,
   },
 })
 
