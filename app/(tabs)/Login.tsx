@@ -1,7 +1,4 @@
-import Button from '@/components/ui/Button'
-import {router} from 'expo-router'
 import React, {useState, useCallback} from 'react'
-import Bottomnav from './Bottomnav'
 import {
   View,
   Text,
@@ -11,6 +8,10 @@ import {
   Alert,
   TouchableOpacity,
 } from 'react-native'
+import Icon from '@expo/vector-icons/MaterialIcons'
+
+import Button from '@/components/ui/Button'
+import {router} from 'expo-router'
 import Fetch from '@/hooks/FetchData'
 
 export default function Login() {
@@ -18,6 +19,7 @@ export default function Login() {
     email: 'yop@alexcd2000.com',
     password: 'ePfpoFZN123',
   })
+  const [showPassword, setShowPassword] = useState(false) // Estado para mostrar/ocultar la contraseña
 
   const redirectToRegister = useCallback(() => {
     router.navigate('./Signup')
@@ -62,22 +64,38 @@ export default function Login() {
         <Text className='text-white text-3xl font-Copperplate'>ACCEDER</Text>
         <View className='w-10/12 flex flex-col gap-5 mt-8'>
           <TextInput
-            className='bg-[#B0A462] border-4 py-3 border-[#FEF4C9] rounded-tr-3xl rounded-bl-3xl p-2 text-white w-full'
+            className='bg-[#B0A462] border-4 py-3 border-[#FEF4C9] rounded-tr-3xl rounded-bl-3xl p-2 text-white'
             placeholder='Correo electrónico'
             onChangeText={(text) => setFormData({...formData, email: text})}
             value={formData.email}
             placeholderTextColor='#fff'
+            style={styles.input} // Aplica el estilo para el texto
           />
-          <TextInput
-            className='bg-[#6CB0B4] border-4 py-3 border-[#518893] rounded-tl-3xl rounded-br-3xl p-2 text-white w-full'
-            placeholder='Contraseña'
-            onChangeText={(text) => setFormData({...formData, password: text})}
-            secureTextEntry={true}
-            value={formData.password}
-          />
+          <View style={styles.passwordContainer}>
+            <TextInput
+              className='bg-[#6CB0B4] border-4 py-3 border-[#518893] rounded-tl-3xl rounded-br-3xl p-2 text-white'
+              placeholder='Contraseña'
+              onChangeText={(text) =>
+                setFormData({...formData, password: text})
+              }
+              secureTextEntry={!showPassword} // Oculta o muestra la contraseña
+              value={formData.password}
+              placeholderTextColor='#fff'
+              style={styles.passwordInput} // Aplica el estilo específico para la contraseña
+            />
+            <TouchableOpacity
+              onPress={() => setShowPassword(!showPassword)} // Cambia el estado al presionar el ícono
+              style={styles.icon}>
+              <Icon
+                name={showPassword ? 'visibility-off' : 'visibility'} // Cambia el ícono según el estado
+                size={24}
+                color='#fff'
+              />
+            </TouchableOpacity>
+          </View>
           <View className='flex flex-row justify-center mt-2'>
             <Button
-              title='Entrar'
+              title='Acceder'
               onPress={() => {
                 router.navigate('./Bottomnav')
               }}
@@ -121,5 +139,22 @@ const styles = StyleSheet.create({
   logo: {
     height: 150,
     width: 250,
+  },
+  passwordContainer: {
+    position: 'relative',
+    width: '100%',
+  },
+  icon: {
+    position: 'absolute',
+    right: 10,
+    top: '50%',
+    transform: [{translateY: -12}], // Centra el ícono verticalmente
+  },
+  input: {
+    width: '100%', // Asegura que el input ocupe el 100% del contenedor
+  },
+  passwordInput: {
+    width: '100%', // Asegura que el input ocupe el 100% del contenedor
+    paddingRight: 40, // Añade padding a la derecha para evitar que el texto se solape con el ícono
   },
 })
