@@ -88,15 +88,25 @@ export default function Login() {
               onPress={() =>
                 Alert.alert('Info', 'Funcionalidad no implementada')
               }>
-              <Text className='text-white text-lg underline'>
+              <Text
+                className='text-white text-lg underline'
+                style={{
+                  fontFamily: 'MyriadPro',
+                }}>
                 ¿Has olvidado tu contraseña?
               </Text>
             </TouchableOpacity>
           </View>
         </View>
       </View>
-      <View className='flex flex-row items-center justify-center mt-24'>
-        <Text className='text-white text-lg mr-2'>¿No tienes una cuenta?</Text>
+      <View className='flex flex-row items-center justify-center mt-28'>
+        <Text
+          className='text-white text-xl mr-2'
+          style={{
+            fontFamily: 'MyriadPro',
+          }}>
+          ¿No tienes una cuenta?
+        </Text>
         <TouchableOpacity onPress={redirectToRegister}>
           <Text className='text-[##B0A462] text-lg font-bold underline'>
             Regístrate aquí
