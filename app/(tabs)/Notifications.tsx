@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react'
-import {View, Text, FlatList, StyleSheet} from 'react-native'
+import {useFocusEffect, useNavigation} from '@react-navigation/native'
+import {View, Text, FlatList, StyleSheet, BackHandler} from 'react-native'
 
 // Simulación de una API ficticia con más datos
 const getNotifications = () => {
@@ -23,6 +24,19 @@ const getNotifications = () => {
 }
 
 const NotificationsScreen = () => {
+  const navigation = useNavigation()
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        navigation.navigate('Bottomnav' as never)
+        return true
+      }
+      BackHandler.addEventListener('hardwareBackPress', onBackPress)
+
+      return () =>
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress)
+    }, [navigation]),
+  )
   const [notifications, setNotifications] = useState<Notification[]>([])
 
   useEffect(() => {
