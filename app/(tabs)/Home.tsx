@@ -108,7 +108,7 @@ export default function Home() {
               />
             </ButtonImage>
             <Text className='mt-4 text-white font-Copperplate'>
-              ENTRENAMIENTO
+              ENTRENAMIENTOS
             </Text>
           </Animated.View>
           <Animated.View
