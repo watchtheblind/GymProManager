@@ -153,10 +153,13 @@ export default function Home() {
                 </Text>
               </View>
               <View className='flex flex-col items-center w-1/2'>
-                <Image
-                  style={[styles.minibox, styles.boderLeft]}
-                  source={require('@/assets/images/cuestionarios.jpeg')}
-                />
+                <ButtonImage href='/Questionnaires'>
+                  <Image
+                    style={[styles.minibox, styles.boderLeft]}
+                    source={require('@/assets/images/cuestionarios.jpeg')}
+                    className='bg-red-500'
+                  />
+                </ButtonImage>
                 <Text className='mt-4 text-white uppercase font-Copperplate'>
                   Cuestionarios
                 </Text>
