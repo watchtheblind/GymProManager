@@ -143,7 +143,12 @@ const App: React.FC = () => {
       strength: '#ea580c',
       dance: '#db2777',
     }
-    return colors[type]
+
+    // Color predeterminado para actividades no clasificadas
+    const defaultColor = '#9A9A98' // Un tono oscuro similar al fondo, pero con contraste
+
+    // Si el tipo no está en la lista, devuelve el color predeterminado
+    return colors[type] || defaultColor
   }
 
   const renderDateButton = ({item}: {item: DateButton}) => (
@@ -221,8 +226,7 @@ const App: React.FC = () => {
       <Text
         style={styles.dateInstructions}
         className='text-xl'>
-        Seleccione una <Text style={styles.highlightText}>fecha</Text> y{' '}
-        <Text style={styles.highlightText2}>hora</Text>
+        Seleccione una <Text style={styles.highlightText}>fecha</Text>
       </Text>
 
       <FlatList
@@ -245,7 +249,7 @@ const App: React.FC = () => {
         <Text
           style={styles.noActivities}
           className='mb-60'>
-          No hay actividades disponibles para esta fecha
+          No hay actividades disponibles para esta fecha.
         </Text>
       ) : (
         <FlatList
@@ -300,7 +304,12 @@ const styles = StyleSheet.create({
     color: '#DFAA8C',
   },
   dateList: {
-    marginBottom: 24,
+    alignSelf: 'flex-start', // Asegura que el height sea el mínimo necesario
+    flexShrink: 1, // Evita que el contenedor se expanda
+    paddingVertical: 0,
+    marginVertical: 0,
+    minHeight: 0, // Asegura que el height no sea más grande que el contenido
+    flexGrow: 0, // Evita que el contenedor crezca más allá de su contenido
   },
   dateButton: {
     width: 64,
@@ -325,6 +334,7 @@ const styles = StyleSheet.create({
   },
   activityList: {
     flex: 1,
+    marginTop: 20,
   },
   activityCard: {
     flexDirection: 'row',
@@ -358,6 +368,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     flex: 1,
     textAlignVertical: 'center',
+    fontFamily: 'MyriadPro',
   },
   footer: {
     color: 'rgba(255, 255, 255, 0.2)',
