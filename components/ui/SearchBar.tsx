@@ -29,7 +29,11 @@ const SearchBar: React.FC<SearchBarProps> = ({onSearch, onClear}) => {
           alignItems: 'center',
         }}>
         <TextInput
-          style={[{fontFamily: 'MyriadPro'}]}
+          style={{
+            fontFamily: 'MyriadPro',
+            paddingLeft: 40,
+            paddingRight: 40,
+          }}
           keyboardType='default'
           placeholder='Buscar'
           placeholderTextColor='#fff'
