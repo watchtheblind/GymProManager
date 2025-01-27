@@ -126,7 +126,9 @@ const NotificationsScreen = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <View
+        style={styles.header}
+        className='z-10'>
         <TouchableOpacity
           onPress={() => navigation.navigate('Bottomnav' as never)}
           style={styles.backButton}>
@@ -138,7 +140,9 @@ const NotificationsScreen = () => {
         </TouchableOpacity>
         <Text style={styles.headerText}>NOTIFICACIONES</Text>
       </View>
-      <View style={styles.dateContainer}>
+      <View
+        style={styles.dateContainer}
+        className='z-10'>
         {/* <Text style={styles.dateText}>Fecha</Text> */}
       </View>
       <FlatList
@@ -146,14 +150,17 @@ const NotificationsScreen = () => {
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderItem}
         contentContainerStyle={styles.listContainer}
+        className='z-10'
       />
-      <Image
-        source={{
-          uri: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-8MepBEPIBCwkATgSuhSEhAsom3VThV.png',
-        }}
-        style={styles.watermark}
-        resizeMode='contain'
-      />
+      <View className='flex-1 justify-center items-center absolute -z-0 w-full h-full opacity-70'>
+        <Image
+          className='mt-24 h-80 -z-20 w-full'
+          source={require('@/assets/images/logo.png')}
+          style={{zIndex: 0}} // Imagen con zIndex: 0
+        />
+      </View>
+      <View className='absolute inset-0 bg-[#1D1D1B] opacity-90 -z-0'></View>{' '}
+      {/* Fondo oscuro con zIndex: 1 */}
     </View>
   )
 }
