@@ -10,6 +10,7 @@ import {
 } from 'react-native'
 import SearchBar from '@/components/ui/SearchBar'
 import {MaterialIcons} from '@expo/vector-icons'
+import Tabs from '@/components/Tabs'
 
 const workouts = [
   {
@@ -83,10 +84,52 @@ export default function WorkoutList() {
     </View>
   )
 
+  const tabs = [
+    {id: 'listado', label: 'Listado'},
+    {id: 'mis-entrenamientos', label: 'Mis entrenamientos'},
+  ]
+
+  const ListadoContent = () => (
+    <>
+      {/* Search Bar */}
+      <View style={styles.searchBarContainer}>
+        <SearchBar
+          onSearch={searchClass}
+          onClear={clearSearch}
+        />
+      </View>
+
+      {/* Favorites Toggle */}
+      <View style={styles.favoritesContainer}>
+        <Text style={styles.favoritesText}>Ver solo mis favoritos</Text>
+        <TouchableOpacity
+          onPress={() => setShowFavorites(!showFavorites)}
+          style={[
+            styles.toggleButton,
+            showFavorites ? styles.toggleButtonOn : styles.toggleButtonOff,
+          ]}>
+          <View
+            style={[styles.toggleCircle, {marginLeft: showFavorites ? 24 : 4}]}
+          />
+        </TouchableOpacity>
+      </View>
+
+      {/* Workout Cards */}
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        {workouts.map((workout) => (
+          <WorkoutCard
+            key={workout.id}
+            workout={workout}
+          />
+        ))}
+      </ScrollView>
+    </>
+  )
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        {/*header*/}
+        {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity
             onPress={() => console.log('Back')}
@@ -97,95 +140,34 @@ export default function WorkoutList() {
               size={24}
             />
           </TouchableOpacity>
-          <View>
-            <Text
-              style={styles.headerText}
-              className='uppercase'>
-              listado de
-            </Text>
-            <View style={{height: 5}} /> {/* Espacio entre las líneas */}
-            <Text
-              style={styles.headerText}
-              className='uppercase'>
-              entrenamientos
-            </Text>
+          <View style={styles.headerTextContainer}>
+            <Text style={styles.headerText}>Listado de</Text>
+            <Text style={styles.headerText}>Entrenamientos</Text>
           </View>
         </View>
 
-        <View style={styles.tabContainer}>
-          <TouchableOpacity
-            onPress={() => setActiveTab('listado')}
-            style={[
-              styles.tabButton,
-              activeTab === 'listado' && styles.activeTab,
-            ]}>
-            <Text
-              style={[
-                styles.tabText,
-                activeTab === 'listado'
-                  ? styles.activeTabText
-                  : styles.inactiveTabText,
-              ]}>
-              Listado
+        {/* Tabs */}
+        <Tabs
+          tabs={tabs}
+          activeTab={activeTab}
+          onTabPress={setActiveTab}
+          containerStyle={styles.tabContainer}
+          tabStyle={styles.tabButton}
+          activeTabStyle={styles.activeTab}
+          tabTextStyle={styles.inactiveTabText}
+          activeTabTextStyle={styles.activeTabText}
+        />
+
+        {/* Conditional Content */}
+        {activeTab === 'listado' ? (
+          <ListadoContent />
+        ) : (
+          <View style={styles.misEntrenamientosContent}>
+            <Text style={styles.misEntrenamientosText}>
+              Contenido de Mis Entrenamientos
             </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => setActiveTab('mis-entrenamientos')}
-            style={[
-              styles.tabButton,
-              activeTab === 'mis-entrenamientos' && styles.activeTab,
-            ]}>
-            <Text
-              style={[
-                styles.tabText,
-                activeTab === 'mis-entrenamientos'
-                  ? styles.activeTabText
-                  : styles.inactiveTabText,
-              ]}>
-              Mis entrenamientos
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.searchBarContainer}>
-          <SearchBar
-            onSearch={searchClass}
-            onClear={clearSearch}
-          />
-        </View>
-
-        <View style={styles.favoritesContainer}>
-          <Text style={styles.favoritesText}>Ver solo mis favoritos</Text>
-          <TouchableOpacity
-            onPress={() => setShowFavorites(!showFavorites)}
-            style={[
-              styles.toggleButton,
-              showFavorites ? styles.toggleButtonOn : styles.toggleButtonOff,
-            ]}>
-            <View
-              style={[
-                styles.toggleCircle,
-                {marginLeft: showFavorites ? 24 : 4},
-              ]}
-            />
-          </TouchableOpacity>
-        </View>
-
-        <ScrollView>
-          <View
-            style={{
-              flexDirection: 'row',
-              flexWrap: 'wrap',
-              justifyContent: 'space-between',
-            }}>
-            {workouts.map((workout) => (
-              <WorkoutCard
-                key={workout.id}
-                workout={workout}
-              />
-            ))}
           </View>
-        </ScrollView>
+        )}
       </View>
     </SafeAreaView>
   )
@@ -197,6 +179,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1D1D1B',
   },
   content: {
+    flex: 1,
     paddingHorizontal: 16,
     paddingTop: 16,
   },
@@ -206,6 +189,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  headerTextContainer: {
+    alignItems: 'center',
   },
   headerText: {
     color: '#fff',
@@ -218,22 +204,17 @@ const styles = StyleSheet.create({
     left: 0,
   },
   tabContainer: {
-    flexDirection: 'row',
     backgroundColor: '#333333',
     borderRadius: 999,
     marginBottom: 16,
   },
   tabButton: {
-    flex: 1,
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 999,
   },
   activeTab: {
     backgroundColor: '#B5AD6F',
-  },
-  tabText: {
-    textAlign: 'center',
   },
   activeTabText: {
     color: '#fff',
@@ -278,30 +259,24 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderRadius: 12,
     overflow: 'hidden',
-    position: 'relative',
+    backgroundColor: '#333',
   },
   workoutImage: {
     width: '100%',
     height: '100%',
-    position: 'absolute',
   },
   levelBadge: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
     backgroundColor: '#B5AD6F',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderBottomRightRadius: 12,
+    margin: 8,
   },
   levelText: {
     color: '#fff',
     fontSize: 12,
   },
   workoutInfo: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
     padding: 8,
   },
   workoutTitle: {
@@ -311,5 +286,20 @@ const styles = StyleSheet.create({
   workoutDuration: {
     color: '#fff',
     fontSize: 12,
+  },
+  scrollViewContent: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    paddingBottom: 16,
+  },
+  misEntrenamientosContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  misEntrenamientosText: {
+    color: '#fff',
+    fontSize: 18,
   },
 })
