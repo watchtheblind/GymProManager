@@ -335,7 +335,6 @@ const styles = StyleSheet.create({
     width: 48,
     height: 24,
     borderRadius: 999,
-    justifyContent: 'center',
   },
   toggleButtonOn: {
     backgroundColor: '#B5AD6F',
