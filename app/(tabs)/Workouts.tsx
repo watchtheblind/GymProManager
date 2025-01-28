@@ -53,6 +53,67 @@ const workouts = [
     image:
       'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
   },
+
+  {
+    id: '2',
+    type: 'Boxeo',
+    title: 'Boxeo',
+    level: 'Intermedio',
+    duration: '32 min',
+    accentColor: '#ED8936',
+    image:
+      'https://images.unsplash.com/photo-1599058917212-d750089bc07e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+  },
+  {
+    id: '3',
+    type: 'HIIT',
+    title: 'HIIT',
+    level: 'Principiante',
+    duration: '32 min',
+    accentColor: '#F06292',
+    image:
+      'https://images.unsplash.com/photo-1576678927484-cc907957088c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+  },
+  {
+    id: '4',
+    type: 'Yoga',
+    title: 'Yoga',
+    level: 'Experto',
+    duration: '32 min',
+    accentColor: '#A0D2EB',
+    image:
+      'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+  },
+  {
+    id: '2',
+    type: 'Boxeo',
+    title: 'Boxeo',
+    level: 'Intermedio',
+    duration: '32 min',
+    accentColor: '#ED8936',
+    image:
+      'https://images.unsplash.com/photo-1599058917212-d750089bc07e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+  },
+  {
+    id: '3',
+    type: 'HIIT',
+    title: 'HIIT',
+    level: 'Principiante',
+    duration: '32 min',
+    accentColor: '#F06292',
+    image:
+      'https://images.unsplash.com/photo-1576678927484-cc907957088c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+  },
+  {
+    id: '4',
+    type: 'Yoga',
+    title: 'Yoga',
+    level: 'Experto',
+    duration: '32 min',
+    accentColor: '#A0D2EB',
+    image:
+      'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+  },
 ]
 
 export default function WorkoutList() {
