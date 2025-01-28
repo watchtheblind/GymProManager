@@ -11,6 +11,7 @@ import {
 import SearchBar from '@/components/ui/SearchBar'
 import {MaterialIcons} from '@expo/vector-icons'
 import Tabs from '@/components/Tabs'
+import {Settingsicon} from '@/components/ui/Bottomnav/Icons'
 
 const workouts = [
   {
@@ -171,12 +172,21 @@ export default function WorkoutList() {
 
   const ListadoContent = () => (
     <>
-      {/* Search Bar */}
-      <View style={styles.searchBarContainer}>
-        <SearchBar
-          onSearch={searchClass}
-          onClear={clearSearch}
-        />
+      {/* Search Bar and settings*/}
+      <View className='flex flex-row justify-center items-center'>
+        <View className='flex-3'>
+          <View className='w-11/12'>
+            <SearchBar
+              onSearch={searchClass}
+              onClear={clearSearch}
+            />
+          </View>
+        </View>
+        <View className='flex-1 flex items-center justify-center w-1/4'>
+          <TouchableOpacity className='h-12 w-12 p-2 rounded-xl mr-2'>
+            <Settingsicon size={24} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Favorites Toggle */}
@@ -221,8 +231,16 @@ export default function WorkoutList() {
             />
           </TouchableOpacity>
           <View style={styles.headerTextContainer}>
-            <Text style={styles.headerText}>Listado de</Text>
-            <Text style={styles.headerText}>Entrenamientos</Text>
+            <Text
+              style={styles.headerText}
+              className='uppercase'>
+              Listado de
+            </Text>
+            <Text
+              style={styles.headerText}
+              className='uppercase'>
+              Entrenamientos
+            </Text>
           </View>
         </View>
 
@@ -275,7 +293,7 @@ const styles = StyleSheet.create({
   },
   headerText: {
     color: '#fff',
-    fontSize: 22,
+    fontSize: 19,
     textAlign: 'center',
     fontFamily: 'Copperplate',
   },
