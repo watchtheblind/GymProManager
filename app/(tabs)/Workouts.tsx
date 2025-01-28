@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
   },
   workoutCard: {
     width: '48%',
-    aspectRatio: 16 / 15,
+    aspectRatio: 16 / 16,
     marginBottom: 16,
     borderRadius: 12,
     overflow: 'hidden',
