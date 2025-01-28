@@ -286,7 +286,6 @@ const styles = StyleSheet.create({
   tabContainer: {
     backgroundColor: '#333333',
     borderRadius: 999,
-    marginBottom: 16,
   },
   tabButton: {
     paddingVertical: 8,
@@ -303,7 +302,7 @@ const styles = StyleSheet.create({
     color: '#9CA3AF',
   },
   searchBarContainer: {
-    marginBottom: 16,
+    marginBottom: 5,
   },
   favoritesContainer: {
     flexDirection: 'row',
