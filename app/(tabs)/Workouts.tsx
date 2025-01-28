@@ -302,8 +302,8 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 12,
     fontWeight: '500',
-    transform: [{rotate: '45deg'}],
-    marginLeft: 20,
+    fontFamily: 'MyriadPro',
+    marginLeft: -6,
   },
   workoutOverlay: {
     position: 'absolute',
