@@ -15,33 +15,41 @@ import Tabs from '@/components/Tabs'
 const workouts = [
   {
     id: '1',
-    title: 'Entrenamiento Funcional',
+    type: 'Pilates',
+    title: 'Entrenamiento',
     level: 'Experto',
     duration: '32 min',
+    accentColor: '#4FD1C5',
     image:
       'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
   },
   {
     id: '2',
+    type: 'Boxeo',
     title: 'Boxeo',
     level: 'Intermedio',
     duration: '32 min',
+    accentColor: '#ED8936',
     image:
       'https://images.unsplash.com/photo-1599058917212-d750089bc07e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
   },
   {
     id: '3',
+    type: 'HIIT',
     title: 'HIIT',
     level: 'Principiante',
     duration: '32 min',
+    accentColor: '#F06292',
     image:
       'https://images.unsplash.com/photo-1576678927484-cc907957088c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
   },
   {
     id: '4',
+    type: 'Yoga',
     title: 'Yoga',
     level: 'Experto',
     duration: '32 min',
+    accentColor: '#A0D2EB',
     image:
       'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
   },
@@ -61,9 +69,11 @@ export default function WorkoutList() {
 
   type Workout = {
     id: string
+    type: string
     title: string
     level: string
     duration: string
+    accentColor: string
     image: string
   }
 
@@ -74,12 +84,21 @@ export default function WorkoutList() {
         style={styles.workoutImage}
         resizeMode='cover'
       />
-      <View style={styles.levelBadge}>
-        <Text style={styles.levelText}>{workout.level}</Text>
+      <View
+        style={[styles.typeTriangle, {backgroundColor: workout.accentColor}]}>
+        <Text style={styles.typeText}>{workout.type}</Text>
       </View>
-      <View style={styles.workoutInfo}>
-        <Text style={styles.workoutTitle}>{workout.title}</Text>
-        <Text style={styles.workoutDuration}>{workout.duration}</Text>
+      <View style={styles.workoutOverlay}>
+        <View style={styles.workoutInfo}>
+          <Text style={styles.workoutTitle}>{workout.title}</Text>
+          <View style={styles.workoutMetaInfo}>
+            <Text style={[styles.workoutLevel, {color: workout.accentColor}]}>
+              {workout.level}
+            </Text>
+            <Text style={styles.workoutDot}>•</Text>
+            <Text style={styles.workoutDuration}>{workout.duration}</Text>
+          </View>
+        </View>
       </View>
     </View>
   )
@@ -195,7 +214,7 @@ const styles = StyleSheet.create({
   },
   headerText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: 22,
     textAlign: 'center',
     fontFamily: 'Copperplate',
   },
@@ -228,7 +247,7 @@ const styles = StyleSheet.create({
   favoritesContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 20,
   },
   favoritesText: {
     color: '#fff',
@@ -255,37 +274,70 @@ const styles = StyleSheet.create({
   },
   workoutCard: {
     width: '48%',
-    aspectRatio: 1,
+    aspectRatio: 16 / 15,
     marginBottom: 16,
     borderRadius: 12,
     overflow: 'hidden',
-    backgroundColor: '#333',
+    backgroundColor: '#1A1A1A',
+    position: 'relative',
   },
   workoutImage: {
     width: '100%',
     height: '100%',
+    opacity: 0.7,
   },
-  levelBadge: {
-    backgroundColor: '#B5AD6F',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderBottomRightRadius: 12,
-    margin: 8,
+  typeTriangle: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: 80,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    transform: [{rotate: '-45deg'}],
+    marginLeft: -20,
+    marginTop: -5,
   },
-  levelText: {
+  typeText: {
     color: '#fff',
     fontSize: 12,
+    fontWeight: '500',
+    transform: [{rotate: '45deg'}],
+    marginLeft: 20,
+  },
+  workoutOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 12,
+    backgroundColor: 'rgba(0,0,0,0.3)',
   },
   workoutInfo: {
-    padding: 8,
+    gap: 4,
   },
   workoutTitle: {
     color: '#fff',
+    fontSize: 16,
     fontWeight: 'bold',
+  },
+  workoutMetaInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  workoutLevel: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  workoutDot: {
+    color: '#fff',
+    opacity: 0.7,
   },
   workoutDuration: {
     color: '#fff',
-    fontSize: 12,
+    fontSize: 14,
+    opacity: 0.7,
   },
   scrollViewContent: {
     flexDirection: 'row',
