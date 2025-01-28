@@ -7,11 +7,11 @@ import {
   ScrollView,
   SafeAreaView,
   StyleSheet,
+  ActivityIndicator,
 } from 'react-native'
-import SearchBar from '@/components/ui/SearchBar'
 import {MaterialIcons} from '@expo/vector-icons'
 import Tabs from '@/components/Tabs'
-import {Settingsicon} from '@/components/ui/Bottomnav/Icons'
+import SearchAndSettings from '@/components/ui/SearchAndSettings'
 
 const workouts = [
   {
@@ -172,22 +172,10 @@ export default function WorkoutList() {
 
   const ListadoContent = () => (
     <>
-      {/* Search Bar and settings*/}
-      <View className='flex flex-row justify-center items-center'>
-        <View className='flex-3'>
-          <View className='w-11/12'>
-            <SearchBar
-              onSearch={searchClass}
-              onClear={clearSearch}
-            />
-          </View>
-        </View>
-        <View className='flex-1 flex items-center justify-center w-1/4'>
-          <TouchableOpacity className='h-12 w-12 p-2 rounded-xl mr-2'>
-            <Settingsicon size={24} />
-          </TouchableOpacity>
-        </View>
-      </View>
+      <SearchAndSettings
+        onSearch={searchClass}
+        onClear={clearSearch}
+      />
 
       {/* Favorites Toggle */}
       <View style={styles.favoritesContainer}>
@@ -204,15 +192,26 @@ export default function WorkoutList() {
         </TouchableOpacity>
       </View>
 
-      {/* Workout Cards */}
-      <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        {workouts.map((workout) => (
-          <WorkoutCard
-            key={workout.id}
-            workout={workout}
+      {/* Workout Cards or Loading Indicator */}
+      {workouts.length === 0 ? (
+        <View style={styles.noWorkoutsContainer}>
+          <Text style={styles.noWorkoutsText}>Aún no hay entrenamientos!</Text>
+          <ActivityIndicator
+            size='large'
+            color='#14b8a6'
+            style={styles.loader}
           />
-        ))}
-      </ScrollView>
+        </View>
+      ) : (
+        <ScrollView contentContainerStyle={styles.scrollViewContent}>
+          {workouts.map((workout) => (
+            <WorkoutCard
+              key={workout.id}
+              workout={workout}
+            />
+          ))}
+        </ScrollView>
+      )}
     </>
   )
 
@@ -260,11 +259,17 @@ export default function WorkoutList() {
         {activeTab === 'listado' ? (
           <ListadoContent />
         ) : (
-          <View style={styles.misEntrenamientosContent}>
-            <Text style={styles.misEntrenamientosText}>
-              Contenido de Mis Entrenamientos
-            </Text>
-          </View>
+          <>
+            <SearchAndSettings
+              onSearch={searchClass}
+              onClear={clearSearch}
+            />
+            <View style={styles.misEntrenamientosContent}>
+              <Text style={styles.misEntrenamientosText}>
+                Contenido de Mis Entrenamientos
+              </Text>
+            </View>
+          </>
         )}
       </View>
     </SafeAreaView>
@@ -430,5 +435,18 @@ const styles = StyleSheet.create({
   misEntrenamientosText: {
     color: '#fff',
     fontSize: 18,
+  },
+  noWorkoutsContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noWorkoutsText: {
+    color: '#fff',
+    fontSize: 18,
+    marginBottom: 16,
+  },
+  loader: {
+    marginTop: 16,
   },
 })
