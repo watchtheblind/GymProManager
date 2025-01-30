@@ -59,16 +59,18 @@ export default function Carousel() {
           data={CarouselSections}
           scrollX={scrollX}
         />
-        <View
-          className='flex flex-row justify-center '
-          style={{backgroundColor: '#1D1D1B'}}>
+        <View className='flex flex-row justify-center '>
           <Button
             title='Empezar'
             onPress={handleSubmit}
           />
         </View>
         <View className='flex flex-row justify-center items-center mt-4'>
-          <ThemedText style={{color: '#ffffff'}}>
+          <ThemedText
+            style={{
+              backgroundColor: '#1D1D1B',
+              fontFamily: 'MyriadPro',
+            }}>
             ¿Aún no tienes cuenta?{' '}
           </ThemedText>
           <Pressable

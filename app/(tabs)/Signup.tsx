@@ -1,13 +1,13 @@
 import type React from 'react'
 import {useState, useRef} from 'react'
-import {View, Text, Image, ScrollView} from 'react-native'
+import {View, Text, Image, ScrollView, TouchableOpacity} from 'react-native'
 import type PhoneInput from 'react-native-phone-number-input'
 import Step1 from './Signup/Step1'
 import Step2 from './Signup/Step2'
 import Step3 from './Signup/Step3'
 import Step4 from './Signup/Step4'
 import StepProgress from './Signup/StepProgress'
-import CustomButton from '@/components/ui/Button2'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 
 interface Unit {
   value: number
@@ -71,6 +71,12 @@ const MultiStepForm: React.FC = () => {
       setStep(step + 1)
     } else {
       handleSubmit()
+    }
+  }
+
+  const handleBack = () => {
+    if (step > 1) {
+      setStep(step - 1)
     }
   }
 
@@ -164,12 +170,30 @@ const MultiStepForm: React.FC = () => {
               onPlanSelected={handlePlanSelected} // Pasar la función para manejar la selección del plan
             />
           )}
-          <View className='flex flex-row justify-center mt-6 mb-6'>
-            <CustomButton
-              title={step === 4 ? 'Enviar' : 'Siguiente'}
+          <View className='flex flex-row justify-center mt-6 mb-6 space-x-4'>
+            {step > 1 && (
+              <TouchableOpacity
+                onPress={handleBack}
+                className='bg-gray-500 p-3 rounded-full'>
+                <MaterialIcons
+                  name='arrow-back'
+                  size={24}
+                  color='white'
+                />
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity
               onPress={handleNext}
-              disabled={!validateStep()}
-            />
+              className={`p-3 rounded-full ${
+                !validateStep() ? 'bg-gray-400' : 'bg-blue-500' // Cambia el color si está deshabilitado
+              }`}
+              disabled={!validateStep()}>
+              <MaterialIcons
+                name={step === 4 ? 'check' : 'arrow-forward'}
+                size={24}
+                color='white'
+              />
+            </TouchableOpacity>
           </View>
         </View>
       </View>

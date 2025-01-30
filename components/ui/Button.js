@@ -68,5 +68,6 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 17,
     userSelect: 'none',
+    fontFamily: 'MyriadPro',
   },
 })

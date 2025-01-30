@@ -54,6 +54,7 @@ const DatePicker: React.FC<DatePickerProps> = ({birthDate, setBirthDate}) => {
         </TouchableOpacity>
         <TextInput
           className='bg-[#B0A462] border-4 text-center text-lg w-10/12 justify-center border-[#FEF4C9] rounded-tr-3xl rounded-bl-3xl p-2 text-white ml-2'
+          style={[{fontFamily: 'MyriadPro'}]}
           placeholder='Tu fecha de nacimiento aquí'
           editable={false}
           placeholderTextColor='#fff'
