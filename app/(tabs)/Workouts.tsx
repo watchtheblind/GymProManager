@@ -7,7 +7,9 @@ import {
   SafeAreaView,
   StyleSheet,
   FlatList,
+  BackHandler,
 } from 'react-native'
+import {useFocusEffect, useNavigation} from '@react-navigation/native'
 import {MaterialIcons} from '@expo/vector-icons'
 import Tabs from '@/components/Tabs'
 import SearchBar from '@/components/ui/SearchBar'
@@ -72,6 +74,20 @@ export default function WorkoutList() {
   const [favorites, setFavorites] = useState<string[]>([])
   const [filteredWorkouts, setFilteredWorkouts] = useState<Workout[]>(workouts)
   const [searchQuery, setSearchQuery] = useState('')
+  const navigation = useNavigation()
+
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        navigation.navigate('Bottomnav' as never)
+        return true
+      }
+      BackHandler.addEventListener('hardwareBackPress', onBackPress)
+
+      return () =>
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress)
+    }, [navigation]),
+  )
 
   const filterWorkouts = useCallback(() => {
     let filtered = workouts
@@ -170,7 +186,7 @@ export default function WorkoutList() {
   ]
 
   const ListadoContent = () => (
-    <>
+    <View>
       <View className='flex flex-row justify-center items-center'>
         <View className='flex-3'>
           <View className='w-11/12'>
@@ -217,7 +233,7 @@ export default function WorkoutList() {
           contentContainerStyle={styles.workoutList}
         />
       )}
-    </>
+    </View>
   )
 
   return (
