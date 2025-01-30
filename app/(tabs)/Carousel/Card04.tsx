@@ -1,37 +1,93 @@
-import React from 'react'
-import {View, useWindowDimensions, Text, ScrollView} from 'react-native'
+import React, {useState, useEffect} from 'react'
+import {
+  View,
+  useWindowDimensions,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Linking,
+} from 'react-native'
 import {MaterialCommunityIcons} from '@expo/vector-icons'
+import ConfirmationModal from '@/components/ui/ConfirmationModal'
+
+interface Subscription {
+  nombre: string
+  precio: string
+  url: string
+  tipo: string
+  subscripcion: {
+    periodo: string
+  }
+}
 
 export default function Card04() {
   const {width} = useWindowDimensions()
-  const plans = [
-    {
-      id: 1,
-      description: 'MIEMBRO BRONCE',
-      color: 'bg-[#CC7751]',
-      borderColor: 'border-[#DFAA8C]',
-      borderRadius: 'rounded-tr-3xl rounded-bl-3xl border-4',
-      price: 0,
-      icon: 'trophy',
-    },
-    {
-      id: 2,
-      description: 'MIEMBRO PLATA',
-      color: 'bg-[#518893]',
-      borderColor: 'border-[#6CB0B4]',
-      borderRadius: 'rounded-tl-3xl rounded-br-3xl border-4',
-      price: 100,
-      icon: 'medal',
-    },
-    {
-      id: 3,
-      description: 'MIEMBRO ORO',
-      color: 'bg-[#B0A462]',
-      borderColor: 'border-[#FEF4C9]',
-      borderRadius: 'rounded-tr-3xl rounded-bl-3xl border-4',
-      price: 200,
-      icon: 'star',
-    },
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>([])
+  const [selectedSubscription, setSelectedSubscription] =
+    useState<Subscription | null>(null)
+  const [showAlert, setShowAlert] = useState(false)
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch(
+          'https://gympromanager.com/app-products.php',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'token=Contraseña...',
+          },
+        )
+        const data = await response.json()
+        const filteredSubscriptions = data.filter(
+          (item: any) => item.tipo === 'subscription',
+        )
+        setSubscriptions(filteredSubscriptions)
+      } catch (error) {
+        console.error('Error fetching products:', error)
+      }
+    }
+
+    fetchProducts()
+  }, [])
+
+  const handleSubscriptionPress = (subscription: Subscription) => {
+    setSelectedSubscription(subscription)
+    setShowAlert(true)
+  }
+
+  const handleAccept = () => {
+    if (selectedSubscription) {
+      Linking.openURL(selectedSubscription.url)
+    }
+    setShowAlert(false)
+  }
+
+  const handleCloseAlert = () => {
+    setShowAlert(false)
+  }
+
+  const translatePeriod = (period: string) => {
+    switch (period) {
+      case 'month':
+        return 'mes'
+      case 'year':
+        return 'año'
+      default:
+        return period
+    }
+  }
+
+  // Colores para cada plan
+  const planColors = [
+    {bg: 'bg-[#FF6B6B]', border: 'border-[#FF9F9F]'}, // Plan 1
+    {bg: 'bg-[#4ECDC4]', border: 'border-[#88D8C0]'}, // Plan 2
+    {bg: 'bg-[#FFD166]', border: 'border-[#FFE08C]'}, // Plan 3
+    {bg: 'bg-[#A06CD5]', border: 'border-[#C4A1E0]'}, // Plan 4
+    {bg: 'bg-[#45B69C]', border: 'border-[#6DD5C4]'}, // Plan 5
+    {bg: 'bg-[#FF8B94]', border: 'border-[#FFB5B5]'}, // Plan 6
   ]
 
   return (
@@ -56,26 +112,34 @@ export default function Card04() {
             paddingBottom: 20,
           }}
           className='mt-4 w-full'>
-          {plans.map((item) => (
-            <View
-              key={item.id}
-              className={`p-2 w-80 h-40 items-center mb-4 ${item.color} border-2 ${item.borderColor} ${item.borderRadius}`}>
+          {subscriptions.map((item, index) => (
+            <TouchableOpacity
+              key={item.nombre}
+              onPress={() => handleSubscriptionPress(item)}
+              className={`p-2 w-80 h-40 items-center mb-4 ${planColors[index % planColors.length].bg} border-2 ${planColors[index % planColors.length].border} rounded-tl-3xl rounded-br-3xl`}>
               <MaterialCommunityIcons
-                name={item.icon as keyof typeof MaterialCommunityIcons.glyphMap}
+                name={'star' as keyof typeof MaterialCommunityIcons.glyphMap}
                 size={40}
                 color='#fff'
                 className='mb-4'
               />
               <Text className='text-xl font-Copperplate text-white text-center mb-2'>
-                {item.description}
+                {item.nombre}
               </Text>
               <Text className='text-2xl font-Copperplate text-white'>
-                {item.price === 0 ? 'Gratis' : item.price + ' €/mes'}
+                {item.precio} €/{translatePeriod(item.subscripcion.periodo)}
               </Text>
-            </View>
+            </TouchableOpacity>
           ))}
         </ScrollView>
       </View>
+      <ConfirmationModal
+        visible={showAlert}
+        title='Redirección'
+        message='Será redirigido a nuestra página de pago, después podrá regresar y acceder a la plataforma'
+        onAccept={handleAccept}
+        onClose={handleCloseAlert}
+      />
     </View>
   )
 }
