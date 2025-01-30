@@ -56,6 +56,66 @@ const workouts = [
     image:
       'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
   },
+  {
+    id: '2',
+    type: 'Boxeo',
+    title: 'Boxeo Cardio',
+    level: 'Intermedio',
+    duration: '45 min',
+    accentColor: '#ED8936',
+    image:
+      'https://images.unsplash.com/photo-1599058917212-d750089bc07e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+  },
+  {
+    id: '3',
+    type: 'HIIT',
+    title: 'Quema Grasa Intenso',
+    level: 'Principiante',
+    duration: '25 min',
+    accentColor: '#F06292',
+    image:
+      'https://images.unsplash.com/photo-1576678927484-cc907957088c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+  },
+  {
+    id: '4',
+    type: 'Yoga',
+    title: 'Yoga Flow',
+    level: 'Experto',
+    duration: '60 min',
+    accentColor: '#A0D2EB',
+    image:
+      'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+  },
+  {
+    id: '2',
+    type: 'Boxeo',
+    title: 'Boxeo Cardio',
+    level: 'Intermedio',
+    duration: '45 min',
+    accentColor: '#ED8936',
+    image:
+      'https://images.unsplash.com/photo-1599058917212-d750089bc07e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+  },
+  {
+    id: '3',
+    type: 'HIIT',
+    title: 'Quema Grasa Intenso',
+    level: 'Principiante',
+    duration: '25 min',
+    accentColor: '#F06292',
+    image:
+      'https://images.unsplash.com/photo-1576678927484-cc907957088c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+  },
+  {
+    id: '4',
+    type: 'Yoga',
+    title: 'Yoga Flow',
+    level: 'Experto',
+    duration: '60 min',
+    accentColor: '#A0D2EB',
+    image:
+      'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+  },
 ]
 
 type Workout = {
@@ -186,7 +246,7 @@ export default function WorkoutList() {
   ]
 
   const ListadoContent = () => (
-    <View>
+    <View style={{flex: 1}}>
       <View className='flex flex-row justify-center items-center'>
         <View className='flex-3'>
           <View className='w-11/12'>
@@ -440,7 +500,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   workoutList: {
-    paddingBottom: 16,
+    paddingBottom: 5,
+    height: 'auto',
   },
   noWorkoutsContainer: {
     flex: 1,
