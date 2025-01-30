@@ -128,31 +128,6 @@ export default function Home() {
                 </Text>
               </View>
               <View className='flex flex-col items-center w-1/2'>
-                <Image
-                  style={[styles.minibox, styles.boderRight]}
-                  source={require('@/assets/images/nutricion.jpeg')}
-                  className='bg-red-500'
-                />
-                <Text className='mt-4 text-white uppercase font-Copperplate'>
-                  Nutrición
-                </Text>
-              </View>
-            </View>
-          </Animated.View>
-          <Animated.View
-            entering={FadeInDown.delay(1000).duration(500)}
-            className='flex flex-col justify-center items-center mt-4 mb-20'>
-            <View className='flex flex-row w-full gap-2'>
-              <View className='flex flex-col items-center w-1/2'>
-                <Image
-                  style={[styles.minibox, styles.boderRight]}
-                  source={require('@/assets/images/servicios.jpeg')}
-                />
-                <Text className='mt-4 text-white font-Copperplate'>
-                  Servicios
-                </Text>
-              </View>
-              <View className='flex flex-col items-center w-1/2'>
                 <ButtonImage href='/Questionnaires'>
                   <Image
                     style={[styles.minibox, styles.boderLeft]}
@@ -162,6 +137,25 @@ export default function Home() {
                 </ButtonImage>
                 <Text className='mt-4 text-white uppercase font-Copperplate'>
                   Cuestionarios
+                </Text>
+              </View>
+            </View>
+          </Animated.View>
+          <Animated.View
+            entering={FadeInDown.delay(1000).duration(500)}
+            className='flex flex-col justify-center items-center mt-4 mb-20'>
+            <View className='flex flex-row w-full gap-2'>
+              <View className='flex flex-col items-center w-full'>
+                <Image
+                  style={[
+                    styles.minibox,
+                    styles.boderRight,
+                    styles.improvedImage,
+                  ]} // Agregamos un nuevo estilo
+                  source={require('@/assets/images/servicios.jpeg')}
+                />
+                <Text className='mt-4 text-white font-Copperplate'>
+                  Servicios
                 </Text>
               </View>
             </View>
@@ -200,7 +194,7 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
-    backgroundSize: 'contain',
+    backgroundSize: 'cover', // Cambiado a 'cover' para que la imagen cubra el contenedor
   },
   boderLeft: {
     borderTopRightRadius: 16,
@@ -209,5 +203,14 @@ const styles = StyleSheet.create({
   boderRight: {
     borderTopLeftRadius: 16,
     borderBottomRightRadius: 16,
+  },
+  improvedImage: {
+    height: 200, // Altura fija
+    width: '100%', // Ancho completo
+    borderTopRightRadius: 0,
+    borderTopLeftRadius: 16,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 16,
+    resizeMode: 'cover', // Asegura que la imagen cubra el contenedor sin deformarse
   },
 })
