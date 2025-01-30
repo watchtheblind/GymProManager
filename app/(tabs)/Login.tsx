@@ -14,8 +14,8 @@ import CustomAlert from '@/components/ui/Alert'
 
 export default function Login() {
   const [formData, setFormData] = useState({
-    email: 'yop@alexcd2000.com',
-    password: 'ePfpoFZN123',
+    email: '',
+    password: '',
   })
   const [showPassword, setShowPassword] = useState(false)
   const [alertVisible, setAlertVisible] = useState(false) // Estado para controlar la visibilidad de la alerta
