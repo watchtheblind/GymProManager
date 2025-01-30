@@ -154,7 +154,7 @@ export default function Home() {
                   ]} // Agregamos un nuevo estilo
                   source={require('@/assets/images/servicios.jpeg')}
                 />
-                <Text className='mt-4 text-white font-Copperplate'>
+                <Text className='mt-4 text-white font-Copperplate uppercase w-full text-center'>
                   Servicios
                 </Text>
               </View>
