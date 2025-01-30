@@ -301,7 +301,7 @@ export default function WorkoutList() {
       <View style={styles.content}>
         <View style={styles.header}>
           <TouchableOpacity
-            onPress={() => console.log('Back')}
+            onPress={() => navigation.navigate('Bottomnav' as never)}
             style={styles.backButton}>
             <MaterialIcons
               name='arrow-back'
