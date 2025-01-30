@@ -3,7 +3,6 @@ import {
   View,
   Text,
   Image,
-  TouchableOpacity,
   StyleSheet,
   ScrollView,
   SafeAreaView,
@@ -11,8 +10,16 @@ import {
 import {Portrait} from '@/components/ui/Bottomnav/Icons'
 import Activity from '../../components/ProfileTabs/Activity'
 import Progress from '../../components/ProfileTabs/Progress'
+import Tabs from '@/components/Tabs'
+
 export default function Profile() {
   const [activeTab, setActiveTab] = useState('progress')
+
+  // Define las pestañas
+  const tabs = [
+    {id: 'progress', label: 'Mi progreso'},
+    {id: 'activity', label: 'Mi actividad'},
+  ]
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -32,41 +39,16 @@ export default function Profile() {
             </View>
           </View>
 
-          {/* Tabs de navegación */}
-          <View style={styles.tabsContainer}>
-            <TouchableOpacity
-              style={[styles.tab, activeTab === 'progress' && styles.activeTab]}
-              onPress={() => setActiveTab('progress')}>
-              <Text
-                style={
-                  activeTab === 'progress'
-                    ? styles.activeTabText
-                    : styles.inactiveTabText
-                }>
-                Mi progreso
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.tab, activeTab === 'activity' && styles.activeTab]}
-              onPress={() => setActiveTab('activity')}>
-              <Text
-                style={
-                  activeTab === 'activity'
-                    ? styles.activeTabText
-                    : styles.inactiveTabText
-                }>
-                Mi actividad
-              </Text>
-            </TouchableOpacity>
-          </View>
+          {/* Usa el componente Tabs */}
+          <Tabs
+            tabs={tabs}
+            activeTab={activeTab}
+            onTabPress={setActiveTab}
+          />
 
           {/* Contenido condicional */}
           <View style={styles.contentContainer}>
-            {activeTab === 'progress' ? (
-              <Progress></Progress>
-            ) : (
-              <Activity></Activity>
-            )}
+            {activeTab === 'progress' ? <Progress /> : <Activity />}
           </View>
         </View>
       </ScrollView>
@@ -81,11 +63,11 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
-    justifyContent: 'flex-start', // Cambiado de "center" a "flex-start"
+    justifyContent: 'flex-start',
   },
   container: {
     alignItems: 'center',
-    justifyContent: 'flex-start', // Cambiado de "center" a "flex-start"
+    justifyContent: 'flex-start',
     width: '100%',
     paddingVertical: 90,
   },
@@ -128,36 +110,11 @@ const styles = StyleSheet.create({
     marginTop: 16,
     textTransform: 'uppercase',
   },
-  tabsContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#333',
-    borderRadius: 25,
-    padding: 4,
-    marginBottom: 10, // Reducido de 20 a 10
-    width: '90%',
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: 8,
-    alignItems: 'center',
-    borderRadius: 20,
-  },
-  activeTab: {
-    backgroundColor: '#B5AD6F',
-  },
-  activeTabText: {
-    color: 'white',
-    fontSize: 14,
-  },
-  inactiveTabText: {
-    color: '#888',
-    fontSize: 14,
-  },
   contentContainer: {
     flex: 1,
     width: '90%',
     alignItems: 'center',
-    justifyContent: 'flex-start', // Cambiado de "center" a "flex-start"
-    paddingTop: 10, // Añadido para dar un poco de espacio en la parte superior
+    justifyContent: 'flex-start',
+    paddingTop: 10,
   },
 })

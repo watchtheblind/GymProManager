@@ -100,7 +100,7 @@ export default function Home() {
           <Animated.View
             entering={FadeInDown.delay(800).duration(500)}
             className='flex flex-col justify-center mt-4'>
-            <ButtonImage href='/trainer'>
+            <ButtonImage href='/Workouts'>
               <Image
                 style={[styles.boderLeft]}
                 className='h-40 w-full'
@@ -108,7 +108,7 @@ export default function Home() {
               />
             </ButtonImage>
             <Text className='mt-4 text-white font-Copperplate'>
-              ENTRENAMIENTO
+              ENTRENAMIENTOS
             </Text>
           </Animated.View>
           <Animated.View

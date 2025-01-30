@@ -5,21 +5,21 @@ import {
   StyleSheet,
   Image,
   TextInput,
-  Alert,
   TouchableOpacity,
 } from 'react-native'
 import Icon from '@expo/vector-icons/MaterialIcons'
-
 import Button from '@/components/ui/Button'
 import {router} from 'expo-router'
-import Fetch from '@/hooks/FetchData'
+import CustomAlert from '@/components/ui/Alert'
 
 export default function Login() {
   const [formData, setFormData] = useState({
-    email: 'yop@alexcd2000.com',
-    password: 'ePfpoFZN123',
+    email: '',
+    password: '',
   })
-  const [showPassword, setShowPassword] = useState(false) // Estado para mostrar/ocultar la contraseña
+  const [showPassword, setShowPassword] = useState(false)
+  const [alertVisible, setAlertVisible] = useState(false) // Estado para controlar la visibilidad de la alerta
+  const [alertMessage, setAlertMessage] = useState('') // Mensaje de la alerta
 
   const redirectToRegister = useCallback(() => {
     router.navigate('./Signup')
@@ -27,22 +27,31 @@ export default function Login() {
 
   const handleSubmit = useCallback(async () => {
     try {
-      const user = await Fetch(
-        'https://gympromanager.com/wp-json/api/v2/suscription',
-      ).post('', formData)
-      const response = user
-      if (response.user_email) {
-        router.navigate('./home')
-        return
-      }
-      if (response.error) {
-        router.navigate('./Home')
+      const response = await fetch('https://gympromanager.com/app-login.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `email=${encodeURIComponent(formData.email)}&password=${encodeURIComponent(formData.password)}`,
+      })
+
+      const data = await response.json()
+
+      if (data.user_email) {
+        router.navigate('./Bottomnav')
+      } else if (data.error) {
+        setAlertMessage(data.error) // Establece el mensaje de error
+        setAlertVisible(true) // Muestra la alerta
       } else {
-        Alert.alert('Error', 'Network error')
+        setAlertMessage(
+          'Error de red inesperado. Por favor, inténtelo de nuevo.',
+        ) // Establece el mensaje de error
+        setAlertVisible(true) // Muestra la alerta
       }
     } catch (error) {
       console.error(error)
-      Alert.alert('Error', 'Network error')
+      setAlertMessage('Error de red inesperado. Por favor, inténtelo de nuevo.') // Establece el mensaje de error
+      setAlertVisible(true) // Muestra la alerta
     }
   }, [formData])
 
@@ -69,7 +78,7 @@ export default function Login() {
             onChangeText={(text) => setFormData({...formData, email: text})}
             value={formData.email}
             placeholderTextColor='#fff'
-            style={styles.input} // Aplica el estilo para el texto
+            style={styles.input}
           />
           <View style={styles.passwordContainer}>
             <TextInput
@@ -78,16 +87,16 @@ export default function Login() {
               onChangeText={(text) =>
                 setFormData({...formData, password: text})
               }
-              secureTextEntry={!showPassword} // Oculta o muestra la contraseña
+              secureTextEntry={!showPassword}
               value={formData.password}
               placeholderTextColor='#fff'
-              style={styles.passwordInput} // Aplica el estilo específico para la contraseña
+              style={styles.passwordInput}
             />
             <TouchableOpacity
-              onPress={() => setShowPassword(!showPassword)} // Cambia el estado al presionar el ícono
+              onPress={() => setShowPassword(!showPassword)}
               style={styles.icon}>
               <Icon
-                name={showPassword ? 'visibility-off' : 'visibility'} // Cambia el ícono según el estado
+                name={showPassword ? 'visibility-off' : 'visibility'}
                 size={24}
                 color='#fff'
               />
@@ -96,16 +105,15 @@ export default function Login() {
           <View className='flex flex-row justify-center mt-2'>
             <Button
               title='Acceder'
-              onPress={() => {
-                router.navigate('./Bottomnav')
-              }}
+              onPress={handleSubmit}
             />
           </View>
           <View className='flex flex-row justify-center'>
             <TouchableOpacity
-              onPress={() =>
-                Alert.alert('Info', 'Funcionalidad no implementada')
-              }>
+              onPress={() => {
+                setAlertMessage('Funcionalidad no implementada') // Establece el mensaje
+                setAlertVisible(true) // Muestra la alerta
+              }}>
               <Text
                 className='text-white text-lg underline'
                 style={{
@@ -131,6 +139,14 @@ export default function Login() {
           </Text>
         </TouchableOpacity>
       </View>
+
+      {/* Componente CustomAlert */}
+      <CustomAlert
+        visible={alertVisible}
+        title='Error'
+        message={alertMessage}
+        onClose={() => setAlertVisible(false)}
+      />
     </View>
   )
 }
@@ -148,13 +164,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 10,
     top: '50%',
-    transform: [{translateY: -12}], // Centra el ícono verticalmente
+    transform: [{translateY: -12}],
   },
   input: {
-    width: '100%', // Asegura que el input ocupe el 100% del contenedor
+    width: '100%',
   },
   passwordInput: {
-    width: '100%', // Asegura que el input ocupe el 100% del contenedor
-    paddingRight: 40, // Añade padding a la derecha para evitar que el texto se solape con el ícono
+    width: '100%',
+    paddingRight: 40,
   },
 })
