@@ -1,23 +1,23 @@
-import React, {useState} from 'react'
+import {useState, useCallback} from 'react'
 import {
   View,
   Text,
   Image,
   TouchableOpacity,
-  ScrollView,
   SafeAreaView,
   StyleSheet,
-  ActivityIndicator,
+  FlatList,
 } from 'react-native'
 import {MaterialIcons} from '@expo/vector-icons'
 import Tabs from '@/components/Tabs'
-import SearchAndSettings from '@/components/ui/SearchAndSettings'
+import SearchBar from '@/components/ui/SearchBar'
+import {Settingsicon} from '@/components/ui/Bottomnav/Icons'
 
 const workouts = [
   {
     id: '1',
     type: 'Pilates',
-    title: 'Entrenamiento',
+    title: 'Entrenamiento de Core',
     level: 'Experto',
     duration: '32 min',
     accentColor: '#4FD1C5',
@@ -27,9 +27,9 @@ const workouts = [
   {
     id: '2',
     type: 'Boxeo',
-    title: 'Boxeo',
+    title: 'Boxeo Cardio',
     level: 'Intermedio',
-    duration: '32 min',
+    duration: '45 min',
     accentColor: '#ED8936',
     image:
       'https://images.unsplash.com/photo-1599058917212-d750089bc07e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
@@ -37,9 +37,9 @@ const workouts = [
   {
     id: '3',
     type: 'HIIT',
-    title: 'HIIT',
+    title: 'Quema Grasa Intenso',
     level: 'Principiante',
-    duration: '32 min',
+    duration: '25 min',
     accentColor: '#F06292',
     image:
       'https://images.unsplash.com/photo-1576678927484-cc907957088c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
@@ -47,96 +47,86 @@ const workouts = [
   {
     id: '4',
     type: 'Yoga',
-    title: 'Yoga',
+    title: 'Yoga Flow',
     level: 'Experto',
-    duration: '32 min',
-    accentColor: '#A0D2EB',
-    image:
-      'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-  },
-
-  {
-    id: '2',
-    type: 'Boxeo',
-    title: 'Boxeo',
-    level: 'Intermedio',
-    duration: '32 min',
-    accentColor: '#ED8936',
-    image:
-      'https://images.unsplash.com/photo-1599058917212-d750089bc07e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-  },
-  {
-    id: '3',
-    type: 'HIIT',
-    title: 'HIIT',
-    level: 'Principiante',
-    duration: '32 min',
-    accentColor: '#F06292',
-    image:
-      'https://images.unsplash.com/photo-1576678927484-cc907957088c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-  },
-  {
-    id: '4',
-    type: 'Yoga',
-    title: 'Yoga',
-    level: 'Experto',
-    duration: '32 min',
-    accentColor: '#A0D2EB',
-    image:
-      'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-  },
-  {
-    id: '2',
-    type: 'Boxeo',
-    title: 'Boxeo',
-    level: 'Intermedio',
-    duration: '32 min',
-    accentColor: '#ED8936',
-    image:
-      'https://images.unsplash.com/photo-1599058917212-d750089bc07e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-  },
-  {
-    id: '3',
-    type: 'HIIT',
-    title: 'HIIT',
-    level: 'Principiante',
-    duration: '32 min',
-    accentColor: '#F06292',
-    image:
-      'https://images.unsplash.com/photo-1576678927484-cc907957088c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-  },
-  {
-    id: '4',
-    type: 'Yoga',
-    title: 'Yoga',
-    level: 'Experto',
-    duration: '32 min',
+    duration: '60 min',
     accentColor: '#A0D2EB',
     image:
       'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
   },
 ]
 
+type Workout = {
+  id: string
+  type: string
+  title: string
+  level: string
+  duration: string
+  accentColor: string
+  image: string
+}
+
 export default function WorkoutList() {
   const [activeTab, setActiveTab] = useState('listado')
   const [showFavorites, setShowFavorites] = useState(false)
+  const [favorites, setFavorites] = useState<string[]>([])
+  const [filteredWorkouts, setFilteredWorkouts] = useState<Workout[]>(workouts)
+  const [searchQuery, setSearchQuery] = useState('')
 
-  const searchClass = (text: string) => {
-    console.log('Searching:', text)
+  const filterWorkouts = useCallback(() => {
+    let filtered = workouts
+    if (searchQuery) {
+      filtered = filtered.filter(
+        (workout) =>
+          workout.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          workout.type.toLowerCase().includes(searchQuery.toLowerCase()),
+      )
+    }
+    if (showFavorites) {
+      filtered = filtered.filter((workout) => favorites.includes(workout.id))
+    }
+    setFilteredWorkouts(filtered)
+  }, [searchQuery, showFavorites, favorites])
+
+  const toggleFavorite = (id: string) => {
+    setFavorites((prevFavorites) =>
+      prevFavorites.includes(id)
+        ? prevFavorites.filter((favId) => favId !== id)
+        : [...prevFavorites, id],
+    )
   }
 
-  const clearSearch = () => {
-    console.log('Clear search')
+  const onSearch = (text: string) => {
+    setSearchQuery(text)
+    let filtered = workouts.filter(
+      (workout) =>
+        workout.title.toLowerCase().includes(text.toLowerCase()) ||
+        workout.type.toLowerCase().includes(text.toLowerCase()),
+    )
+    if (showFavorites) {
+      filtered = filtered.filter((workout) => favorites.includes(workout.id))
+    }
+    setFilteredWorkouts(filtered)
   }
 
-  type Workout = {
-    id: string
-    type: string
-    title: string
-    level: string
-    duration: string
-    accentColor: string
-    image: string
+  const onClear = () => {
+    setSearchQuery('')
+    setFilteredWorkouts(
+      showFavorites
+        ? workouts.filter((workout) => favorites.includes(workout.id))
+        : workouts,
+    )
+  }
+
+  const toggleShowFavorites = () => {
+    setShowFavorites((prev) => !prev)
+    if (!showFavorites) {
+      setFilteredWorkouts(
+        workouts.filter((workout) => favorites.includes(workout.id)),
+      )
+    } else {
+      setFilteredWorkouts(workouts)
+    }
   }
 
   const WorkoutCard = ({workout}: {workout: Workout}) => (
@@ -146,6 +136,15 @@ export default function WorkoutList() {
         style={styles.workoutImage}
         resizeMode='cover'
       />
+      <TouchableOpacity
+        style={styles.favoriteButton}
+        onPress={() => toggleFavorite(workout.id)}>
+        <MaterialIcons
+          name={favorites.includes(workout.id) ? 'favorite' : 'favorite-border'}
+          size={24}
+          color='#fff'
+        />
+      </TouchableOpacity>
       <View
         style={[styles.typeTriangle, {backgroundColor: workout.accentColor}]}>
         <Text style={styles.typeText}>{workout.type}</Text>
@@ -172,16 +171,26 @@ export default function WorkoutList() {
 
   const ListadoContent = () => (
     <>
-      <SearchAndSettings
-        onSearch={searchClass}
-        onClear={clearSearch}
-      />
+      <View className='flex flex-row justify-center items-center'>
+        <View className='flex-3'>
+          <View className='w-11/12'>
+            <SearchBar
+              onSearch={onSearch}
+              onClear={onClear}
+            />
+          </View>
+        </View>
+        <View className='flex-1 flex items-center justify-center w-1/4'>
+          <TouchableOpacity className='h-12 w-12 p-2 rounded-xl mr-2'>
+            <Settingsicon size={24} />
+          </TouchableOpacity>
+        </View>
+      </View>
 
-      {/* Favorites Toggle */}
       <View style={styles.favoritesContainer}>
         <Text style={styles.favoritesText}>Ver solo mis favoritos</Text>
         <TouchableOpacity
-          onPress={() => setShowFavorites(!showFavorites)}
+          onPress={toggleShowFavorites}
           style={[
             styles.toggleButton,
             showFavorites ? styles.toggleButtonOn : styles.toggleButtonOff,
@@ -192,25 +201,21 @@ export default function WorkoutList() {
         </TouchableOpacity>
       </View>
 
-      {/* Workout Cards or Loading Indicator */}
-      {workouts.length === 0 ? (
+      {filteredWorkouts.length === 0 ? (
         <View style={styles.noWorkoutsContainer}>
-          <Text style={styles.noWorkoutsText}>Aún no hay entrenamientos!</Text>
-          <ActivityIndicator
-            size='large'
-            color='#14b8a6'
-            style={styles.loader}
-          />
+          <Text style={styles.noWorkoutsText}>
+            No hay entrenamientos disponibles
+          </Text>
         </View>
       ) : (
-        <ScrollView contentContainerStyle={styles.scrollViewContent}>
-          {workouts.map((workout) => (
-            <WorkoutCard
-              key={workout.id}
-              workout={workout}
-            />
-          ))}
-        </ScrollView>
+        <FlatList
+          data={filteredWorkouts}
+          renderItem={({item}) => <WorkoutCard workout={item} />}
+          keyExtractor={(item) => item.id}
+          numColumns={2}
+          columnWrapperStyle={styles.workoutRow}
+          contentContainerStyle={styles.workoutList}
+        />
       )}
     </>
   )
@@ -218,7 +223,6 @@ export default function WorkoutList() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity
             onPress={() => console.log('Back')}
@@ -243,7 +247,6 @@ export default function WorkoutList() {
           </View>
         </View>
 
-        {/* Tabs */}
         <Tabs
           tabs={tabs}
           activeTab={activeTab}
@@ -255,21 +258,14 @@ export default function WorkoutList() {
           activeTabTextStyle={styles.activeTabText}
         />
 
-        {/* Conditional Content */}
         {activeTab === 'listado' ? (
           <ListadoContent />
         ) : (
-          <>
-            <SearchAndSettings
-              onSearch={searchClass}
-              onClear={clearSearch}
-            />
-            <View style={styles.misEntrenamientosContent}>
-              <Text style={styles.misEntrenamientosText}>
-                Contenido de Mis Entrenamientos
-              </Text>
-            </View>
-          </>
+          <View style={styles.misEntrenamientosContent}>
+            <Text style={styles.misEntrenamientosText}>
+              Contenido de Mis Entrenamientos
+            </Text>
+          </View>
         )}
       </View>
     </SafeAreaView>
@@ -324,9 +320,6 @@ const styles = StyleSheet.create({
   inactiveTabText: {
     color: '#9CA3AF',
   },
-  searchBarContainer: {
-    marginBottom: 5,
-  },
   favoritesContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -367,6 +360,12 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     opacity: 0.7,
+  },
+  favoriteButton: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    zIndex: 10,
   },
   typeTriangle: {
     position: 'absolute',
@@ -421,20 +420,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     opacity: 0.7,
   },
-  scrollViewContent: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+  workoutRow: {
     justifyContent: 'space-between',
+  },
+  workoutList: {
     paddingBottom: 16,
-  },
-  misEntrenamientosContent: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  misEntrenamientosText: {
-    color: '#fff',
-    fontSize: 18,
   },
   noWorkoutsContainer: {
     flex: 1,
@@ -444,9 +434,15 @@ const styles = StyleSheet.create({
   noWorkoutsText: {
     color: '#fff',
     fontSize: 18,
-    marginBottom: 16,
+    textAlign: 'center',
   },
-  loader: {
-    marginTop: 16,
+  misEntrenamientosContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  misEntrenamientosText: {
+    color: '#fff',
+    fontSize: 18,
   },
 })
