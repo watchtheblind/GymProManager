@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react'
+import React, {useState, useCallback, useEffect} from 'react'
 import {
   View,
   Text,
@@ -24,24 +24,36 @@ export default function Login() {
   const [alertVisible, setAlertVisible] = useState(false) // Estado para controlar la visibilidad de la alerta
   const [alertMessage, setAlertMessage] = useState('') // Mensaje de la alerta
   const [isLoading, setIsLoading] = useState(false)
+  const [isFormValid, setIsFormValid] = useState(false) // Estado para controlar si el formulario es válido
 
   const redirectToRegister = useCallback(() => {
     router.navigate('./Signup')
   }, [])
 
-  const handleSubmit = useCallback(async () => {
-    // Validar los datos del formulario
-    const validationResult = validateLogin(formData)
-
-    if (!validationResult.isValid) {
-      // Si hay errores, actualizar el estado de errores
-      setErrors(validationResult.errors || {})
-      return // Detener la ejecución si hay errores
+  // Función para validar un campo específico
+  const validateField = (field: keyof LoginFormData, value: string) => {
+    const validationResult = validateLogin({...formData, [field]: value})
+    if (validationResult.errors?.[field]) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [field]: validationResult.errors[field],
+      }))
+    } else {
+      setErrors((prevErrors) => {
+        const newErrors = {...prevErrors}
+        delete newErrors[field]
+        return newErrors
+      })
     }
+  }
 
-    // Limpiar los errores si la validación es exitosa
-    setErrors({})
+  // Validar el formulario completo cuando cambien los datos
+  useEffect(() => {
+    const validationResult = validateLogin(formData)
+    setIsFormValid(validationResult.isValid)
+  }, [formData])
 
+  const handleSubmit = useCallback(async () => {
     setIsLoading(true) // Activar el estado de carga
 
     try {
@@ -102,7 +114,10 @@ export default function Login() {
                 isLoading ? 'bg-[#555]' : 'bg-[#B0A462]'
               } border-4 py-3 rounded-tr-3xl rounded-bl-3xl p-2 text-white`}
               placeholder='Correo electrónico'
-              onChangeText={(text) => setFormData({...formData, email: text})}
+              onChangeText={(text) => {
+                setFormData({...formData, email: text})
+                validateField('email', text) // Validar el campo en tiempo real
+              }}
               value={formData.email}
               placeholderTextColor='#fff'
               editable={!isLoading}
@@ -124,9 +139,10 @@ export default function Login() {
                   isLoading ? 'bg-[#444]' : 'bg-[#6CB0B4]'
                 } border-4 py-3 rounded-tl-3xl rounded-br-3xl p-2 text-white`}
                 placeholder='Contraseña'
-                onChangeText={(text) =>
+                onChangeText={(text) => {
                   setFormData({...formData, password: text})
-                }
+                  validateField('password', text) // Validar el campo en tiempo real
+                }}
                 secureTextEntry={!showPassword}
                 value={formData.password}
                 placeholderTextColor='#fff'
@@ -152,16 +168,17 @@ export default function Login() {
           </View>
 
           {/* Botón Acceder con loader */}
-          <View className='flex flex-row justify-center mt-2'>
+          <View className='flex flex-row justify-center mt-1'>
             <Button
               title={isLoading ? '' : 'Acceder'}
               onPress={handleSubmit}
-              disabled={isLoading}
+              disabled={isLoading || !isFormValid} // Deshabilitar si el formulario no es válido
               style={[
                 styles.button,
                 {
-                  backgroundColor: isLoading ? '#555' : '#B0A462',
-                  borderColor: isLoading ? '#555' : '#FEF4C9',
+                  backgroundColor:
+                    isLoading || !isFormValid ? '#555' : '#B0A462',
+                  borderColor: isLoading || !isFormValid ? '#555' : '#FEF4C9',
                 },
               ]}
               icon={
