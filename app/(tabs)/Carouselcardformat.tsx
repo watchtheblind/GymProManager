@@ -8,7 +8,7 @@ export default function Carouselcardformat({item}: {item: any}) {
       <View
         style={{
           flex: 1.2,
-          backgroundColor: 'skyblue',
+          backgroundColor: '#2B2B25',
           width: width,
         }}>
         <Image
