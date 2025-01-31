@@ -1,4 +1,4 @@
-import {useRef, useState} from 'react'
+import {useRef} from 'react'
 import {
   StyleSheet,
   View,
@@ -6,6 +6,7 @@ import {
   Animated,
   Text,
   Pressable,
+  ActivityIndicator,
 } from 'react-native'
 import Carouselcardformat from './Carouselcardformat'
 import Pagination from './Carousel/Paginator'
@@ -14,18 +15,17 @@ import {router} from 'expo-router'
 import {ThemedText} from '@/components/ThemedText'
 import useCarouselData from './Carousel/Cardsexport'
 
-// Componente principal del carrusel
+// Main carousel component
 export default function Carousel() {
-  // Referencia para la animación de desplazamiento horizontal
+  // Reference for horizontal scroll animation
   const scrollX = useRef(new Animated.Value(0)).current
-
-  // Referencia para el FlatList que contiene los elementos del carrusel
+  // Reference for the FlatList containing the carousel items
   const slideRef = useRef(null)
 
-  // Obtenemos los datos del carrusel usando un hook personalizado
-  const carouselData = useCarouselData()
+  // Get carousel data and loading state using the custom hook
+  const {carouselData, isLoading} = useCarouselData()
 
-  // Función que se ejecuta cuando los elementos visibles cambian (no está implementada)
+  // Function executed when visible items change (not implemented)
   const viewableItemsChanged = useRef(
     ({viewableItems}: {viewableItems: any}) => {},
   ).current
@@ -34,22 +34,35 @@ export default function Carousel() {
     router.navigate('./Login')
   }
 
+  // While data is loading, show a loading indicator
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator
+          size='large'
+          color='#B0A462'
+        />
+        <Text style={styles.loadingText}>Cargando...</Text>
+      </View>
+    )
+  }
+
   return (
     <View style={styles.container}>
-      {/* Contenedor principal del carrusel */}
+      {/* Main carousel container */}
       <View
         className='rounded-xl'
         style={{flex: 3}}>
-        {/* FlatList que renderiza los elementos del carrusel */}
+        {/* FlatList rendering the carousel items */}
         <FlatList
-          data={carouselData} // Datos del carrusel
-          renderItem={({item}) => <Carouselcardformat item={item} />} // Renderiza cada elemento usando el componente Carouselcardformat
-          horizontal // Desplazamiento horizontal
+          data={carouselData} // Carousel data
+          renderItem={({item}) => <Carouselcardformat item={item} />} // Render each item using the Carouselcardformat component
+          horizontal
           showsHorizontalScrollIndicator={false}
-          pagingEnabled // Habilita el desplazamiento por páginas
-          bounces={false} // Desactiva el efecto de rebote
+          pagingEnabled
+          bounces={false}
           onScroll={Animated.event(
-            [{nativeEvent: {contentOffset: {x: scrollX}}}], // Animación del desplazamiento
+            [{nativeEvent: {contentOffset: {x: scrollX}}}],
             {
               useNativeDriver: false,
             },
@@ -57,20 +70,20 @@ export default function Carousel() {
           scrollEventThrottle={32}
           onViewableItemsChanged={viewableItemsChanged}
           viewabilityConfig={{
-            minimumViewTime: 300, // Tiempo mínimo que un elemento debe estar visible
+            minimumViewTime: 300, // Minimum time an item must be visible
             viewAreaCoveragePercentThreshold: 10,
           }}
-          ref={slideRef} // Referencia al FlatList
+          ref={slideRef} // Reference to the FlatList
         />
       </View>
 
-      {/* Contenedor inferior con la paginación y botones */}
+      {/* Bottom container with pagination and buttons */}
       <View style={{flex: 1, backgroundColor: '#1d1d1b'}}>
         <Pagination
           data={carouselData}
           scrollX={scrollX}
         />
-        <View className='flex flex-row justify-center '>
+        <View className='flex flex-row justify-center'>
           <Button
             title='Empezar'
             onPress={handleSubmit}
@@ -98,12 +111,24 @@ export default function Carousel() {
   )
 }
 
-// Estilos del componente
+// Component styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignContent: 'center',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#1d1d1b',
+  },
+  loadingText: {
+    marginTop: 16,
+    color: '#B0A462',
+    fontSize: 18,
+    fontFamily: 'MyriadPro',
   },
   linkColor: {
     color: '#B0A462',

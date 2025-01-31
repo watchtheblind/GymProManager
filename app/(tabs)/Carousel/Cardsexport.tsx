@@ -22,6 +22,7 @@ const CardComponents = [Card01, Card02, Card03]
 
 export default function useCarouselData() {
   const [carouselData, setCarouselData] = useState<CardData[]>([])
+  const [isLoading, setIsLoading] = useState(true) // Estado para controlar la carga
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,7 +40,6 @@ export default function useCarouselData() {
         }
 
         const data: ApiResponse[] = await response.json()
-
         const mappedData: CardData[] = data.slice(0, 3).map((item, index) => ({
           id: (index + 1).toString(),
           title: item.titulo,
@@ -62,11 +62,13 @@ export default function useCarouselData() {
         setCarouselData(mappedData)
       } catch (error) {
         console.error('Error fetching carousel data:', error)
+      } finally {
+        setIsLoading(false) // Marcar como cargado, incluso si hay un error
       }
     }
 
     fetchData()
   }, [])
 
-  return carouselData
+  return {carouselData, isLoading} // Devolver tanto los datos como el estado de carga
 }
