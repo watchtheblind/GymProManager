@@ -1,49 +1,72 @@
-import {ThemedText} from '@/components/ThemedText'
 import {Image, StyleSheet, View, useWindowDimensions, Text} from 'react-native'
 
-export default function Card03() {
+interface Card03Props {
+  titulo?: string
+  texto?: string
+  imagen?: string
+}
+
+const getColorFromTitle = (title: string): string => {
+  // Lista de colores a usar
+  const colors = ['#B0A462', '#6CB0B4', '#DFAA8C', '#FFFFFF']
+
+  // Generar un hash simple basado en el título
+  let hash = 0
+  for (let i = 0; i < title.length; i++) {
+    hash = title.charCodeAt(i) + ((hash << 5) - hash)
+  }
+
+  // Seleccionar un color basado en el hash
+  const index = Math.abs(hash) % colors.length
+  return colors[index]
+}
+
+export default function Card03({titulo, texto, imagen}: Card03Props) {
   const {width} = useWindowDimensions()
+  const CARD_WIDTH = width
+  const titleColor = titulo ? getColorFromTitle(titulo) : '#FFFFFF'
+  // Función para generar un color basado en el título
 
   return (
     <View
-      className='flex flex-col items-center rounded-6xl pt-8 '
-      style={[styles.colorBackground, styles.box]}>
-      <View className='flex flex-col items-center gap-1'>
-        <View className='absolute left-3 top-0'>
+      className='flex flex-col items-center rounded-xl p-4 pt-8'
+      style={[styles.colorBackground, styles.box, {width: CARD_WIDTH}]} // Aplicamos el ancho dinámico aquí
+    >
+      <View className='flex flex-col items-center w-full'>
+        {/* Imagen de fondo (polygon-01) */}
+        <View className='absolute left-0 top-14'>
           <Image
             style={styles.polygonContainer}
             source={require('@/assets/images/polygon-01.png')}
           />
         </View>
-        <View className='flex flex-row leading-3'>
-          <Text className='text-4xl font-Copperplate text-white'>
-            ¿Listo para
-          </Text>
-        </View>
-        <View className='flex flex-row'>
-          <Text className='text-4xl font-Copperplate text-[#DFAA8C]'>
-            transformar
-          </Text>
-        </View>
-        <View className='flex flex-row'>
-          <Text className='text-4xl font-Copperplate text-white'>tu </Text>
-          <Text className='text-4xl font-Copperplate text-[#B0A462]'>
-            negocio
-          </Text>
-          <Text className='text-4xl font-Copperplate text-white'>?</Text>
-        </View>
-        <View
-          className='flex flex-row mt-2 mx-1 px-3'
-          style={{width}}>
+
+        {/* Título de la tarjeta */}
+        <View className='flex flex-col justify-center items-center'>
           <Text
-            className='text-white text-center text-lg'
-            style={[{fontFamily: 'MyriadPro'}]}>
-            Con Gym Pro Manager, tendrás acceso a un software de gestión
-            avanzado que te permitirá optimizar la administración, la
-            comunicación, el cobro y el control de tus operaciones.  
+            className='font-Copperplate text-3xl lowercase text-center'
+            numberOfLines={3}
+            ellipsizeMode='tail'
+            style={{color: titleColor}} // Aplicamos el color generado
+          >
+            {titulo}
           </Text>
         </View>
-        <View className='absolute right-4 top-56'>
+
+        {/* Texto de la tarjeta */}
+        <View className='flex flex-row mt-4 items-center justify-center w-full'>
+          <Text
+            className='text-white text-2xl text-center'
+            style={[{fontFamily: 'MyriadPro'}]}
+            numberOfLines={7} // Limita el número de líneas
+            ellipsizeMode='tail' // Añade puntos suspensivos si el texto es demasiado largo
+          >
+            {texto}
+          </Text>
+        </View>
+
+        {/* Imagen de fondo (polygon-02) */}
+        <View className='absolute right-0 bottom-0 top-56'>
           <Image
             style={styles.polygonContainer}
             source={require('@/assets/images/polygon-02.png')}
