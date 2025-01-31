@@ -57,9 +57,6 @@ export default function Login() {
     setIsLoading(true) // Activar el estado de carga
 
     try {
-      // Simulación de un retraso de 5 segundos
-      await new Promise((resolve) => setTimeout(resolve, 5000))
-
       const response = await fetch('https://gympromanager.com/app-login.php', {
         method: 'POST',
         headers: {
