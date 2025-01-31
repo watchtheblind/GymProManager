@@ -9,11 +9,11 @@ import {
   ActivityIndicator,
 } from 'react-native'
 import Carouselcardformat from './Carouselcardformat'
-import Pagination from './Carousel/Paginator'
+import Pagination from './Paginator'
 import Button from '@/components/ui/Button'
 import {router} from 'expo-router'
 import {ThemedText} from '@/components/ThemedText'
-import useCarouselData from './Carousel/Cardsexport'
+import useCarouselData from './Cardsexport'
 
 // Main carousel component
 export default function Carousel() {
