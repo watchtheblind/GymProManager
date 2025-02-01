@@ -21,49 +21,49 @@ const Services = () => {
     {
       name: 'Entrenamiento personal',
       count: 3,
-      iconName: 'fitness-center' as keyof typeof MaterialIcons.glyphMap,
+      iconName: 'fitness-center' as keyof typeof MaterialIcons.glyphMap, // Ícono válido
       color: '#B0A462', // Color de fondo
       borderColor: '#FEF4C9', // Color del borde
     },
     {
       name: 'Yoga',
       count: 10,
-      iconName: 'yoga' as keyof typeof MaterialIcons.glyphMap,
+      iconName: 'self-improvement' as keyof typeof MaterialIcons.glyphMap, // Ícono válido
       color: '#518893', // Color de fondo
       borderColor: '#6CB0B4', // Color del borde
     },
     {
       name: 'Pilates',
       count: 5,
-      iconName: 'pilates' as keyof typeof MaterialIcons.glyphMap,
+      iconName: 'fitness-center' as keyof typeof MaterialIcons.glyphMap, // Ícono válido
       color: '#CC7751', // Color de fondo
       borderColor: '#DFAA8C', // Color del borde
     },
     {
       name: 'Boxeo',
       count: 10,
-      iconName: 'directions-run' as keyof typeof MaterialIcons.glyphMap,
+      iconName: 'sports-mma' as keyof typeof MaterialIcons.glyphMap, // Ícono válido
       color: '#B0A462', // Color de fondo
       borderColor: '#FEF4C9', // Color del borde
     },
     {
       name: 'Artes marciales',
       count: 10,
-      iconName: 'sports-kabaddi' as keyof typeof MaterialIcons.glyphMap,
+      iconName: 'sports-kabaddi' as keyof typeof MaterialIcons.glyphMap, // Ícono válido
       color: '#518893', // Color de fondo
       borderColor: '#6CB0B4', // Color del borde
     },
     {
       name: 'Danza',
       count: 9,
-      iconName: 'dancing' as keyof typeof MaterialIcons.glyphMap,
+      iconName: 'music-note' as keyof typeof MaterialIcons.glyphMap, // Ícono válido
       color: '#D67D5E', // Color de fondo
       borderColor: '#DFAA8C', // Color del borde
     },
     {
       name: 'Rehabilitación',
       count: 2,
-      iconName: 'healing' as keyof typeof MaterialIcons.glyphMap,
+      iconName: 'healing' as keyof typeof MaterialIcons.glyphMap, // Ícono válido
       color: '#518893', // Color de fondo
       borderColor: '#6CB0B4', // Color del borde
     },
