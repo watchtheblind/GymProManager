@@ -153,6 +153,8 @@ const Activities: React.FC = () => {
               }}
               isFavorite={favorites.includes(item.id.toString())} // Convertir id a string para comparar
               onToggleFavorite={() => toggleFavorite(item.id.toString())} // Convertir id a string
+              userId={4} // Pasar el ID del usuario
+              token={'Contraseña...'} // Pasar el token de autorización
             />
           )}
           keyExtractor={(item) => item.id.toString()} // Convertir id a string
