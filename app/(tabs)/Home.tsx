@@ -12,155 +12,144 @@ import Animated, {
   FadeInDown,
   FadeInRight,
   FadeInLeft,
-  useSharedValue,
   useAnimatedStyle,
   withTiming,
   withDelay,
 } from 'react-native-reanimated'
 import Settingsbutton from '@/components/ui/Settingsbutton'
+import {green} from 'react-native-reanimated/lib/typescript/Colors'
+
+// Animaciones reutilizables
+const animations = {
+  fadeInDown: (delay: number) => FadeInDown.delay(delay).duration(500),
+  fadeInRight: (delay: number) => FadeInRight.delay(delay).duration(500),
+  fadeInLeft: (delay: number) => FadeInLeft.delay(delay).duration(500),
+}
 
 export default function Home() {
-  const AnimatedView = Animated.createAnimatedComponent(View)
   const {width} = useWindowDimensions()
-  const logoOpacity = useSharedValue(0)
 
-  useEffect(() => {
-    logoOpacity.value = withDelay(500, withTiming(1, {duration: 1000}))
-  }, [])
-
-  const logoStyle = useAnimatedStyle(() => {
-    return {
-      opacity: logoOpacity.value,
-    }
-  })
+  const logoStyle = useAnimatedStyle(() => ({
+    opacity: withDelay(500, withTiming(1, {duration: 1000})),
+  }))
 
   return (
     <ScrollView style={styles.container}>
-      <View className='p-6'>
-        <View className='flex items-end'>
-          <Animated.View
-            entering={FadeInLeft.delay(200).duration(500)}
-            className='absolute left-6 top-28'>
+      <View style={styles.paddingContainer}>
+        {/* Polígono izquierdo */}
+        <Animated.View
+          entering={animations.fadeInLeft(200)}
+          style={styles.polygonLeft}>
+          <Image
+            style={styles.polygonContainer}
+            source={require('@/assets/images/polygon-01.png')}
+          />
+        </Animated.View>
+
+        {/* Botón de configuración */}
+        <Animated.View
+          entering={animations.fadeInDown(300)}
+          style={styles.settingsButton}>
+          <Settingsbutton />
+        </Animated.View>
+
+        {/* Polígono derecho */}
+        <Animated.View
+          entering={animations.fadeInRight(200)}
+          style={styles.polygonRight}>
+          <Image
+            style={[styles.polygonContainer, styles.PolygonRotate]}
+            source={require('@/assets/images/polygon-02.png')}
+          />
+        </Animated.View>
+
+        {/* Logo */}
+        <Animated.View style={[styles.logoContainer, logoStyle]}>
+          <Image
+            style={styles.logo}
+            source={require('@/assets/images/logo.png')}
+          />
+        </Animated.View>
+
+        {/* Sección de Clases Virtuales */}
+        <Animated.View entering={animations.fadeInDown(600)}>
+          <ButtonImage href='/Homesections/Classes'>
             <Image
-              style={styles.polygonContainer}
-              source={require('@/assets/images/polygon-01.png')}
+              style={[styles.image, styles.borderLeft]}
+              source={require('@/assets/images/clases.jpeg')}
             />
-          </Animated.View>
-          <AnimatedView
-            entering={FadeInDown.delay(300).duration(500)}
-            className='mt-10'>
-            <Settingsbutton />
-          </AnimatedView>
-          <Animated.View
-            entering={FadeInRight.delay(200).duration(500)}
-            className='absolute right-7 top-56'>
+          </ButtonImage>
+          <Text style={styles.sectionTitle}>CLASES VIRTUALES</Text>
+        </Animated.View>
+
+        {/* Sección de Actividades en Streaming */}
+        <Animated.View
+          entering={animations.fadeInDown(700)}
+          style={styles.mt4}>
+          <ButtonImage href='/Homesections/Activities'>
             <Image
-              style={[styles.polygonContainer, styles.PolygonRotate]}
-              source={require('@/assets/images/polygon-02.png')}
+              style={[styles.image, styles.borderLeft]}
+              source={require('@/assets/images/actividades.jpeg')}
             />
-          </Animated.View>
-        </View>
-        <View className='gap-3'>
-          <Animated.View
-            className='flex flex-row justify-center'
-            style={logoStyle}>
+          </ButtonImage>
+          <Text style={styles.sectionTitle}>ACTIVIDADES EN STREAMING</Text>
+        </Animated.View>
+
+        {/* Sección de Entrenamientos */}
+        <Animated.View
+          entering={animations.fadeInDown(800)}
+          style={styles.mt4}>
+          <ButtonImage href='/Homesections/Workouts'>
             <Image
-              style={styles.logo}
-              source={require('@/assets/images/logo.png')}
+              style={[styles.image, styles.borderLeft]}
+              source={require('@/assets/images/entrenamiento.jpeg')}
             />
-          </Animated.View>
-          <Animated.View
-            entering={FadeInDown.delay(600).duration(500)}
-            className='flex flex-col justify-center'>
-            <ButtonImage href='/Homesections/Classes'>
-              <Image
-                style={[styles.boderLeft]}
-                className='h-36 w-full'
-                source={require('@/assets/images/clases.jpeg')}
-              />
-            </ButtonImage>
-            <Text className='mt-4 text-white text-lg font-Copperplate'>
-              CLASES VIRTUALES
-            </Text>
-          </Animated.View>
-          <Animated.View
-            entering={FadeInDown.delay(700).duration(500)}
-            className='flex flex-col justify-center mt-4'>
-            <ButtonImage href='/Homesections/Activities'>
-              <Image
-                style={[styles.boderLeft]}
-                className='h-36 w-full'
-                source={require('@/assets/images/actividades.jpeg')}
-              />
-            </ButtonImage>
-            <Text className='mt-4 text-white font-Copperplate'>
-              ACTIVIDADES EN STREAMING
-            </Text>
-          </Animated.View>
-          <Animated.View
-            entering={FadeInDown.delay(800).duration(500)}
-            className='flex flex-col justify-center mt-4'>
-            <ButtonImage href='/Workouts'>
-              <Image
-                style={[styles.boderLeft]}
-                className='h-40 w-full'
-                source={require('@/assets/images/entrenamiento.jpeg')}
-              />
-            </ButtonImage>
-            <Text className='mt-4 text-white font-Copperplate'>
-              ENTRENAMIENTOS
-            </Text>
-          </Animated.View>
-          <Animated.View
-            entering={FadeInDown.delay(900).duration(500)}
-            className='flex flex-col justify-center items-center mt-4'>
-            <View className='flex flex-row w-full gap-2'>
-              <View className='flex flex-col items-center w-1/2'>
-                <ButtonImage href='/Notifications'>
-                  <Image
-                    style={[styles.minibox, styles.boderLeft]}
-                    source={require('@/assets/images/notifications.jpeg')}
-                    className='bg-red-500'
-                  />
-                </ButtonImage>
-                <Text className='mt-4 text-white uppercase font-Copperplate'>
-                  Notificaciones
-                </Text>
-              </View>
-              <View className='flex flex-col items-center w-1/2'>
-                <ButtonImage href='/Questionnaires'>
-                  <Image
-                    style={[styles.minibox, styles.boderLeft]}
-                    source={require('@/assets/images/cuestionarios.jpeg')}
-                    className='bg-red-500'
-                  />
-                </ButtonImage>
-                <Text className='mt-4 text-white uppercase font-Copperplate'>
-                  Cuestionarios
-                </Text>
-              </View>
-            </View>
-          </Animated.View>
-          <Animated.View
-            entering={FadeInDown.delay(1000).duration(500)}
-            className='flex flex-col justify-center items-center mt-4 mb-20'>
-            <View className='flex flex-row w-full gap-2'>
-              <View className='flex flex-col items-center w-full'>
+          </ButtonImage>
+          <Text style={styles.sectionTitle}>ENTRENAMIENTOS</Text>
+        </Animated.View>
+
+        {/* Sección de Notificaciones y Cuestionarios */}
+        <Animated.View
+          entering={animations.fadeInDown(900)}
+          style={styles.mt4}>
+          <View style={styles.row}>
+            <View style={styles.halfWidth}>
+              <ButtonImage href='/Homesections/Notifications'>
                 <Image
-                  style={[
-                    styles.minibox,
-                    styles.boderRight,
-                    styles.improvedImage,
-                  ]} // Agregamos un nuevo estilo
-                  source={require('@/assets/images/servicios.jpeg')}
+                  style={[styles.miniImage, styles.borderLeft]}
+                  source={require('@/assets/images/notifications.jpeg')}
                 />
-                <Text className='mt-4 text-white font-Copperplate uppercase w-full text-center'>
-                  Servicios
-                </Text>
-              </View>
+              </ButtonImage>
+              <Text style={styles.sectionTitle2}>NOTIFICACIONES</Text>
             </View>
-          </Animated.View>
-        </View>
+            <View style={styles.halfWidth}>
+              <ButtonImage href='/Homesections/Questionnaires'>
+                <Image
+                  style={[styles.miniImage, styles.borderLeft]}
+                  source={require('@/assets/images/cuestionarios.jpeg')}
+                />
+              </ButtonImage>
+              <Text style={styles.sectionTitle2}>CUESTIONARIOS</Text>
+            </View>
+          </View>
+        </Animated.View>
+
+        {/* Sección de Servicios */}
+        <Animated.View
+          entering={animations.fadeInDown(1000)}
+          style={styles.mt4}>
+          <View style={styles.fullWidth}>
+            <Image
+              style={[
+                styles.miniImage,
+                styles.borderRight,
+                styles.improvedImage,
+              ]}
+              source={require('@/assets/images/servicios.jpeg')}
+            />
+            <Text style={styles.sectionTitle}>SERVICIOS</Text>
+          </View>
+        </Animated.View>
       </View>
     </ScrollView>
   )
@@ -169,48 +158,89 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#1D1D1B',
-    height: '100%',
+    flex: 1,
+    paddingBottom: 40,
   },
-  logo: {
-    marginBlock: 31,
-    height: 100,
-    width: '80%',
-    maxWidth: 300,
-    marginBottom: 58,
+  paddingContainer: {
+    padding: 24,
+    paddingBottom: 85,
+  },
+  polygonLeft: {
+    position: 'absolute',
+    left: 24,
+    top: 112,
+  },
+  polygonRight: {
+    position: 'absolute',
+    right: 28,
+    top: 224,
+  },
+  PolygonRotate: {
+    transform: [{rotate: '58deg'}],
   },
   polygonContainer: {
     height: 38,
     width: 35,
   },
-  PolygonRotate: {
-    transform: [{rotate: '58deg'}],
+  settingsButton: {
+    marginTop: 20,
+    alignItems: 'flex-end',
   },
-  box: {
+  logoContainer: {
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  logo: {
+    height: 100,
+    width: '100%',
+    maxWidth: 300,
+    marginBlock: 30,
+  },
+  image: {
+    height: 144,
+    width: '100%',
+  },
+  miniImage: {
     height: 200,
     width: '100%',
   },
-  minibox: {
-    height: 200,
-    width: '100%',
-    backgroundPosition: 'center',
-    backgroundRepeat: 'no-repeat',
-    backgroundSize: 'cover', // Cambiado a 'cover' para que la imagen cubra el contenedor
-  },
-  boderLeft: {
+  borderLeft: {
     borderTopRightRadius: 16,
     borderBottomLeftRadius: 16,
   },
-  boderRight: {
+  borderRight: {
     borderTopLeftRadius: 16,
     borderBottomRightRadius: 16,
   },
   improvedImage: {
-    height: 200, // Altura fija
-    width: '100%', // Ancho completo
-    borderTopRightRadius: 0,
-    borderTopLeftRadius: 16,
-    borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 16,
-    resizeMode: 'cover', // Asegura que la imagen cubra el contenedor sin deformarse
+    resizeMode: 'cover',
+  },
+  sectionTitle: {
+    marginTop: 16,
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontFamily: 'Copperplate',
+    textAlign: 'center',
+  },
+  sectionTitle2: {
+    marginTop: 16,
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'Copperplate',
+    textAlign: 'center',
+  },
+
+  row: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  halfWidth: {
+    width: '48%',
+  },
+  fullWidth: {
+    width: '100%',
+  },
+  mt4: {
+    marginTop: 16,
   },
 })
