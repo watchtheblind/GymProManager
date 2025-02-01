@@ -8,7 +8,7 @@ import React from 'react'
 interface CardData {
   id: string
   title: string
-  image: string | (() => any)
+  image: string | (() => any) // Mantenemos el tipo original
   content: React.ReactNode
 }
 
@@ -40,14 +40,16 @@ export default function useCarouselData() {
         }
 
         const data: ApiResponse[] = await response.json()
+
+        // Mapea los datos de la API a CardData
         const mappedData: CardData[] = data.slice(0, 3).map((item, index) => ({
           id: (index + 1).toString(),
           title: item.titulo,
-          image: item.imagen,
+          image: item.imagen, // Mantenemos item.imagen tal cual
           content: React.createElement(CardComponents[index], {
             titulo: item.titulo,
             texto: item.texto,
-            imagen: item.imagen,
+            imagen: item.imagen, // Pasamos item.imagen directamente
           }),
         }))
 
@@ -55,7 +57,7 @@ export default function useCarouselData() {
         mappedData.push({
           id: '4',
           title: 'Title 4',
-          image: require('@/assets/images/onboarding-04.jpg'),
+          image: require('@/assets/images/onboarding-04.jpg'), // Ruta local con require
           content: <Card04 />,
         })
 

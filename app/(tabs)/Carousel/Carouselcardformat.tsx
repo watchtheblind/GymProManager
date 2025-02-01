@@ -3,6 +3,12 @@ import {View, Image, StyleSheet, useWindowDimensions} from 'react-native'
 export default function Carouselcardformat({item}: {item: any}) {
   const {width} = useWindowDimensions()
 
+  // Determina si la imagen es una URL o una ruta local
+  const imageSource =
+    typeof item.image === 'string' && item.image.startsWith('http')
+      ? {uri: item.image} // Es una URL
+      : item.image // Es una ruta local
+
   return (
     <View style={{flex: 1}}>
       <View
@@ -12,7 +18,7 @@ export default function Carouselcardformat({item}: {item: any}) {
           width: width,
         }}>
         <Image
-          source={item.image}
+          source={imageSource} // Usamos imageSource
           style={[styles.image, {width: '100%', height: '100%'}]}
           resizeMode='cover'
         />
