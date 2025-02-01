@@ -1,4 +1,4 @@
-import {useState, useCallback} from 'react'
+import React, {useState, useCallback} from 'react'
 import {
   View,
   Text,
@@ -8,13 +8,18 @@ import {
   StyleSheet,
   FlatList,
   BackHandler,
+  Switch,
 } from 'react-native'
 import {useFocusEffect, useNavigation} from '@react-navigation/native'
 import {MaterialIcons} from '@expo/vector-icons'
 import Tabs from '@/components/Tabs'
 import SearchBar from '@/components/ui/SearchBar'
 import {Settingsicon} from '@/components/ui/Bottomnav/Icons'
+import UniversalCard from '@/components/ui/Card'
+import {useFavorites} from '@/hooks/Activities/useFavorites'
+import {useFilter} from '@/hooks/Common/useFilter' // Importamos el hook useFilter
 
+// Tu JSON de workouts
 const workouts = [
   {
     id: '1',
@@ -25,66 +30,6 @@ const workouts = [
     accentColor: '#4FD1C5',
     image:
       'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-  },
-  {
-    id: '2',
-    type: 'Boxeo',
-    title: 'Boxeo Cardio',
-    level: 'Intermedio',
-    duration: '45 min',
-    accentColor: '#ED8936',
-    image:
-      'https://images.unsplash.com/photo-1599058917212-d750089bc07e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-  },
-  {
-    id: '3',
-    type: 'HIIT',
-    title: 'Quema Grasa Intenso',
-    level: 'Principiante',
-    duration: '25 min',
-    accentColor: '#F06292',
-    image:
-      'https://images.unsplash.com/photo-1576678927484-cc907957088c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-  },
-  {
-    id: '4',
-    type: 'Yoga',
-    title: 'Yoga Flow',
-    level: 'Experto',
-    duration: '60 min',
-    accentColor: '#A0D2EB',
-    image:
-      'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-  },
-  {
-    id: '2',
-    type: 'Boxeo',
-    title: 'Boxeo Cardio',
-    level: 'Intermedio',
-    duration: '45 min',
-    accentColor: '#ED8936',
-    image:
-      'https://images.unsplash.com/photo-1599058917212-d750089bc07e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-  },
-  {
-    id: '3',
-    type: 'HIIT',
-    title: 'Quema Grasa Intenso',
-    level: 'Principiante',
-    duration: '25 min',
-    accentColor: '#F06292',
-    image:
-      'https://images.unsplash.com/photo-1576678927484-cc907957088c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-  },
-  {
-    id: '4',
-    type: 'Yoga',
-    title: 'Yoga Flow',
-    level: 'Experto',
-    duration: '60 min',
-    accentColor: '#A0D2EB',
-    image:
-      'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
   },
   {
     id: '2',
@@ -131,8 +76,7 @@ type Workout = {
 export default function WorkoutList() {
   const [activeTab, setActiveTab] = useState('listado')
   const [showFavorites, setShowFavorites] = useState(false)
-  const [favorites, setFavorites] = useState<string[]>([])
-  const [filteredWorkouts, setFilteredWorkouts] = useState<Workout[]>(workouts)
+  const {favorites, toggleFavorite} = useFavorites()
   const [searchQuery, setSearchQuery] = useState('')
   const navigation = useNavigation()
 
@@ -149,96 +93,22 @@ export default function WorkoutList() {
     }, [navigation]),
   )
 
-  const filterWorkouts = useCallback(() => {
-    let filtered = workouts
-    if (searchQuery) {
-      filtered = filtered.filter(
-        (workout) =>
-          workout.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          workout.type.toLowerCase().includes(searchQuery.toLowerCase()),
-      )
-    }
-    if (showFavorites) {
-      filtered = filtered.filter((workout) => favorites.includes(workout.id))
-    }
-    setFilteredWorkouts(filtered)
-  }, [searchQuery, showFavorites, favorites])
-
-  const toggleFavorite = (id: string) => {
-    setFavorites((prevFavorites) =>
-      prevFavorites.includes(id)
-        ? prevFavorites.filter((favId) => favId !== id)
-        : [...prevFavorites, id],
-    )
-  }
+  // Usamos el hook useFilter para filtrar los workouts
+  const filteredWorkouts = useFilter({
+    searchQuery,
+    showFavorites,
+    favorites,
+    data: workouts,
+    searchKeys: ['title', 'type'], // Campos por los que se puede buscar
+  })
 
   const onSearch = (text: string) => {
     setSearchQuery(text)
-    let filtered = workouts.filter(
-      (workout) =>
-        workout.title.toLowerCase().includes(text.toLowerCase()) ||
-        workout.type.toLowerCase().includes(text.toLowerCase()),
-    )
-    if (showFavorites) {
-      filtered = filtered.filter((workout) => favorites.includes(workout.id))
-    }
-    setFilteredWorkouts(filtered)
   }
 
   const onClear = () => {
     setSearchQuery('')
-    setFilteredWorkouts(
-      showFavorites
-        ? workouts.filter((workout) => favorites.includes(workout.id))
-        : workouts,
-    )
   }
-
-  const toggleShowFavorites = () => {
-    setShowFavorites((prev) => !prev)
-    if (!showFavorites) {
-      setFilteredWorkouts(
-        workouts.filter((workout) => favorites.includes(workout.id)),
-      )
-    } else {
-      setFilteredWorkouts(workouts)
-    }
-  }
-
-  const WorkoutCard = ({workout}: {workout: Workout}) => (
-    <View style={styles.workoutCard}>
-      <Image
-        source={{uri: workout.image}}
-        style={styles.workoutImage}
-        resizeMode='cover'
-      />
-      <TouchableOpacity
-        style={styles.favoriteButton}
-        onPress={() => toggleFavorite(workout.id)}>
-        <MaterialIcons
-          name={favorites.includes(workout.id) ? 'favorite' : 'favorite-border'}
-          size={24}
-          color='#fff'
-        />
-      </TouchableOpacity>
-      <View
-        style={[styles.typeTriangle, {backgroundColor: workout.accentColor}]}>
-        <Text style={styles.typeText}>{workout.type}</Text>
-      </View>
-      <View style={styles.workoutOverlay}>
-        <View style={styles.workoutInfo}>
-          <Text style={styles.workoutTitle}>{workout.title}</Text>
-          <View style={styles.workoutMetaInfo}>
-            <Text style={[styles.workoutLevel, {color: workout.accentColor}]}>
-              {workout.level}
-            </Text>
-            <Text style={styles.workoutDot}>•</Text>
-            <Text style={styles.workoutDuration}>{workout.duration}</Text>
-          </View>
-        </View>
-      </View>
-    </View>
-  )
 
   const tabs = [
     {id: 'listado', label: 'Listado'},
@@ -265,16 +135,12 @@ export default function WorkoutList() {
 
       <View style={styles.favoritesContainer}>
         <Text style={styles.favoritesText}>Ver solo mis favoritos</Text>
-        <TouchableOpacity
-          onPress={toggleShowFavorites}
-          style={[
-            styles.toggleButton,
-            showFavorites ? styles.toggleButtonOn : styles.toggleButtonOff,
-          ]}>
-          <View
-            style={[styles.toggleCircle, {marginLeft: showFavorites ? 24 : 4}]}
-          />
-        </TouchableOpacity>
+        <Switch
+          value={showFavorites}
+          onValueChange={setShowFavorites}
+          trackColor={{false: '#767577', true: '#FEF4C9'}}
+          thumbColor={showFavorites ? '#B0A462' : '#f4f3f4'}
+        />
       </View>
 
       {filteredWorkouts.length === 0 ? (
@@ -286,7 +152,19 @@ export default function WorkoutList() {
       ) : (
         <FlatList
           data={filteredWorkouts}
-          renderItem={({item}) => <WorkoutCard workout={item} />}
+          renderItem={({item}) => (
+            <UniversalCard
+              image={item.image}
+              title={item.title}
+              type={item.type}
+              accentColor={item.accentColor}
+              level={item.level}
+              duration={item.duration}
+              isFavorite={favorites.includes(item.id)}
+              onFavoritePress={() => toggleFavorite(item.id)}
+              showFavoriteIcon={true}
+            />
+          )}
           keyExtractor={(item) => item.id}
           numColumns={2}
           columnWrapperStyle={styles.workoutRow}
@@ -405,104 +283,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     marginRight: 8,
   },
-  toggleButton: {
-    width: 48,
-    height: 24,
-    borderRadius: 999,
-  },
-  toggleButtonOn: {
-    backgroundColor: '#B5AD6F',
-  },
-  toggleButtonOff: {
-    backgroundColor: '#4B5563',
-  },
-  toggleCircle: {
-    width: 20,
-    height: 20,
-    borderRadius: 999,
-    backgroundColor: '#fff',
-    marginTop: 2,
-  },
-  workoutCard: {
-    width: '48%',
-    aspectRatio: 16 / 16,
-    marginBottom: 16,
-    borderRadius: 12,
-    overflow: 'hidden',
-    backgroundColor: '#1A1A1A',
-    position: 'relative',
-  },
-  workoutImage: {
-    width: '100%',
-    height: '100%',
-    opacity: 0.7,
-  },
-  favoriteButton: {
-    position: 'absolute',
-    top: 8,
-    right: 8,
-    zIndex: 10,
-  },
-  typeTriangle: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: 80,
-    height: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-    transform: [{rotate: '-45deg'}],
-    marginLeft: -20,
-    marginTop: -5,
-  },
-  typeText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: '500',
-    fontFamily: 'MyriadPro',
-    marginLeft: -6,
-  },
-  workoutOverlay: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: 12,
-    backgroundColor: 'rgba(0,0,0,0.3)',
-  },
-  workoutInfo: {
-    gap: 4,
-  },
-  workoutTitle: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  workoutMetaInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  workoutLevel: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  workoutDot: {
-    color: '#fff',
-    opacity: 0.7,
-  },
-  workoutDuration: {
-    color: '#fff',
-    fontSize: 14,
-    opacity: 0.7,
-  },
-  workoutRow: {
-    justifyContent: 'space-between',
-  },
-  workoutList: {
-    paddingBottom: 5,
-    height: 'auto',
-  },
   noWorkoutsContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -521,5 +301,12 @@ const styles = StyleSheet.create({
   misEntrenamientosText: {
     color: '#fff',
     fontSize: 18,
+  },
+  workoutRow: {
+    justifyContent: 'space-between',
+  },
+  workoutList: {
+    paddingBottom: 5,
+    height: 'auto',
   },
 })

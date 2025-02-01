@@ -3,17 +3,17 @@ import {
   View,
   StyleSheet,
   Text,
-  Image,
   SafeAreaView,
   ScrollView,
   BackHandler,
 } from 'react-native'
 import {Stack} from 'expo-router'
 import {useFetchAPI} from '@/hooks/useFetchAPI'
-import {ThemedText} from '@/components/ThemedText'
-import Settingsbutton from '@/components/ui/Settingsbutton'
 import {useFocusEffect, useNavigation} from '@react-navigation/native'
 import SearchBar from '@/components/ui/SearchBar'
+import UniversalCard from '@/components/ui/Card'
+import Settingsbutton from '@/components/ui/Settingsbutton'
+
 export default function Classes() {
   const {data, loading, error} = useFetchAPI('/clases', {})
   const [searchedClasses, setSearchedClasses] = useState<any[]>([])
@@ -68,52 +68,29 @@ export default function Classes() {
       style={styles.container}>
       <SafeAreaView>
         <Stack.Screen options={{headerShown: false}} />
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}>
-          <Text
-            style={{color: '#fff', fontSize: 20, fontFamily: 'Copperplate'}}>
-            CLASES VIRTUALES
-          </Text>
+        <View style={styles.header}>
+          <Text style={styles.headerText}>CLASES VIRTUALES</Text>
           <Settingsbutton />
         </View>
         <SearchBar
           onSearch={searchClass}
           onClear={clearSearch}
         />
-        <View
-          style={{flexDirection: 'row', flexWrap: 'wrap', marginBottom: 80}}>
-          {searchedClasses &&
-            Array.from({length: 3}).map((_, outerIndex) =>
-              searchedClasses.map((item: any, index: number) => (
-                <View
-                  key={`${outerIndex}-${index}`}
-                  style={{width: '50%', padding: 8}}>
-                  <Image
-                    style={{height: 150, width: '100%', borderRadius: 8}}
-                    source={{uri: item.imagen}}
-                    resizeMode='cover'
-                  />
-                  <ThemedText
-                    type='subtitle'
-                    style={{fontFamily: 'Myriad Pro'}}>
-                    {item.titulo}
-                  </ThemedText>
-                  <View style={{flexDirection: 'row'}}>
-                    <Text style={{color: colorNivel(item.nivel)}}>
-                      {TextNivel(item.nivel)}
-                    </Text>
-                    <View style={{paddingHorizontal: 8}}>
-                      <Text style={{color: '#fff'}}>•</Text>
-                    </View>
-                    <Text style={{color: '#fff'}}>{item.time}</Text>
-                  </View>
-                </View>
-              )),
-            )}
+        <View style={styles.cardsContainer}>
+          {searchedClasses.map((item: any, index: number) => (
+            <UniversalCard
+              key={index}
+              image={item.imagen}
+              title={item.titulo}
+              type={item.tipo} // Asegúrate de que la API devuelva un campo "tipo"
+              accentColor={colorNivel(item.nivel)}
+              level={TextNivel(item.nivel)}
+              duration={item.time}
+              isFavorite={false} // Puedes manejar favoritos si es necesario
+              onFavoritePress={() => console.log('Favorito presionado')}
+              showFavoriteIcon={false} // Oculta el ícono de favoritos si no lo necesitas
+            />
+          ))}
         </View>
       </SafeAreaView>
     </ScrollView>
@@ -123,11 +100,24 @@ export default function Classes() {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#1D1D1B',
-    color: '#ffffff',
-    paddingLeft: 16,
-    paddingRight: 16,
-    position: 'absolute',
-    height: '100%',
+    paddingHorizontal: 16,
     paddingTop: 64,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  headerText: {
+    color: '#fff',
+    fontSize: 20,
+    fontFamily: 'Copperplate',
+  },
+  cardsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: 80,
+    gap: 12,
   },
 })
