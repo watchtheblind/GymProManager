@@ -1,4 +1,4 @@
-import {useState, useCallback} from 'react'
+import React, {useState, useCallback} from 'react'
 import {
   View,
   Text,
@@ -14,7 +14,9 @@ import {MaterialIcons} from '@expo/vector-icons'
 import Tabs from '@/components/Tabs'
 import SearchBar from '@/components/ui/SearchBar'
 import {Settingsicon} from '@/components/ui/Bottomnav/Icons'
+import UniversalCard from '@/components/ui/Card'
 
+// Tu JSON de workouts
 const workouts = [
   {
     id: '1',
@@ -56,66 +58,7 @@ const workouts = [
     image:
       'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
   },
-  {
-    id: '2',
-    type: 'Boxeo',
-    title: 'Boxeo Cardio',
-    level: 'Intermedio',
-    duration: '45 min',
-    accentColor: '#ED8936',
-    image:
-      'https://images.unsplash.com/photo-1599058917212-d750089bc07e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-  },
-  {
-    id: '3',
-    type: 'HIIT',
-    title: 'Quema Grasa Intenso',
-    level: 'Principiante',
-    duration: '25 min',
-    accentColor: '#F06292',
-    image:
-      'https://images.unsplash.com/photo-1576678927484-cc907957088c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-  },
-  {
-    id: '4',
-    type: 'Yoga',
-    title: 'Yoga Flow',
-    level: 'Experto',
-    duration: '60 min',
-    accentColor: '#A0D2EB',
-    image:
-      'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-  },
-  {
-    id: '2',
-    type: 'Boxeo',
-    title: 'Boxeo Cardio',
-    level: 'Intermedio',
-    duration: '45 min',
-    accentColor: '#ED8936',
-    image:
-      'https://images.unsplash.com/photo-1599058917212-d750089bc07e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-  },
-  {
-    id: '3',
-    type: 'HIIT',
-    title: 'Quema Grasa Intenso',
-    level: 'Principiante',
-    duration: '25 min',
-    accentColor: '#F06292',
-    image:
-      'https://images.unsplash.com/photo-1576678927484-cc907957088c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-  },
-  {
-    id: '4',
-    type: 'Yoga',
-    title: 'Yoga Flow',
-    level: 'Experto',
-    duration: '60 min',
-    accentColor: '#A0D2EB',
-    image:
-      'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-  },
+  // ... (puedes agregar más workouts si es necesario)
 ]
 
 type Workout = {
@@ -205,41 +148,6 @@ export default function WorkoutList() {
     }
   }
 
-  const WorkoutCard = ({workout}: {workout: Workout}) => (
-    <View style={styles.workoutCard}>
-      <Image
-        source={{uri: workout.image}}
-        style={styles.workoutImage}
-        resizeMode='cover'
-      />
-      <TouchableOpacity
-        style={styles.favoriteButton}
-        onPress={() => toggleFavorite(workout.id)}>
-        <MaterialIcons
-          name={favorites.includes(workout.id) ? 'favorite' : 'favorite-border'}
-          size={24}
-          color='#fff'
-        />
-      </TouchableOpacity>
-      <View
-        style={[styles.typeTriangle, {backgroundColor: workout.accentColor}]}>
-        <Text style={styles.typeText}>{workout.type}</Text>
-      </View>
-      <View style={styles.workoutOverlay}>
-        <View style={styles.workoutInfo}>
-          <Text style={styles.workoutTitle}>{workout.title}</Text>
-          <View style={styles.workoutMetaInfo}>
-            <Text style={[styles.workoutLevel, {color: workout.accentColor}]}>
-              {workout.level}
-            </Text>
-            <Text style={styles.workoutDot}>•</Text>
-            <Text style={styles.workoutDuration}>{workout.duration}</Text>
-          </View>
-        </View>
-      </View>
-    </View>
-  )
-
   const tabs = [
     {id: 'listado', label: 'Listado'},
     {id: 'mis-entrenamientos', label: 'Mis entrenamientos'},
@@ -286,7 +194,19 @@ export default function WorkoutList() {
       ) : (
         <FlatList
           data={filteredWorkouts}
-          renderItem={({item}) => <WorkoutCard workout={item} />}
+          renderItem={({item}) => (
+            <UniversalCard
+              image={item.image}
+              title={item.title}
+              type={item.type}
+              accentColor={item.accentColor}
+              level={item.level}
+              duration={item.duration}
+              isFavorite={favorites.includes(item.id)}
+              onFavoritePress={() => toggleFavorite(item.id)}
+              showFavoriteIcon={true} // Puedes cambiar esto si no quieres mostrar el ícono
+            />
+          )}
           keyExtractor={(item) => item.id}
           numColumns={2}
           columnWrapperStyle={styles.workoutRow}
