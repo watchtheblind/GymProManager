@@ -17,8 +17,26 @@ import SearchBar from '@/components/ui/SearchBar'
 import Settingsbutton from '@/components/ui/Settingsbutton'
 import useBackHandler from '@/hooks/Common/useBackHandler'
 
-const getNextTwoWeeks = (): {date: Date; day: number; month: string}[] => {
-  const dates = []
+// Definimos la interfaz para las fechas
+interface DateInfo {
+  date: Date
+  day: number
+  month: string
+}
+
+// Definimos la interfaz para las actividades (sin cambios)
+interface Activity {
+  id: number // id es number, como lo defines
+  name: string
+  time: string
+  type: string
+  capacity: number
+  available: number
+  Instructor: string
+}
+
+const getNextTwoWeeks = (): DateInfo[] => {
+  const dates: DateInfo[] = []
   const today = new Date()
 
   for (let i = 0; i < 14; i++) {
@@ -35,9 +53,9 @@ const getNextTwoWeeks = (): {date: Date; day: number; month: string}[] => {
 }
 
 const Activities: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [showFavorites, setShowFavorites] = useState(false)
-  const [selectedDate, setSelectedDate] = useState(new Date())
+  const [searchQuery, setSearchQuery] = useState<string>('')
+  const [showFavorites, setShowFavorites] = useState<boolean>(false)
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date())
   const {activities, loading, error} = useActivities(selectedDate)
   const {favorites, toggleFavorite} = useFavorites()
   const navigation = useNavigation()
@@ -48,12 +66,14 @@ const Activities: React.FC = () => {
     return true // Indica que el evento ha sido manejado
   })
 
-  const filteredActivities = activities.filter((activity) =>
+  const filteredActivities = activities.filter((activity: Activity) =>
     activity.name.toLowerCase().includes(searchQuery.toLowerCase()),
   )
 
   const finalActivities = showFavorites
-    ? filteredActivities.filter((activity) => favorites.includes(activity.id))
+    ? filteredActivities.filter(
+        (activity: Activity) => favorites.includes(activity.id.toString()), // Convertir id a string para comparar
+      )
     : filteredActivities
 
   const dates = getNextTwoWeeks()
@@ -127,12 +147,15 @@ const Activities: React.FC = () => {
           data={finalActivities}
           renderItem={({item}) => (
             <ActivityCard
-              activity={item}
-              isFavorite={favorites.includes(item.id)}
-              onToggleFavorite={() => toggleFavorite(item.id)}
+              activity={{
+                ...item,
+                id: item.id.toString(), // Convertir id a string para ActivityCard
+              }}
+              isFavorite={favorites.includes(item.id.toString())} // Convertir id a string para comparar
+              onToggleFavorite={() => toggleFavorite(item.id.toString())} // Convertir id a string
             />
           )}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.id.toString()} // Convertir id a string
           style={styles.activityList}
         />
       )}
