@@ -11,26 +11,27 @@ import {
 import Icon from '@expo/vector-icons/MaterialIcons'
 import Button from '@/components/ui/Button'
 import {router} from 'expo-router'
-import CustomAlert from '@/components/ui/Alert' // Importar el componente CustomAlert
+import CustomAlert from '@/components/ui/Alert'
 import {validateLogin, LoginFormData} from '@/hooks/LoginValidation'
+import {useSession} from '@/hooks/SessionContext' // Importar el hook useSession
 
 export default function Login() {
+  const {login} = useSession() // Usar el contexto
   const [formData, setFormData] = useState<LoginFormData>({
     email: 'admin@gmail.com',
     password: 'admin',
   })
   const [showPassword, setShowPassword] = useState(false)
-  const [errors, setErrors] = useState<Record<string, string>>({}) // Estado para los errores de validación
-  const [alertVisible, setAlertVisible] = useState(false) // Estado para controlar la visibilidad de la alerta
-  const [alertMessage, setAlertMessage] = useState('') // Mensaje de la alerta
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [alertVisible, setAlertVisible] = useState(false)
+  const [alertMessage, setAlertMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [isFormValid, setIsFormValid] = useState(false) // Estado para controlar si el formulario es válido
+  const [isFormValid, setIsFormValid] = useState(false)
 
   const redirectToRegister = useCallback(() => {
     router.navigate('./Signup')
   }, [])
 
-  // Función para validar un campo específico
   const validateField = (field: keyof LoginFormData, value: string) => {
     const validationResult = validateLogin({...formData, [field]: value})
     if (validationResult.errors?.[field]) {
@@ -47,14 +48,13 @@ export default function Login() {
     }
   }
 
-  // Validar el formulario completo cuando cambien los datos
   useEffect(() => {
     const validationResult = validateLogin(formData)
     setIsFormValid(validationResult.isValid)
   }, [formData])
 
   const handleSubmit = useCallback(async () => {
-    setIsLoading(true) // Activar el estado de carga
+    setIsLoading(true)
 
     try {
       const response = await fetch('https://gympromanager.com/app-login.php', {
@@ -68,24 +68,25 @@ export default function Login() {
       const data = await response.json()
 
       if (data.user_email) {
-        router.navigate('./Bottomnav')
+        login(data) // Guardar los datos del usuario en el contexto
+        router.navigate('./Bottomnav') // Redirigir a Bottomnav
       } else if (data.error) {
-        setAlertMessage(data.error) // Establece el mensaje de error
-        setAlertVisible(true) // Muestra la alerta
+        setAlertMessage(data.error)
+        setAlertVisible(true)
       } else {
         setAlertMessage(
           'Error de red inesperado. Por favor, inténtelo de nuevo.',
-        ) // Establece el mensaje de error
-        setAlertVisible(true) // Muestra la alerta
+        )
+        setAlertVisible(true)
       }
     } catch (error) {
       console.error(error)
-      setAlertMessage('Error de red inesperado. Por favor, inténtelo de nuevo.') // Establece el mensaje de error
-      setAlertVisible(true) // Muestra la alerta
+      setAlertMessage('Error de red inesperado. Por favor, inténtelo de nuevo.')
+      setAlertVisible(true)
     } finally {
-      setIsLoading(false) // Desactivar el estado de carga
+      setIsLoading(false)
     }
-  }, [formData])
+  }, [formData, login])
 
   return (
     <View className='bg-[#1D1D1B] h-full text-white relative'>
