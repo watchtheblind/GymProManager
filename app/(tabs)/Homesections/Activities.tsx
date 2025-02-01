@@ -16,6 +16,7 @@ import {DateButton} from '@/components/ui/Activities/Datebutton'
 import SearchBar from '@/components/ui/SearchBar'
 import Settingsbutton from '@/components/ui/Settingsbutton'
 import useBackHandler from '@/hooks/Common/useBackHandler'
+import {useFilter} from '@/hooks/Common/useFilter'
 
 // Definimos la interfaz para las fechas
 interface DateInfo {
@@ -24,9 +25,9 @@ interface DateInfo {
   month: string
 }
 
-// Definimos la interfaz para las actividades (sin cambios)
+// Definimos la interfaz para las actividades
 interface Activity {
-  id: number // id es number, como lo defines
+  id: number
   name: string
   time: string
   type: string
@@ -62,19 +63,18 @@ const Activities: React.FC = () => {
 
   // Lógica de BackHandler usando el hook personalizado
   useBackHandler(() => {
-    navigation.navigate('Bottomnav' as never) // Navega a 'Bottomnav' al presionar el botón de retroceso
-    return true // Indica que el evento ha sido manejado
+    navigation.navigate('Bottomnav' as never)
+    return true
   })
 
-  const filteredActivities = activities.filter((activity: Activity) =>
-    activity.name.toLowerCase().includes(searchQuery.toLowerCase()),
-  )
-
-  const finalActivities = showFavorites
-    ? filteredActivities.filter(
-        (activity: Activity) => favorites.includes(activity.id.toString()), // Convertir id a string para comparar
-      )
-    : filteredActivities
+  // Usamos el hook useFilter para filtrar las actividades
+  const filteredActivities = useFilter<Activity>({
+    searchQuery,
+    showFavorites,
+    favorites: favorites.map(String), // Convertimos los favoritos a strings
+    data: activities,
+    searchKeys: ['name'], // Clave de búsqueda
+  })
 
   const dates = getNextTwoWeeks()
 
@@ -138,13 +138,13 @@ const Activities: React.FC = () => {
           color='#14b8a6'
           style={styles.loader}
         />
-      ) : finalActivities.length === 0 ? (
+      ) : filteredActivities.length === 0 ? (
         <Text style={styles.noActivities}>
           No hay actividades disponibles para esta fecha.
         </Text>
       ) : (
         <FlatList
-          data={finalActivities}
+          data={filteredActivities}
           renderItem={({item}) => (
             <ActivityCard
               activity={{
