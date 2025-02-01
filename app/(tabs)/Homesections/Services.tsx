@@ -43,14 +43,14 @@ const Services = () => {
       name: 'Boxeo',
       count: 10,
       iconName: 'directions-run' as keyof typeof MaterialIcons.glyphMap,
-      color: '#BDBA5E', // Color de fondo
+      color: '#B0A462', // Color de fondo
       borderColor: '#FEF4C9', // Color del borde
     },
     {
       name: 'Artes marciales',
       count: 10,
       iconName: 'sports-kabaddi' as keyof typeof MaterialIcons.glyphMap,
-      color: '#5EBDCD', // Color de fondo
+      color: '#518893', // Color de fondo
       borderColor: '#6CB0B4', // Color del borde
     },
     {
@@ -64,7 +64,7 @@ const Services = () => {
       name: 'Rehabilitación',
       count: 2,
       iconName: 'healing' as keyof typeof MaterialIcons.glyphMap,
-      color: '#5EBDCD', // Color de fondo
+      color: '#518893', // Color de fondo
       borderColor: '#6CB0B4', // Color del borde
     },
   ]
@@ -107,7 +107,7 @@ const Services = () => {
               {
                 backgroundColor: category.color,
                 borderColor: category.borderColor, // Borde específico para cada categoría
-                borderWidth: 2, // Grosor del borde
+                borderWidth: 3, // Grosor del borde
               },
             ]}>
             <MaterialIcons
@@ -122,10 +122,11 @@ const Services = () => {
                 {category.count} entrenamientos
               </Text>
             </View>
+            {/* Cambiar a chevron-right y color blanco */}
             <MaterialIcons
-              name='arrow-forward'
+              name='chevron-right'
               size={24}
-              color='#B0A462'
+              color='white'
             />
           </TouchableOpacity>
         ))}
@@ -161,7 +162,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     marginVertical: 8,
-    borderRadius: 10,
+    borderTopRightRadius: 16,
+    borderBottomLeftRadius: 16,
     overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 2},
@@ -181,8 +183,9 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   categoryCount: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: 16,
+    color: '#fff',
+    fontFamily: 'MyriadPro',
   },
 })
 
