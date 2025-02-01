@@ -139,14 +139,16 @@ export default function Home() {
           entering={animations.fadeInDown(1000)}
           style={styles.mt4}>
           <View style={styles.fullWidth}>
-            <Image
-              style={[
-                styles.miniImage,
-                styles.borderRight,
-                styles.improvedImage,
-              ]}
-              source={require('@/assets/images/servicios.jpeg')}
-            />
+            <ButtonImage href='/Homesections/Services'>
+              <Image
+                style={[
+                  styles.miniImage,
+                  styles.borderRight,
+                  styles.improvedImage,
+                ]}
+                source={require('@/assets/images/servicios.jpeg')}
+              />
+            </ButtonImage>
             <Text style={styles.sectionTitle}>SERVICIOS</Text>
           </View>
         </Animated.View>
