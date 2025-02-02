@@ -1,5 +1,4 @@
-'use client'
-import React, {useState} from 'react'
+import React from 'react'
 import {
   SafeAreaProvider,
   useSafeAreaInsets,
@@ -12,10 +11,13 @@ import {
   ScrollView,
   SafeAreaView,
   Alert,
+  Image,
+  StyleSheet,
 } from 'react-native'
 import {useNavigation} from '@react-navigation/native'
 import Tabs from '@/components/common/Tabs'
 import Header from '@/components/common/Header'
+
 const Settings = () => {
   return (
     <SafeAreaProvider>
@@ -28,8 +30,7 @@ function AccountInfo() {
   const {user} = useSession()
   const insets = useSafeAreaInsets()
   const navigation = useNavigation()
-
-  const [activeTab, setActiveTab] = useState('basic') // Estado para manejar la pestaña activa
+  const [activeTab, setActiveTab] = React.useState('basic') // Estado para manejar la pestaña activa
 
   const handlePress = () => {
     navigation.navigate('Bottomnav' as never)
@@ -89,7 +90,27 @@ function AccountInfo() {
         {/* Header */}
         <Header
           title='Información de cuenta'
-          onBackPress={handlePress}></Header>
+          onBackPress={handlePress}
+        />
+
+        {/* Avatar Circle */}
+        <View style={styles.avatarContainer}>
+          {user?.meta?.backend_imagen ? (
+            <Image
+              source={{uri: user.meta.backend_imagen}}
+              style={styles.avatar}
+            />
+          ) : (
+            <View style={styles.avatarPlaceholder}>
+              <Text style={styles.placeholderText}>
+                {user?.meta?.backend_nombre
+                  ? user.meta.backend_nombre[0].toUpperCase()
+                  : 'U'}
+              </Text>
+            </View>
+          )}
+        </View>
+
         {/* Tabs */}
         <Tabs
           tabs={tabs}
@@ -138,5 +159,36 @@ function AccountInfo() {
     </SafeAreaView>
   )
 }
+
+// Estilos para el avatar
+const styles = StyleSheet.create({
+  avatarContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBlock: 40,
+  },
+  avatar: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+  },
+  avatarPlaceholder: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: '#B5A97C',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+  },
+  placeholderText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+})
 
 export default Settings
