@@ -16,7 +16,6 @@ import {
 } from 'react-native'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import {useNavigation} from '@react-navigation/native'
-
 const Settings = () => {
   return (
     <SafeAreaProvider>
