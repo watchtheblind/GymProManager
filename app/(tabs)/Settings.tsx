@@ -46,10 +46,8 @@ function AccountInfo() {
   const getTabContent = () => {
     if (activeTab === 'basic') {
       return [
-        {label: 'ID', value: user?.ID},
         {label: 'Usuario', value: user?.user_login},
         {label: 'Email', value: user?.user_email},
-        {label: 'Rol', value: user?.roles?.join(', ')},
         {label: 'Fecha de Registro', value: user?.user_registered},
         {label: 'Nombre', value: user?.meta?.backend_nombre},
         {label: 'Apellido', value: user?.meta?.backend_apellido},
