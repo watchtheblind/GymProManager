@@ -1,5 +1,8 @@
 'use client'
-
+import {
+  SafeAreaProvider,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context'
 import React, {useState} from 'react'
 import {
   View,
@@ -14,12 +17,22 @@ import {
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import {useNavigation} from '@react-navigation/native'
 
-export default function AccountInfo() {
+const Settings = () => {
+  return (
+    <SafeAreaProvider>
+      <AccountInfo />
+    </SafeAreaProvider>
+  )
+}
+
+function AccountInfo() {
+  const insets = useSafeAreaInsets()
   const navigation = useNavigation()
 
   const handlePress = () => {
     navigation.navigate('Bottomnav' as never)
   }
+
   const [menuItems, setMenuItems] = useState([
     {id: 1, label: 'Nombre', value: 'Nombre', light: true, editing: false},
     {id: 2, label: 'Peso', value: 'Peso', light: false, editing: false},
@@ -53,11 +66,11 @@ export default function AccountInfo() {
     )
   }
 
-  const handleSave = async () => {
-    const data = menuItems.reduce((acc: {[key: string]: string}, item) => {
-      acc[item.label] = item.value
-      return acc
-    }, {})
+  const handleSave = async (id: number) => {
+    const itemToSave = menuItems.find((item) => item.id === id)
+    if (!itemToSave) return
+
+    const data = {[itemToSave.label]: itemToSave.value}
 
     try {
       // Simulación de una llamada a la API
@@ -74,6 +87,11 @@ export default function AccountInfo() {
 
       if (response.ok) {
         Alert.alert('Éxito', 'Los cambios se han guardado correctamente.')
+        setMenuItems(
+          menuItems.map((item) =>
+            item.id === id ? {...item, editing: false} : item,
+          ),
+        )
       } else {
         Alert.alert('Error', 'No se pudo guardar los cambios.')
       }
@@ -83,29 +101,29 @@ export default function AccountInfo() {
   }
 
   return (
-    <SafeAreaView className='flex-1 bg-[#1C1C1C]'>
+    <SafeAreaView
+      className='flex-1 bg-[#1C1C1C]'
+      style={{paddingTop: insets.top * 1.2}}>
       <ScrollView className='flex-1 px-2'>
         {/* Header */}
-        <View className='flex-row items-center justify-between px-4 pt-4 my-10'>
-          <TouchableOpacity onPress={handlePress}>
-            <MaterialIcons
-              name='arrow-back'
-              color='white'
-              size={24}
-            />
-          </TouchableOpacity>
-          <Text
-            className='text-white text-xl'
-            style={[{fontFamily: 'MyriadPro'}]}>
-            Información de cuenta
-          </Text>
-          <TouchableOpacity onPress={handleSave}>
+        <View className='flex-row items-center'>
+          <View className='self-center'>
+            <TouchableOpacity onPress={handlePress}>
+              <MaterialIcons
+                name='arrow-back'
+                color='white'
+                size={24}
+              />
+            </TouchableOpacity>
+          </View>
+          <View className=' flex-1 box-border'>
             <Text
-              className='text-[#5FA7A0] text-xl'
-              style={[{fontFamily: 'MyriadPro'}]}>
-              Guardar
+              className='text-white text-2xl text-center'
+              style={{fontFamily: 'Copperplate'}}>
+              Información de cuenta
             </Text>
-          </TouchableOpacity>
+          </View>
+          <View style={{width: 24}} /> {/* Espacio para mantener el balance */}
         </View>
 
         {/* Profile Image */}
@@ -131,35 +149,46 @@ export default function AccountInfo() {
               </Text>
               <View className='flex-row items-center flex-1 justify-end'>
                 {item.editing ? (
-                  <TextInput
-                    className={`mr-2 ${item.light ? 'text-zinc-600' : 'text-zinc-100'}`}
-                    style={{flex: 1, maxWidth: '60%'}} // Limita el ancho del TextInput
-                    value={item.value}
-                    onChangeText={(text) => handleChange(item.id, text)}
-                    onBlur={() =>
-                      setMenuItems(
-                        menuItems.map((i) =>
-                          i.id === item.id ? {...i, editing: false} : i,
-                        ),
-                      )
-                    }
-                    autoFocus
-                  />
+                  <>
+                    <TextInput
+                      className={`mr-2 ${item.light ? 'text-zinc-600' : 'text-zinc-100'}`}
+                      style={{flex: 1, maxWidth: '60%'}} // Limita el ancho del TextInput
+                      value={item.value.toString()}
+                      onChangeText={(text) => handleChange(item.id, text)}
+                      onBlur={() =>
+                        setMenuItems(
+                          menuItems.map((i) =>
+                            i.id === item.id ? {...i, editing: false} : i,
+                          ),
+                        )
+                      }
+                      autoFocus
+                    />
+                    <TouchableOpacity onPress={() => handleSave(item.id)}>
+                      <MaterialIcons
+                        name='save'
+                        size={20}
+                        color={item.light ? '#666666' : '#FFFFFF'}
+                      />
+                    </TouchableOpacity>
+                  </>
                 ) : (
-                  <Text
-                    className={`mr-2 ${item.light ? 'text-zinc-600' : 'text-zinc-100'}`}
-                    style={{maxWidth: '60%', flexShrink: 1}} // Limita el ancho del Text y permite que se contraiga
-                    numberOfLines={1} // Evita que el texto se desborde
-                    ellipsizeMode='tail' // Añade puntos suspensivos si el texto es muy largo
-                  >
-                    {item.value}
-                  </Text>
+                  <>
+                    <Text
+                      className={`mr-2 ${item.light ? 'text-zinc-600' : 'text-zinc-100'}`}
+                      style={{maxWidth: '60%', flexShrink: 1}} // Limita el ancho del Text y permite que se contraiga
+                      numberOfLines={1} // Evita que el texto se desborde
+                      ellipsizeMode='tail' // Añade puntos suspensivos si el texto es muy largo
+                    >
+                      {item.value}
+                    </Text>
+                    <MaterialIcons
+                      name='arrow-forward-ios'
+                      size={20}
+                      color={item.light ? '#666666' : '#FFFFFF'}
+                    />
+                  </>
                 )}
-                <MaterialIcons
-                  name='arrow-forward-ios'
-                  size={20}
-                  color={item.light ? '#666666' : '#FFFFFF'}
-                />
               </View>
             </TouchableOpacity>
           ))}
@@ -168,3 +197,5 @@ export default function AccountInfo() {
     </SafeAreaView>
   )
 }
+
+export default Settings
