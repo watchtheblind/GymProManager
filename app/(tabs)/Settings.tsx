@@ -17,7 +17,7 @@ import {
 import {useNavigation} from '@react-navigation/native'
 import Tabs from '@/components/common/Tabs'
 import Header from '@/components/common/Header'
-
+import Avatar from '@/components/common/Avatar'
 const Settings = () => {
   return (
     <SafeAreaProvider>
@@ -91,23 +91,11 @@ function AccountInfo() {
           onBackPress={handlePress}
         />
 
-        {/* Avatar Circle */}
-        <View style={styles.avatarContainer}>
-          {user?.meta?.backend_imagen ? (
-            <Image
-              source={{uri: user.meta.backend_imagen}}
-              style={styles.avatar}
-            />
-          ) : (
-            <View style={styles.avatarPlaceholder}>
-              <Text style={styles.placeholderText}>
-                {user?.meta?.backend_nombre
-                  ? user.meta.backend_nombre[0].toUpperCase()
-                  : 'U'}
-              </Text>
-            </View>
-          )}
-        </View>
+        {/* Avatar Circle - Usando el componente reutilizable */}
+        <Avatar
+          imageUrl={user?.meta?.backend_imagen}
+          initials={user?.meta?.backend_nombre?.[0]}
+        />
 
         {/* Tabs */}
         <Tabs
