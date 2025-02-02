@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React from 'react'
 import {
   View,
   Text,
@@ -17,7 +17,6 @@ import Animated, {
   withDelay,
 } from 'react-native-reanimated'
 import Settingsbutton from '@/components/ui/Settingsbutton'
-import {green} from 'react-native-reanimated/lib/typescript/Colors'
 
 // Animaciones reutilizables
 const animations = {
