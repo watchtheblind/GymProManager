@@ -1,21 +1,21 @@
 'use client'
+import React, {useState} from 'react'
 import {
   SafeAreaProvider,
   useSafeAreaInsets,
 } from 'react-native-safe-area-context'
-import React, {useState} from 'react'
+import {useSession} from '@/hooks/SessionContext'
 import {
   View,
   Text,
-  Image,
   TouchableOpacity,
   ScrollView,
   SafeAreaView,
-  TextInput,
   Alert,
 } from 'react-native'
-import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import {useNavigation} from '@react-navigation/native'
+import Tabs from '@/components/common/Tabs'
+import Header from '@/components/common/Header'
 const Settings = () => {
   return (
     <SafeAreaProvider>
@@ -25,79 +25,61 @@ const Settings = () => {
 }
 
 function AccountInfo() {
+  const {user} = useSession()
   const insets = useSafeAreaInsets()
   const navigation = useNavigation()
+
+  const [activeTab, setActiveTab] = useState('basic') // Estado para manejar la pestaña activa
 
   const handlePress = () => {
     navigation.navigate('Bottomnav' as never)
   }
 
-  const [menuItems, setMenuItems] = useState([
-    {id: 1, label: 'Nombre', value: 'Nombre', light: true, editing: false},
-    {id: 2, label: 'Peso', value: 'Peso', light: false, editing: false},
-    {
-      id: 3,
-      label: 'Fecha de nacimiento',
-      value: 'Fecha',
-      light: true,
-      editing: false,
-    },
-    {
-      id: 4,
-      label: 'Correo electrónico',
-      value: 'Correo',
-      light: false,
-      editing: false,
-    },
-  ])
+  // Datos para las tabs
+  const tabs = [
+    {id: 'basic', label: 'Información Básica'},
+    {id: 'additional', label: 'Información Adicional'},
+  ]
 
-  const handleEdit = (id: number) => {
-    setMenuItems(
-      menuItems.map((item) =>
-        item.id === id ? {...item, editing: true} : item,
-      ),
-    )
-  }
-
-  const handleChange = (id: number, text: string) => {
-    setMenuItems(
-      menuItems.map((item) => (item.id === id ? {...item, value: text} : item)),
-    )
-  }
-
-  const handleSave = async (id: number) => {
-    const itemToSave = menuItems.find((item) => item.id === id)
-    if (!itemToSave) return
-
-    const data = {[itemToSave.label]: itemToSave.value}
-
-    try {
-      // Simulación de una llamada a la API
-      const response = await fetch(
-        'https://jsonplaceholder.typicode.com/posts',
+  // Función para obtener los datos según la pestaña activa
+  const getTabContent = () => {
+    if (activeTab === 'basic') {
+      return [
+        {label: 'ID', value: user?.ID},
+        {label: 'Usuario', value: user?.user_login},
+        {label: 'Email', value: user?.user_email},
+        {label: 'Rol', value: user?.roles?.join(', ')},
+        {label: 'Fecha de Registro', value: user?.user_registered},
+        {label: 'Nombre', value: user?.meta?.backend_nombre},
+        {label: 'Apellido', value: user?.meta?.backend_apellido},
+        {label: 'Descripción', value: user?.meta?.description || '(Vacío)'},
+      ]
+    } else if (activeTab === 'additional') {
+      return [
+        {label: 'NIF', value: user?.meta?.backend_nif},
+        {label: 'Dirección', value: user?.meta?.backend_direccion},
+        {label: 'Código País', value: user?.meta?.backend_codigo_pais},
+        {label: 'Teléfono', value: user?.meta?.backend_telefono},
+        {label: 'Género', value: user?.meta?.backend_genero},
         {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
+          label: 'Fecha de Nacimiento',
+          value: user?.meta?.backend_fecha_de_nacimiento,
         },
-      )
-
-      if (response.ok) {
-        Alert.alert('Éxito', 'Los cambios se han guardado correctamente.')
-        setMenuItems(
-          menuItems.map((item) =>
-            item.id === id ? {...item, editing: false} : item,
-          ),
-        )
-      } else {
-        Alert.alert('Error', 'No se pudo guardar los cambios.')
-      }
-    } catch (error) {
-      Alert.alert('Error', 'Hubo un problema al intentar guardar los cambios.')
+        {
+          label: 'Altura',
+          value: JSON.parse(user?.meta?.backend_altura ?? '{}')?.valor + ' in',
+        },
+        {
+          label: 'Peso',
+          value: JSON.parse(user?.meta?.backend_peso ?? '{}')?.valor + ' kg',
+        },
+        {label: 'Imagen', value: user?.meta?.backend_imagen},
+      ]
     }
+    return []
   }
+
+  const tabContent = getTabContent()
 
   return (
     <SafeAreaView
@@ -105,91 +87,51 @@ function AccountInfo() {
       style={{paddingTop: insets.top * 1.2}}>
       <ScrollView className='flex-1 px-2'>
         {/* Header */}
-        <View className='flex-row items-center'>
-          <View className='self-center'>
-            <TouchableOpacity onPress={handlePress}>
-              <MaterialIcons
-                name='arrow-back'
-                color='white'
-                size={24}
-              />
-            </TouchableOpacity>
-          </View>
-          <View className=' flex-1 box-border'>
-            <Text
-              className='text-white text-2xl text-center'
-              style={{fontFamily: 'Copperplate'}}>
-              Información de cuenta
-            </Text>
-          </View>
-          <View style={{width: 24}} /> {/* Espacio para mantener el balance */}
-        </View>
+        <Header
+          title='Información de cuenta'
+          onBackPress={handlePress}></Header>
+        {/* Tabs */}
+        <Tabs
+          tabs={tabs}
+          activeTab={activeTab}
+          onTabPress={(id) => setActiveTab(id)}
+          containerStyle={{marginBottom: 20}}
+        />
 
-        {/* Profile Image */}
-        <View className='items-center py-8 mb-5'>
-          <Image
-            source={{
-              uri: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-RGUuPrbDRpG3q2654hiVI4uLIZODMx.png',
-            }}
-            className='h-32 w-32 rounded-full'
-          />
-        </View>
-
-        {/* Menu Items */}
+        {/* Tab Content */}
         <View className='mx-4 overflow-hidden rounded-tl-3xl rounded-br-3xl'>
-          {menuItems.map((item) => (
-            <TouchableOpacity
-              key={item.id}
-              className={`flex-row items-center justify-between p-4 ${item.light ? 'bg-[#F5E6C3]' : 'bg-[#B5A97C]'}`}
-              onPress={() => handleEdit(item.id)}>
+          {tabContent.map((item, index) => (
+            <View
+              key={index}
+              className={`flex-row items-center justify-between p-4 ${
+                index % 2 === 0 ? 'bg-[#F5E6C3]' : 'bg-[#B5A97C]'
+              }`}>
               <Text
-                className={`text-base font-medium ${item.light ? 'text-black' : 'text-white'}`}>
+                className={`text-base font-medium ${
+                  index % 2 === 0 ? 'text-black' : 'text-white'
+                }`}>
                 {item.label}
               </Text>
-              <View className='flex-row items-center flex-1 justify-end'>
-                {item.editing ? (
-                  <>
-                    <TextInput
-                      className={`mr-2 ${item.light ? 'text-zinc-600' : 'text-zinc-100'}`}
-                      style={{flex: 1, maxWidth: '60%'}} // Limita el ancho del TextInput
-                      value={item.value.toString()}
-                      onChangeText={(text) => handleChange(item.id, text)}
-                      onBlur={() =>
-                        setMenuItems(
-                          menuItems.map((i) =>
-                            i.id === item.id ? {...i, editing: false} : i,
-                          ),
-                        )
-                      }
-                      autoFocus
-                    />
-                    <TouchableOpacity onPress={() => handleSave(item.id)}>
-                      <MaterialIcons
-                        name='save'
-                        size={20}
-                        color={item.light ? '#666666' : '#FFFFFF'}
-                      />
-                    </TouchableOpacity>
-                  </>
+              <Text
+                className={`mr-2 ${
+                  index % 2 === 0 ? 'text-zinc-600' : 'text-zinc-100'
+                }`}
+                numberOfLines={1}
+                ellipsizeMode='tail'>
+                {item.value === 'Ver Imagen' ? (
+                  <TouchableOpacity
+                    onPress={() =>
+                      Alert.alert('Imagen', 'Mostrando imagen...', [
+                        {text: 'Aceptar'},
+                      ])
+                    }>
+                    <Text>Ver Imagen</Text>
+                  </TouchableOpacity>
                 ) : (
-                  <>
-                    <Text
-                      className={`mr-2 ${item.light ? 'text-zinc-600' : 'text-zinc-100'}`}
-                      style={{maxWidth: '60%', flexShrink: 1}} // Limita el ancho del Text y permite que se contraiga
-                      numberOfLines={1} // Evita que el texto se desborde
-                      ellipsizeMode='tail' // Añade puntos suspensivos si el texto es muy largo
-                    >
-                      {item.value}
-                    </Text>
-                    <MaterialIcons
-                      name='arrow-forward-ios'
-                      size={20}
-                      color={item.light ? '#666666' : '#FFFFFF'}
-                    />
-                  </>
+                  item.value
                 )}
-              </View>
-            </TouchableOpacity>
+              </Text>
+            </View>
           ))}
         </View>
       </ScrollView>

@@ -12,7 +12,7 @@ import {
 } from 'react-native'
 import {useFocusEffect, useNavigation} from '@react-navigation/native'
 import {MaterialIcons} from '@expo/vector-icons'
-import Tabs from '@/components/Tabs'
+import Tabs from '@/components/common/Tabs'
 import SearchBar from '@/components/ui/SearchBar'
 import {Settingsicon} from '@/components/ui/Bottomnav/Icons'
 import UniversalCard from '@/components/ui/Card'

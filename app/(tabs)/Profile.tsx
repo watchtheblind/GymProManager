@@ -10,7 +10,7 @@ import {
 import {Portrait} from '@/components/ui/Bottomnav/Icons'
 import Activity from '../../components/ProfileTabs/Activity'
 import Progress from '../../components/ProfileTabs/Progress'
-import Tabs from '@/components/Tabs'
+import Tabs from '@/components/common/Tabs'
 
 export default function Profile() {
   const [activeTab, setActiveTab] = useState('progress')
