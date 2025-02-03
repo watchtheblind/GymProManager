@@ -19,7 +19,7 @@ interface ImagePickerResponse {
   height: number
   mime?: string
   size?: number
-  data?: string | null // Cambiado a string | null
+  data?: string
 }
 
 export const useImagePicker = ({
@@ -30,11 +30,6 @@ export const useImagePicker = ({
 
   const pickImage = async () => {
     try {
-      // Verifica que ImagePicker esté correctamente inicializado
-      if (!ImagePicker) {
-        throw new Error('ImagePicker no está inicializado.')
-      }
-
       const image: ImagePickerResponse = await ImagePicker.openPicker({
         width: 300, // Ancho deseado
         height: 300, // Alto deseado
@@ -47,7 +42,7 @@ export const useImagePicker = ({
 
       if (image.data) {
         const base64 = image.data
-        const sizeInKB = (base64.length * 0.75) / 1024 // Calcula el tamaño en KB
+        const sizeInKB = (base64.length * 0.75) / 1024
         if (sizeInKB <= maxSizeInKB) {
           setImageUri(`data:image/jpeg;base64,${base64}`)
           setError(null)
