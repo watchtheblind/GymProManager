@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react' // Importa useEffect
 import {
   SafeAreaProvider,
   useSafeAreaInsets,
@@ -7,21 +7,20 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import {useSession} from '@/hooks/SessionContext'
 import CustomAlert from '@/components/ui/Alert'
 import useBackHandler from '@/hooks/Common/useBackHandler'
-import {useImagePicker} from '@/hooks/Settings/useImagePicker'
 import {
   View,
   Text,
   TouchableOpacity,
   ScrollView,
   SafeAreaView,
-  Alert,
   StyleSheet,
-  TextInput, // Importa TextInput aquí
+  TextInput,
 } from 'react-native'
 import {useNavigation} from '@react-navigation/native'
 import Tabs from '@/components/common/Tabs'
 import Header from '@/components/common/Header'
 import Avatar from '@/components/common/Avatar'
+import {useImagePicker} from '@/hooks/Settings/useImagePicker'
 
 const Settings = () => {
   return (
@@ -42,9 +41,6 @@ function AccountInfo() {
   const [alertVisible, setAlertVisible] = useState(false)
   const [alertMessage, setAlertMessage] = useState('')
   const [alertTitle, setAlerTitle] = useState('')
-  const {imageUri, error, pickImage, reset} = useImagePicker({
-    maxSizeInKB: 150, // Tamaño máximo de la imagen en KB
-  })
 
   // Lógica de BackHandler usando el hook personalizado
   useBackHandler(() => {
@@ -101,6 +97,32 @@ function AccountInfo() {
 
   const tabContent = getTabContent()
 
+  // Lógica para la imagen del avatar
+  const {imageUri, base64, pickImage, reset} = useImagePicker({
+    maxSizeInKB: 150,
+  })
+  const [avatarUri, setAvatarUri] = useState<string | null>(
+    user?.meta?.backend_imagen || null,
+  )
+
+  // Sincroniza el estado de avatarUri con imageUri
+  useEffect(() => {
+    if (imageUri) {
+      setAvatarUri(imageUri) // Actualiza el estado local cuando imageUri cambia
+    }
+  }, [imageUri])
+
+  const handleAvatarPress = async () => {
+    try {
+      await pickImage() // Seleccionar una nueva imagen
+      if (base64) {
+        // Mostrar el Base64 en un alert
+        alert('Base64 de la imagen' + base64.substring(0, 100) + '...') // Muestra solo los primeros 100 caracteres
+      }
+    } catch (error) {
+      console.error('Error al seleccionar la imagen:', error)
+    }
+  }
   // Función para iniciar la edición de un campo
   const startEditing = (label: string, value: string) => {
     setEditingField(label)
@@ -129,13 +151,6 @@ function AccountInfo() {
     setTempValue('')
   }
 
-  // Manejo de errores de selección de imagen
-  React.useEffect(() => {
-    if (error) {
-      Alert.alert('Error', error)
-    }
-  }, [error])
-
   return (
     <SafeAreaView
       className='flex-1 bg-[#1C1C1C]'
@@ -150,12 +165,12 @@ function AccountInfo() {
         {/* Avatar Circle - Usando el componente reutilizable dentro de un TouchableOpacitiy */}
         <View style={styles.avatarContainer}>
           <TouchableOpacity
-            onPress={pickImage}
+            onPress={handleAvatarPress}
             activeOpacity={0.7}
             className='max-h-28 flex-col justify-center'>
             {/* Avatar Original */}
             <Avatar
-              imageUrl={imageUri || user?.meta?.backend_imagen}
+              imageUrl={avatarUri || undefined}
               initials={user?.meta?.backend_nombre?.[0]}
             />
             {/* Botón "+" Circular */}
