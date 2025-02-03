@@ -160,20 +160,20 @@ function AccountInfo() {
                   <TextInput
                     value={tempValue}
                     onChangeText={setTempValue}
-                    className='border border-gray-300 px-2 py-1 rounded'
+                    className='border border-gray-300 px-2 py-0 mr-2 rounded'
                   />
                   <TouchableOpacity onPress={() => saveEdit(item.label)}>
                     <MaterialIcons
-                      name='check'
+                      name='save'
                       size={24}
-                      color='#00FF00'
+                      color={index % 2 === 0 ? '#5A543E' : '#F5E6C3'}
                     />
                   </TouchableOpacity>
                   <TouchableOpacity onPress={cancelEdit}>
                     <MaterialIcons
                       name='close'
                       size={24}
-                      color='#FF0000'
+                      color={index % 2 === 0 ? '#5A543E' : '#F5E6C3'}
                     />
                   </TouchableOpacity>
                 </View>
@@ -192,7 +192,7 @@ function AccountInfo() {
                     <MaterialIcons
                       name='edit'
                       size={24}
-                      color='#FFFFFF'
+                      color={index % 2 === 0 ? '#5A543E' : '#F5E6C3'}
                     />
                   </TouchableOpacity>
                 </View>
