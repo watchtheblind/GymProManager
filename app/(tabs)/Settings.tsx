@@ -7,6 +7,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import {useSession} from '@/hooks/SessionContext'
 import CustomAlert from '@/components/ui/Alert'
 import useBackHandler from '@/hooks/Common/useBackHandler'
+import {useImagePicker} from '@/hooks/Settings/useImagePicker'
 import {
   View,
   Text,
@@ -41,6 +42,10 @@ function AccountInfo() {
   const [alertVisible, setAlertVisible] = useState(false)
   const [alertMessage, setAlertMessage] = useState('')
   const [alertTitle, setAlerTitle] = useState('')
+  const {imageUri, error, pickImage, reset} = useImagePicker({
+    maxSizeInKB: 150, // Tamaño máximo de la imagen en KB
+  })
+
   // Lógica de BackHandler usando el hook personalizado
   useBackHandler(() => {
     navigation.navigate('Bottomnav' as never)
@@ -124,6 +129,13 @@ function AccountInfo() {
     setTempValue('')
   }
 
+  // Manejo de errores de selección de imagen
+  React.useEffect(() => {
+    if (error) {
+      Alert.alert('Error', error)
+    }
+  }, [error])
+
   return (
     <SafeAreaView
       className='flex-1 bg-[#1C1C1C]'
@@ -138,12 +150,12 @@ function AccountInfo() {
         {/* Avatar Circle - Usando el componente reutilizable dentro de un TouchableOpacitiy */}
         <View style={styles.avatarContainer}>
           <TouchableOpacity
-            onPress={() => Alert.alert('Acción', 'Has presionado el avatar')}
+            onPress={pickImage}
             activeOpacity={0.7}
             className='max-h-28 flex-col justify-center'>
             {/* Avatar Original */}
             <Avatar
-              imageUrl={user?.meta?.backend_imagen}
+              imageUrl={imageUri || user?.meta?.backend_imagen}
               initials={user?.meta?.backend_nombre?.[0]}
             />
             {/* Botón "+" Circular */}
@@ -225,7 +237,7 @@ function AccountInfo() {
                   </TouchableOpacity>
                   <CustomAlert
                     visible={alertVisible}
-                    title='Error'
+                    title={alertTitle}
                     message={alertMessage}
                     onClose={() => setAlertVisible(false)}
                   />
