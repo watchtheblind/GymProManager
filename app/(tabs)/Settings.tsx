@@ -168,7 +168,8 @@ function AccountInfo() {
                 index % 2 === 0 ? 'bg-[#F5E6C3]' : 'bg-[#B5A97C]'
               }`}>
               <Text
-                className={`text-base font-medium ${
+                style={{fontFamily: 'MyriadPro'}}
+                className={`text-base ${
                   index % 2 === 0 ? 'text-black' : 'text-white'
                 }`}>
                 {item.label}
@@ -176,6 +177,7 @@ function AccountInfo() {
               {editingField === item.label ? (
                 <View className='flex-row items-center justify-end space-x-2'>
                   <TextInput
+                    style={{fontFamily: 'MyriadPro'}}
                     value={tempValue}
                     maxLength={50}
                     scrollEnabled={true}
