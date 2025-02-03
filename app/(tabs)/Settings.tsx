@@ -49,23 +49,26 @@ function AccountInfo() {
   const getTabContent = () => {
     if (activeTab === 'basic') {
       return [
-        {label: 'Usuario', value: user?.user_login},
-        {label: 'Email', value: user?.user_email},
-        {label: 'Fecha de Registro', value: user?.user_registered},
-        {label: 'Nombre', value: user?.meta?.backend_nombre},
-        {label: 'Apellido', value: user?.meta?.backend_apellido},
+        {label: 'Usuario', value: user?.user_login || '(Vacío)'},
+        {label: 'Email', value: user?.user_email || '(Vacío)'},
+        {label: 'Fecha de Registro', value: user?.user_registered || '(Vacío)'},
+        {label: 'Nombre', value: user?.meta?.backend_nombre || '(Vacío)'},
+        {label: 'Apellido', value: user?.meta?.backend_apellido || '(Vacío)'},
         {label: 'Descripción', value: user?.meta?.description || '(Vacío)'},
       ]
     } else if (activeTab === 'additional') {
       return [
-        {label: 'NIF', value: user?.meta?.backend_nif},
-        {label: 'Dirección', value: user?.meta?.backend_direccion},
-        {label: 'Código País', value: user?.meta?.backend_codigo_pais},
-        {label: 'Teléfono', value: user?.meta?.backend_telefono},
-        {label: 'Género', value: user?.meta?.backend_genero},
+        {label: 'NIF', value: user?.meta?.backend_nif || '(Vacío)'},
+        {label: 'Dirección', value: user?.meta?.backend_direccion || '(Vacío)'},
+        {
+          label: 'Código País',
+          value: user?.meta?.backend_codigo_pais || '(Vacío)',
+        },
+        {label: 'Teléfono', value: user?.meta?.backend_telefono || '(Vacío)'},
+        {label: 'Género', value: user?.meta?.backend_genero || '(Vacío)'},
         {
           label: 'Fecha de Nacimiento',
-          value: user?.meta?.backend_fecha_de_nacimiento,
+          value: user?.meta?.backend_fecha_de_nacimiento || '(Vacío)',
         },
         {
           label: 'Altura',
@@ -156,7 +159,7 @@ function AccountInfo() {
                 {item.label}
               </Text>
               {editingField === item.label ? (
-                <View className='flex-row items-center space-x-2'>
+                <View className='flex-row items-center justify-end space-x-2'>
                   <TextInput
                     value={tempValue}
                     onChangeText={setTempValue}
