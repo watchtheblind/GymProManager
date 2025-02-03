@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react' // Importa useEffect
+import React, {useState, useEffect} from 'react'
 import {
   SafeAreaProvider,
   useSafeAreaInsets,
@@ -21,6 +21,7 @@ import Tabs from '@/components/common/Tabs'
 import Header from '@/components/common/Header'
 import Avatar from '@/components/common/Avatar'
 import {useImagePicker} from '@/hooks/Settings/useImagePicker'
+import useUpdateUser from '@/hooks/Settings/useUpdateUser'
 
 const Settings = () => {
   return (
@@ -40,7 +41,10 @@ function AccountInfo() {
   const [originalValue, setOriginalValue] = useState<string>('')
   const [alertVisible, setAlertVisible] = useState(false)
   const [alertMessage, setAlertMessage] = useState('')
-  const [alertTitle, setAlerTitle] = useState('')
+  const [alertTitle, setAlertTitle] = useState('')
+
+  // Hook para actualizar datos del usuario
+  const {updateUserField, loading, error} = useUpdateUser()
 
   // Lógica de BackHandler usando el hook personalizado
   useBackHandler(() => {
@@ -123,25 +127,76 @@ function AccountInfo() {
       console.error('Error al seleccionar la imagen:', error)
     }
   }
+
   // Función para iniciar la edición de un campo
-  const startEditing = (label: string, value: string) => {
+  const startEditing = (label: string, value: string | number) => {
     setEditingField(label)
-    setTempValue(value) // Inicializa el TextInput con el valor actual
-    setOriginalValue(value) // Guarda el valor original
+    setTempValue(String(value)) // Convierte el valor a cadena
+    setOriginalValue(String(value)) // Guarda el valor original como cadena
   }
 
-  // Función para guardar los cambios
-  const saveEdit = (label: string) => {
+  // Función para guardar los cambios usando el hook
+  const saveEdit = async (label: string) => {
     if (tempValue.trim() === '') {
       setTempValue(originalValue)
       setAlertVisible(true)
       setAlertMessage('El campo no puede estar vacío.')
-      setAlerTitle('Error')
-    } else {
-      setAlertVisible(true)
-      setAlerTitle('Todo hecho!')
-      setAlertMessage(`${label} ha sido editado correctamente.`)
+      setAlertTitle('Error')
+      return
     }
+
+    try {
+      // Mapear el campo al nombre esperado por el servidor
+      const fieldMapping: Record<string, string> = {
+        Usuario: 'user_login',
+        Email: 'correo_electronico',
+        Nombre: 'nombre',
+        Apellido: 'apellido',
+        Descripción: 'description',
+        NIF: 'nif',
+        Dirección: 'direccion',
+        'Código País': 'codigo_pais',
+        Teléfono: 'telefono',
+        Género: 'genero',
+        'Fecha de Nacimiento': 'fecha_de_nacimiento',
+        Altura: 'altura.valor',
+        Peso: 'peso.valor',
+      }
+
+      const serverField = fieldMapping[label]
+      if (!serverField) {
+        throw new Error(`Campo desconocido: ${label}`)
+      }
+
+      // Construir el valor a enviar al servidor
+      let valueToSend: string | number = tempValue // Por defecto, enviamos como string
+      if (label === 'Altura' || label === 'Peso') {
+        const parsedValue = parseFloat(tempValue) // Convertir a número
+        if (isNaN(parsedValue)) {
+          throw new Error('El valor debe ser un número válido.')
+        }
+        valueToSend = parsedValue // Enviamos como número
+      }
+
+      // Actualizar el campo usando el hook
+      await updateUserField(
+        'Contraseña...',
+        String(user?.ID),
+        serverField,
+        valueToSend,
+      )
+
+      // Mostrar mensaje de éxito
+      setAlertVisible(true)
+      setAlertTitle('¡Todo hecho!')
+      setAlertMessage(`${label} ha sido editado correctamente.`)
+    } catch (err: any) {
+      console.error('Error al actualizar el campo:', err.message)
+      setAlertVisible(true)
+      setAlertTitle('Error')
+      setAlertMessage(`No se pudo actualizar ${label}: ${err.message}`)
+    }
+
     setEditingField(null) // Sale del modo edición
   }
 
@@ -213,7 +268,6 @@ function AccountInfo() {
                     style={{fontFamily: 'MyriadPro'}}
                     value={tempValue}
                     maxLength={50}
-                    scrollEnabled={true}
                     onChangeText={setTempValue}
                     className='border border-gray-300 px-2 py-0 mr-2 rounded max-w-[70%]'
                   />
@@ -250,17 +304,19 @@ function AccountInfo() {
                       color={index % 2 === 0 ? '#5A543E' : '#F5E6C3'}
                     />
                   </TouchableOpacity>
-                  <CustomAlert
-                    visible={alertVisible}
-                    title={alertTitle}
-                    message={alertMessage}
-                    onClose={() => setAlertVisible(false)}
-                  />
                 </View>
               )}
             </View>
           ))}
         </View>
+
+        {/* Alerta */}
+        <CustomAlert
+          visible={alertVisible}
+          title={alertTitle}
+          message={alertMessage}
+          onClose={() => setAlertVisible(false)}
+        />
       </ScrollView>
     </SafeAreaView>
   )
