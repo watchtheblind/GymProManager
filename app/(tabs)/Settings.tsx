@@ -57,7 +57,6 @@ function AccountInfo() {
       return [
         {label: 'Usuario', value: user?.user_login || '(Vacío)'},
         {label: 'Email', value: user?.user_email || '(Vacío)'},
-        {label: 'Fecha de Registro', value: user?.user_registered || '(Vacío)'},
         {label: 'Nombre', value: user?.meta?.backend_nombre || '(Vacío)'},
         {label: 'Apellido', value: user?.meta?.backend_apellido || '(Vacío)'},
         {label: 'Descripción', value: user?.meta?.description || '(Vacío)'},
