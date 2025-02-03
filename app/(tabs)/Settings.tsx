@@ -6,6 +6,7 @@ import {
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import {useSession} from '@/hooks/SessionContext'
 import CustomAlert from '@/components/ui/Alert'
+import useBackHandler from '@/hooks/Common/useBackHandler'
 import {
   View,
   Text,
@@ -40,6 +41,11 @@ function AccountInfo() {
   const [alertVisible, setAlertVisible] = useState(false)
   const [alertMessage, setAlertMessage] = useState('')
   const [alertTitle, setAlerTitle] = useState('')
+  // Lógica de BackHandler usando el hook personalizado
+  useBackHandler(() => {
+    navigation.navigate('Bottomnav' as never)
+    return true
+  })
 
   const handlePress = () => {
     navigation.navigate('Bottomnav' as never)
