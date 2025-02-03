@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 import {
   SafeAreaProvider,
   useSafeAreaInsets,
@@ -13,11 +13,12 @@ import {
   SafeAreaView,
   Alert,
   StyleSheet,
+  TextInput, // Importa TextInput aquí
 } from 'react-native'
 import {useNavigation} from '@react-navigation/native'
 import Tabs from '@/components/common/Tabs'
 import Header from '@/components/common/Header'
-import Avatar from '@/components/common/Avatar' // Importamos el Avatar sin cambios
+import Avatar from '@/components/common/Avatar'
 
 const Settings = () => {
   return (
@@ -31,7 +32,9 @@ function AccountInfo() {
   const {user} = useSession()
   const insets = useSafeAreaInsets()
   const navigation = useNavigation()
-  const [activeTab, setActiveTab] = React.useState('basic') // Estado para manejar la pestaña activa
+  const [activeTab, setActiveTab] = useState('basic') // Estado para manejar la pestaña activa
+  const [editingField, setEditingField] = useState<string | null>(null) // Campo en edición
+  const [tempValue, setTempValue] = useState<string>('') // Valor temporal mientras se edita
   const handlePress = () => {
     navigation.navigate('Bottomnav' as never)
   }
@@ -79,6 +82,24 @@ function AccountInfo() {
 
   const tabContent = getTabContent()
 
+  // Función para iniciar la edición de un campo
+  const startEditing = (label: string, value: string) => {
+    setEditingField(label)
+    setTempValue(value)
+  }
+
+  // Función para guardar los cambios
+  const saveEdit = (label: string) => {
+    Alert.alert(`${label} ha sido editado`)
+    setEditingField(null)
+  }
+
+  // Función para cancelar la edición
+  const cancelEdit = () => {
+    setEditingField(null)
+    setTempValue('')
+  }
+
   return (
     <SafeAreaView
       className='flex-1 bg-[#1C1C1C]'
@@ -95,20 +116,19 @@ function AccountInfo() {
           <TouchableOpacity
             onPress={() => Alert.alert('Acción', 'Has presionado el avatar')}
             activeOpacity={0.7}
-            className=' max-h-28 flex-col justify-center'>
+            className='max-h-28 flex-col justify-center'>
             {/* Avatar Original */}
             <Avatar
               imageUrl={user?.meta?.backend_imagen}
               initials={user?.meta?.backend_nombre?.[0]}
             />
-
             {/* Botón "+" Circular */}
             <View style={styles.addButton}>
               <MaterialIcons
                 name='add'
                 size={20}
                 color='#FFFFFF'
-              />{' '}
+              />
             </View>
           </TouchableOpacity>
         </View>
@@ -135,25 +155,48 @@ function AccountInfo() {
                 }`}>
                 {item.label}
               </Text>
-              <Text
-                className={`mr-2 ${
-                  index % 2 === 0 ? 'text-zinc-600' : 'text-zinc-100'
-                }`}
-                numberOfLines={1}
-                ellipsizeMode='tail'>
-                {item.value === 'Ver Imagen' ? (
-                  <TouchableOpacity
-                    onPress={() =>
-                      Alert.alert('Imagen', 'Mostrando imagen...', [
-                        {text: 'Aceptar'},
-                      ])
-                    }>
-                    <Text>Ver Imagen</Text>
+              {editingField === item.label ? (
+                <View className='flex-row items-center space-x-2'>
+                  <TextInput
+                    value={tempValue}
+                    onChangeText={setTempValue}
+                    className='border border-gray-300 px-2 py-1 rounded'
+                  />
+                  <TouchableOpacity onPress={() => saveEdit(item.label)}>
+                    <MaterialIcons
+                      name='check'
+                      size={24}
+                      color='#00FF00'
+                    />
                   </TouchableOpacity>
-                ) : (
-                  item.value
-                )}
-              </Text>
+                  <TouchableOpacity onPress={cancelEdit}>
+                    <MaterialIcons
+                      name='close'
+                      size={24}
+                      color='#FF0000'
+                    />
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <View className='flex-row items-center space-x-2'>
+                  <Text
+                    className={`mr-2 ${
+                      index % 2 === 0 ? 'text-zinc-600' : 'text-zinc-100'
+                    }`}
+                    numberOfLines={1}
+                    ellipsizeMode='tail'>
+                    {item.value}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => startEditing(item.label, item.value ?? '')}>
+                    <MaterialIcons
+                      name='edit'
+                      size={24}
+                      color='#FFFFFF'
+                    />
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
           ))}
         </View>
@@ -182,11 +225,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 2,
     borderColor: '#FFFFFF',
-  },
-  addButtonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
   },
 })
 
