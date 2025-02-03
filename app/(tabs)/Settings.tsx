@@ -5,6 +5,7 @@ import {
 } from 'react-native-safe-area-context'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import {useSession} from '@/hooks/SessionContext'
+import CustomAlert from '@/components/ui/Alert'
 import {
   View,
   Text,
@@ -35,6 +36,11 @@ function AccountInfo() {
   const [activeTab, setActiveTab] = useState('basic') // Estado para manejar la pestaña activa
   const [editingField, setEditingField] = useState<string | null>(null) // Campo en edición
   const [tempValue, setTempValue] = useState<string>('') // Valor temporal mientras se edita
+  const [originalValue, setOriginalValue] = useState<string>('')
+  const [alertVisible, setAlertVisible] = useState(false)
+  const [alertMessage, setAlertMessage] = useState('')
+  const [alertTitle, setAlerTitle] = useState('')
+
   const handlePress = () => {
     navigation.navigate('Bottomnav' as never)
   }
@@ -88,13 +94,22 @@ function AccountInfo() {
   // Función para iniciar la edición de un campo
   const startEditing = (label: string, value: string) => {
     setEditingField(label)
-    setTempValue(value)
+    setTempValue(value) // Inicializa el TextInput con el valor actual
+    setOriginalValue(value) // Guarda el valor original
   }
 
   // Función para guardar los cambios
   const saveEdit = (label: string) => {
-    Alert.alert(`${label} ha sido editado`)
-    setEditingField(null)
+    if (tempValue.trim() === '') {
+      setTempValue(originalValue)
+      setAlertVisible(true)
+      setAlertMessage('El campo no puede estar vacío.')
+      setAlerTitle('Error')
+    } else {
+      setAlerTitle('Todo hecho!')
+      setAlertMessage(`${label} ha sido editado correctamente.`)
+    }
+    setEditingField(null) // Sale del modo edición
   }
 
   // Función para cancelar la edición
@@ -162,8 +177,10 @@ function AccountInfo() {
                 <View className='flex-row items-center justify-end space-x-2'>
                   <TextInput
                     value={tempValue}
+                    maxLength={50}
+                    scrollEnabled={true}
                     onChangeText={setTempValue}
-                    className='border border-gray-300 px-2 py-0 mr-2 rounded'
+                    className='border border-gray-300 px-2 py-0 mr-2 rounded max-w-[70%]'
                   />
                   <TouchableOpacity onPress={() => saveEdit(item.label)}>
                     <MaterialIcons
@@ -198,6 +215,12 @@ function AccountInfo() {
                       color={index % 2 === 0 ? '#5A543E' : '#F5E6C3'}
                     />
                   </TouchableOpacity>
+                  <CustomAlert
+                    visible={alertVisible}
+                    title='Error'
+                    message={alertMessage}
+                    onClose={() => setAlertVisible(false)}
+                  />
                 </View>
               )}
             </View>
