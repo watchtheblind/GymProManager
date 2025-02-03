@@ -12,7 +12,6 @@ import {
   ScrollView,
   SafeAreaView,
   Alert,
-  Image,
   StyleSheet,
 } from 'react-native'
 import {useNavigation} from '@react-navigation/native'
@@ -73,7 +72,6 @@ function AccountInfo() {
           label: 'Peso',
           value: JSON.parse(user?.meta?.backend_peso ?? '{}')?.valor + ' kg',
         },
-        {label: 'Imagen', value: user?.meta?.backend_imagen},
       ]
     }
     return []
