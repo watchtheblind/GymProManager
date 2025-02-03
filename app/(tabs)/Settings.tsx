@@ -3,6 +3,7 @@ import {
   SafeAreaProvider,
   useSafeAreaInsets,
 } from 'react-native-safe-area-context'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import {useSession} from '@/hooks/SessionContext'
 import {
   View,
@@ -17,7 +18,8 @@ import {
 import {useNavigation} from '@react-navigation/native'
 import Tabs from '@/components/common/Tabs'
 import Header from '@/components/common/Header'
-import Avatar from '@/components/common/Avatar'
+import Avatar from '@/components/common/Avatar' // Importamos el Avatar sin cambios
+
 const Settings = () => {
   return (
     <SafeAreaProvider>
@@ -31,7 +33,6 @@ function AccountInfo() {
   const insets = useSafeAreaInsets()
   const navigation = useNavigation()
   const [activeTab, setActiveTab] = React.useState('basic') // Estado para manejar la pestaña activa
-
   const handlePress = () => {
     navigation.navigate('Bottomnav' as never)
   }
@@ -91,11 +92,28 @@ function AccountInfo() {
           onBackPress={handlePress}
         />
 
-        {/* Avatar Circle - Usando el componente reutilizable */}
-        <Avatar
-          imageUrl={user?.meta?.backend_imagen}
-          initials={user?.meta?.backend_nombre?.[0]}
-        />
+        {/* Avatar Circle - Usando el componente reutilizable dentro de un TouchableOpacitiy */}
+        <View style={styles.avatarContainer}>
+          <TouchableOpacity
+            onPress={() => Alert.alert('Acción', 'Has presionado el avatar')}
+            activeOpacity={0.7}
+            className=' max-h-28 flex-col justify-center'>
+            {/* Avatar Original */}
+            <Avatar
+              imageUrl={user?.meta?.backend_imagen}
+              initials={user?.meta?.backend_nombre?.[0]}
+            />
+
+            {/* Botón "+" Circular */}
+            <View style={styles.addButton}>
+              <MaterialIcons
+                name='add'
+                size={20}
+                color='#FFFFFF'
+              />{' '}
+            </View>
+          </TouchableOpacity>
+        </View>
 
         {/* Tabs */}
         <Tabs
@@ -146,32 +164,29 @@ function AccountInfo() {
   )
 }
 
-// Estilos para el avatar
+// Estilos adicionales para el contenedor y el botón "+"
 const styles = StyleSheet.create({
   avatarContainer: {
+    position: 'relative',
     alignItems: 'center',
     justifyContent: 'center',
     marginBlock: 40,
   },
-  avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    borderWidth: 2,
-    borderColor: '#FFFFFF',
-  },
-  avatarPlaceholder: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+  addButton: {
+    position: 'absolute',
+    bottom: -8, // Ajusta la posición vertical
+    right: 0, // Ajusta la posición horizontal
+    width: 30,
+    height: 30,
+    borderRadius: 15,
     backgroundColor: '#B5A97C',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
     borderColor: '#FFFFFF',
   },
-  placeholderText: {
-    fontSize: 24,
+  addButtonText: {
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#FFFFFF',
   },
