@@ -105,6 +105,7 @@ function AccountInfo() {
       setAlertMessage('El campo no puede estar vacío.')
       setAlerTitle('Error')
     } else {
+      setAlertVisible(true)
       setAlerTitle('Todo hecho!')
       setAlertMessage(`${label} ha sido editado correctamente.`)
     }
