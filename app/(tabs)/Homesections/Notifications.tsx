@@ -259,15 +259,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#1E1E1E',
+    marginBottom: 60,
   },
   header: {
     width: '100%',
     justifyContent: 'center',
     paddingTop: 60,
     paddingBottom: 20,
-  },
-  backButton: {
-    marginRight: 16,
   },
   headerText: {
     fontSize: 20,
