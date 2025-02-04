@@ -226,7 +226,7 @@ function AccountInfo() {
             {/* Avatar Original */}
             <Avatar
               imageUrl={avatarUri || undefined}
-              initials={user?.meta?.backend_nombre?.[0]}
+              initials={user?.first_name?.[0]}
             />
             {/* Botón "+" Circular */}
             <View style={styles.addButton}>
