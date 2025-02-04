@@ -1,21 +1,15 @@
 import React from 'react'
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
-import {View, Text, StyleSheet, Platform, TouchableOpacity} from 'react-native'
+import {View, Text, StyleSheet, Platform} from 'react-native'
 import Home from './Home'
 import Profile from './Profile'
+import NotificationsScreen from './Homesections/Notifications'
 import {
   Dumbbellicon,
   Profileicon,
   Goalicon,
 } from '@/components/ui/Bottomnav/Icons'
 const Tab = createBottomTabNavigator()
-
-const HoyTienesScreen = () => (
-  <View style={styles.screen}>
-    <Text className='text-white'>Hoy Tienes</Text>
-  </View>
-)
-
 export default function BottomTabs() {
   return (
     <>
@@ -44,7 +38,7 @@ export default function BottomTabs() {
         />
         <Tab.Screen
           name='HoyTienes'
-          component={HoyTienesScreen}
+          component={NotificationsScreen}
           options={{
             tabBarLabel: 'Hoy tienes',
             tabBarIcon: ({color, size}) => (
