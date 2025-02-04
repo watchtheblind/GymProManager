@@ -203,22 +203,17 @@ const NotificationsScreen = () => {
   return (
     <View style={styles.container}>
       <View
-        style={styles.header}
-        className='z-20'>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Bottomnav' as never)}
-          style={styles.backButton}>
-          <Ionicons
-            name='arrow-back'
-            size={24}
-            color='white'
-          />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>NOTIFICACIONES</Text>
-      </View>
-      <View
         style={styles.dateContainer}
         className='z-20'>
+        <View
+          style={styles.header}
+          className='z-20 flex-row items-center'>
+          <Text
+            style={styles.headerText}
+            className='text-center'>
+            NOTIFICACIONES
+          </Text>
+        </View>
         <TouchableOpacity
           onPress={markAllAsRead}
           style={styles.markAllButton}>
@@ -266,12 +261,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#1E1E1E',
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 16,
-    paddingRight: 70,
+    width: '100%',
+    justifyContent: 'center',
     paddingTop: 60,
+    paddingBottom: 20,
   },
   backButton: {
     marginRight: 16,
