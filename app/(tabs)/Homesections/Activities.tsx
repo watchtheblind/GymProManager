@@ -17,7 +17,7 @@ import SearchBar from '@/components/ui/SearchBar'
 import Settingsbutton from '@/components/ui/Settingsbutton'
 import useBackHandler from '@/hooks/Common/useBackHandler'
 import {useFilter} from '@/hooks/Common/useFilter'
-
+import {useSession} from '@/hooks/SessionContext'
 // Definimos la interfaz para las fechas
 interface DateInfo {
   date: Date
@@ -54,6 +54,7 @@ const getNextTwoWeeks = (): DateInfo[] => {
 }
 
 const Activities: React.FC = () => {
+  const {user} = useSession()
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [showFavorites, setShowFavorites] = useState<boolean>(false)
   const [selectedDate, setSelectedDate] = useState<Date>(new Date())
@@ -71,7 +72,7 @@ const Activities: React.FC = () => {
   const filteredActivities = useFilter<Activity>({
     searchQuery,
     showFavorites,
-    favorites: favorites.map(String), // Convertimos los favoritos a strings
+    favorites: favorites.map(Number), // Convertimos los favoritos a strings
     data: activities,
     searchKeys: ['name'], // Clave de búsqueda
   })
@@ -149,11 +150,11 @@ const Activities: React.FC = () => {
             <ActivityCard
               activity={{
                 ...item,
-                id: item.id.toString(), // Convertir id a string para ActivityCard
+                id: item.id, // Convertir id a string para ActivityCard
               }}
-              isFavorite={favorites.includes(item.id.toString())} // Convertir id a string para comparar
-              onToggleFavorite={() => toggleFavorite(item.id.toString())} // Convertir id a string
-              userId={4} // Pasar el ID del usuario
+              isFavorite={favorites.includes(item.id)} // Convertir id a string para comparar
+              onToggleFavorite={() => toggleFavorite(item.id)} // Convertir id a string
+              userId={user?.ID || NaN} // Pasar el ID del usuario
               token={'Contraseña...'} // Pasar el token de autorización
             />
           )}
