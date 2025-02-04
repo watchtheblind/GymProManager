@@ -17,7 +17,8 @@ import Animated, {
   withDelay,
 } from 'react-native-reanimated'
 import Settingsbutton from '@/components/ui/Settingsbutton'
-
+import {useNavigation} from '@react-navigation/native'
+import useBackHandler from '@/hooks/Common/useBackHandler'
 // Animaciones reutilizables
 const animations = {
   fadeInDown: (delay: number) => FadeInDown.delay(delay).duration(500),
@@ -27,11 +28,14 @@ const animations = {
 
 export default function Home() {
   const {width} = useWindowDimensions()
-
+  const navigation = useNavigation()
   const logoStyle = useAnimatedStyle(() => ({
     opacity: withDelay(500, withTiming(1, {duration: 1000})),
   }))
-
+  useBackHandler(() => {
+    navigation.navigate('ConfirmationPage' as never)
+    return true
+  })
   return (
     <ScrollView style={styles.container}>
       <View style={styles.paddingContainer}>
