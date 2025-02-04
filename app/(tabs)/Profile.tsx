@@ -1,18 +1,13 @@
 import React, {useState} from 'react'
-import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  ScrollView,
-  SafeAreaView,
-} from 'react-native'
+import {View, Text, StyleSheet, ScrollView, SafeAreaView} from 'react-native'
 import {Portrait} from '@/components/ui/Bottomnav/Icons'
 import Activity from '../../components/ProfileTabs/Activity'
 import Progress from '../../components/ProfileTabs/Progress'
 import Tabs from '@/components/common/Tabs'
-
+import Avatar from '@/components/common/Avatar'
+import {useSession} from '@/hooks/SessionContext'
 export default function Profile() {
+  const {user} = useSession()
   const [activeTab, setActiveTab] = useState('progress')
 
   // Define las pestañas
@@ -31,11 +26,10 @@ export default function Profile() {
               <Portrait size={330} />
             </View>
             <View style={styles.profileContainer}>
-              <Image
-                source={require('@/assets/mbappe.png')}
-                style={styles.profileImage}
-              />
-              <Text style={styles.profileName}>javier camacaro</Text>
+              <Avatar></Avatar>
+              <Text style={styles.profileName}>
+                {user?.first_name + ' ' + user?.last_name}
+              </Text>
             </View>
           </View>
 
@@ -88,11 +82,6 @@ const styles = StyleSheet.create({
     zIndex: 0,
   },
   profileContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1,
@@ -107,7 +96,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontFamily: 'Copperplate',
     fontSize: 20,
-    marginTop: 16,
+    marginTop: -10,
     textTransform: 'uppercase',
   },
   contentContainer: {

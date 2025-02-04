@@ -68,8 +68,8 @@ function AccountInfo() {
       return [
         {label: 'Usuario', value: user?.user_login || '(Vacío)'},
         {label: 'Email', value: user?.user_email || '(Vacío)'},
-        {label: 'Nombre', value: user?.meta?.backend_nombre || '(Vacío)'},
-        {label: 'Apellido', value: user?.meta?.backend_apellido || '(Vacío)'},
+        {label: 'Nombre', value: user?.first_name || '(Vacío)'},
+        {label: 'Apellido', value: user?.last_name || '(Vacío)'},
         {label: 'Descripción', value: user?.meta?.description || '(Vacío)'},
       ]
     } else if (activeTab === 'additional') {
