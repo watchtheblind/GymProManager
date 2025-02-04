@@ -58,12 +58,16 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
           },
-          body: `token=${token}&activityid=${activity.id}&userid=${userId}`,
+          body: `token=${token}&userid=${userId}&activityid=${activity.id}`,
         },
       )
 
       const data = await response.json()
-
+      console.log('Activity ID:', activity.id)
+      console.log(
+        'Request body:',
+        `token=${token}&activityid=${activity.id}&userid=${userId}`,
+      )
       if (data.success) {
         setAlertTitle('Éxito')
         setAlertMessage('Te has inscrito correctamente en la actividad.')
@@ -116,7 +120,7 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
               styles.typeText,
               {color: getActivityTypeColor(activity.type)},
             ]}>
-            {activity.type.toUpperCase()}
+            {activity.type.toUpperCase() + activity.id + typeof userId}
           </Text>
         </View>
         <Text style={styles.name}>{activity.name}</Text>
