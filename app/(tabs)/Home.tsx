@@ -107,32 +107,24 @@ export default function Home() {
           <Text style={styles.sectionTitle}>ENTRENAMIENTOS</Text>
         </Animated.View>
 
-        {/* Sección de Notificaciones y Cuestionarios */}
+        {/* Sección de Cuestionarios */}
         <Animated.View
-          entering={animations.fadeInDown(900)}
+          entering={animations.fadeInDown(1000)}
           style={styles.mt4}>
-          <View style={styles.row}>
-            <View style={styles.halfWidth}>
-              <ButtonImage href='/Homesections/Notifications'>
-                <Image
-                  style={[styles.miniImage, styles.borderLeft]}
-                  source={require('@/assets/images/notifications.jpeg')}
-                />
-              </ButtonImage>
-              <Text style={styles.sectionTitle2}>NOTIFICACIONES</Text>
-            </View>
-            <View style={styles.halfWidth}>
-              <ButtonImage href='/Homesections/Questionnaires'>
-                <Image
-                  style={[styles.miniImage, styles.borderLeft]}
-                  source={require('@/assets/images/cuestionarios.jpeg')}
-                />
-              </ButtonImage>
-              <Text style={styles.sectionTitle2}>CUESTIONARIOS</Text>
-            </View>
+          <View style={styles.fullWidth}>
+            <ButtonImage href='/Homesections/Questionnaires'>
+              <Image
+                style={[
+                  styles.miniImage,
+                  styles.borderRight,
+                  styles.improvedImage,
+                ]}
+                source={require('@/assets/images/cuestionarios.jpeg')}
+              />
+            </ButtonImage>
+            <Text style={styles.sectionTitle}>CUESTIONARIOS</Text>
           </View>
         </Animated.View>
-
         {/* Sección de Servicios */}
         <Animated.View
           entering={animations.fadeInDown(1000)}
