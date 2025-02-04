@@ -3,12 +3,12 @@ import {useCallback} from 'react'
 interface FilterOptions<T> {
   searchQuery: string
   showFavorites: boolean
-  favorites: string[]
+  favorites: Number[]
   data: T[]
   searchKeys: (keyof T)[]
 }
 
-export const useFilter = <T extends {id: string}>({
+export const useFilter = <T extends {id: number}>({
   searchQuery,
   showFavorites,
   favorites,

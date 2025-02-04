@@ -7,7 +7,7 @@ import CustomAlert from '../Alert'
 
 interface ActivityCardProps {
   activity: {
-    id: string
+    id: number
     name: string
     time: string
     Instructor: string
