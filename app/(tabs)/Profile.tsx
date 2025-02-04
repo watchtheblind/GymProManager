@@ -26,7 +26,9 @@ export default function Profile() {
               <Portrait size={330} />
             </View>
             <View style={styles.profileContainer}>
-              <Avatar></Avatar>
+              <Avatar
+                imageUrl={user?.meta?.backend_imagen || undefined}
+                initials={user?.first_name?.[0]}></Avatar>
               <Text style={styles.profileName}>
                 {user?.first_name + ' ' + user?.last_name}
               </Text>
