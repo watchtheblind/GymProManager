@@ -101,7 +101,7 @@ export const SessionProvider = ({children}: {children: ReactNode}) => {
     try {
       await AsyncStorage.removeItem('userSession')
       setUser(null)
-      navigation.navigate('Carousel' as never) // Navegar al componente Carousel
+      navigation.navigate('index' as never) // Navegar al componente Carousel
     } catch (error) {
       console.error('Error during logout:', error)
     }

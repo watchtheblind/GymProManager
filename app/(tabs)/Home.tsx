@@ -22,6 +22,7 @@ import Animated, {
 import Settingsbutton from '@/components/ui/Settingsbutton'
 import {useNavigation, useFocusEffect} from '@react-navigation/native'
 import ConfirmationModal from './ConfirmModal'
+import {useSession} from '@/hooks/SessionContext'
 
 // Animaciones reutilizables
 const animations = {
@@ -31,6 +32,7 @@ const animations = {
 }
 
 export default function Home() {
+  const {logout} = useSession()
   const {width} = useWindowDimensions()
   const [isModalVisible, setIsModalVisible] = React.useState(false)
   const navigation = useNavigation()
@@ -59,7 +61,7 @@ export default function Home() {
   }
 
   const handleAccept = () => {
-    console.log('Usuario aceptó')
+    logout()
     handleCloseModal()
   }
 
