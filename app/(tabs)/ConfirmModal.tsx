@@ -21,8 +21,8 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   return (
     <Animated.View
       style={styles.modalOverlay}
-      entering={FadeInDown.duration(300)}
-      exiting={FadeInDown.duration(300).easing(Easing.out(Easing.ease))}>
+      entering={FadeInDown.duration(300)} // Mantenemos la animación al aparecer
+    >
       <View style={styles.alertContainer}>
         <Text style={styles.title}>Confirmación</Text>
         <Text style={styles.message}>
