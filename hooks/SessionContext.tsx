@@ -7,6 +7,7 @@ import React, {
 } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import moment from 'moment'
+import {useNavigation} from '@react-navigation/native' // Importar el hook de navegación
 
 // Definir la interfaz para los datos del usuario
 interface UserData {
@@ -57,6 +58,7 @@ const SessionContext = createContext<SessionContextType>({
 export const SessionProvider = ({children}: {children: ReactNode}) => {
   const [user, setUser] = useState<UserData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const navigation = useNavigation() // Obtener el objeto de navegación
 
   // Cargar la sesión al iniciar la aplicación
   useEffect(() => {
@@ -66,7 +68,6 @@ export const SessionProvider = ({children}: {children: ReactNode}) => {
         if (session) {
           const parsedSession = JSON.parse(session)
           const {user, expiresAt} = parsedSession
-
           if (moment().isBefore(expiresAt)) {
             setUser(user) // Restaurar la sesión si no ha expirado
           } else {
@@ -79,7 +80,6 @@ export const SessionProvider = ({children}: {children: ReactNode}) => {
         setIsLoading(false)
       }
     }
-
     loadSession()
   }, [])
 
@@ -101,6 +101,7 @@ export const SessionProvider = ({children}: {children: ReactNode}) => {
     try {
       await AsyncStorage.removeItem('userSession')
       setUser(null)
+      navigation.navigate('Carousel' as never) // Navegar al componente Carousel
     } catch (error) {
       console.error('Error during logout:', error)
     }
