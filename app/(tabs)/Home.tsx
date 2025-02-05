@@ -20,7 +20,7 @@ import Animated, {
   withDelay,
 } from 'react-native-reanimated'
 import Settingsbutton from '@/components/ui/Settingsbutton'
-import {useNavigation} from '@react-navigation/native'
+import {useNavigation, useFocusEffect} from '@react-navigation/native'
 import ConfirmationModal from './ConfirmModal'
 
 // Animaciones reutilizables
@@ -34,6 +34,15 @@ export default function Home() {
   const {width} = useWindowDimensions()
   const [isModalVisible, setIsModalVisible] = React.useState(false)
   const navigation = useNavigation()
+
+  // Ocultar el modal cuando la pantalla pierde el foco
+  useFocusEffect(
+    React.useCallback(() => {
+      return () => {
+        setIsModalVisible(false) // Oculta el modal cuando el componente no está en foco
+      }
+    }, []),
+  )
 
   // Animación del logo
   const logoStyle = useAnimatedStyle(() => ({
