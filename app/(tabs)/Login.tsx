@@ -11,7 +11,7 @@ import {
 import Icon from '@expo/vector-icons/MaterialIcons'
 import Button from '@/components/ui/Button'
 import {router} from 'expo-router'
-import CustomAlert from '@/components/ui/Alert'
+import CustomAlert from '@/components/common/Alert'
 import {validateLogin, LoginFormData} from '@/hooks/LoginValidation'
 import {useSession} from '@/hooks/SessionContext' // Importar el hook useSession
 

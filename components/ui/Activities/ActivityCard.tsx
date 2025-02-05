@@ -2,8 +2,8 @@ import React, {useState} from 'react'
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native'
 import {MaterialIcons} from '@expo/vector-icons' // Importamos MaterialIcons
 import moment from 'moment'
-import ConfirmationModal from '../ConfirmationModal'
-import CustomAlert from '../Alert'
+import ConfirmationModal from '../../common/ConfirmationModal'
+import CustomAlert from '../../common/Alert'
 
 interface ActivityCardProps {
   activity: {
