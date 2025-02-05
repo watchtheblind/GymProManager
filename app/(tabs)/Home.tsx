@@ -1,3 +1,4 @@
+// Home.tsx
 import React from 'react'
 import {
   View,
@@ -6,8 +7,10 @@ import {
   Image,
   ScrollView,
   useWindowDimensions,
+  TouchableOpacity,
 } from 'react-native'
 import ButtonImage from '@/components/ui/ButtonImage'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import Animated, {
   FadeInDown,
   FadeInRight,
@@ -18,7 +21,8 @@ import Animated, {
 } from 'react-native-reanimated'
 import Settingsbutton from '@/components/ui/Settingsbutton'
 import {useNavigation} from '@react-navigation/native'
-import useBackHandler from '@/hooks/Common/useBackHandler'
+import ConfirmationModal from './ConfirmModal'
+
 // Animaciones reutilizables
 const animations = {
   fadeInDown: (delay: number) => FadeInDown.delay(delay).duration(500),
@@ -28,14 +32,33 @@ const animations = {
 
 export default function Home() {
   const {width} = useWindowDimensions()
+  const [isModalVisible, setIsModalVisible] = React.useState(false)
   const navigation = useNavigation()
+
+  // Animación del logo
   const logoStyle = useAnimatedStyle(() => ({
     opacity: withDelay(500, withTiming(1, {duration: 1000})),
   }))
-  useBackHandler(() => {
-    navigation.navigate('ConfirmationPage' as never)
-    return true
-  })
+
+  // Funciones para manejar el modal
+  const handleOpenModal = () => {
+    setIsModalVisible(true)
+  }
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false)
+  }
+
+  const handleAccept = () => {
+    console.log('Usuario aceptó')
+    handleCloseModal()
+  }
+
+  const handleReject = () => {
+    console.log('Usuario rechazó')
+    handleCloseModal()
+  }
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.paddingContainer}>
@@ -49,11 +72,22 @@ export default function Home() {
           />
         </Animated.View>
 
-        {/* Botón de configuración */}
+        {/* Botón de configuración y salida */}
         <Animated.View
+          className={'flex-row-reverse justify-between'}
           entering={animations.fadeInDown(300)}
           style={styles.settingsButton}>
           <Settingsbutton />
+          <TouchableOpacity
+            className='flex items-center justify-center h-12 w-11'
+            onPress={handleOpenModal}>
+            <MaterialIcons
+              className='transform scale-x-[-1]'
+              name='exit-to-app'
+              size={32}
+              color='red'
+            />
+          </TouchableOpacity>
         </Animated.View>
 
         {/* Polígono derecho */}
@@ -129,6 +163,7 @@ export default function Home() {
             <Text style={styles.sectionTitle}>CUESTIONARIOS</Text>
           </View>
         </Animated.View>
+
         {/* Sección de Servicios */}
         <Animated.View
           entering={animations.fadeInDown(1000)}
@@ -147,6 +182,14 @@ export default function Home() {
             <Text style={styles.sectionTitle}>SERVICIOS</Text>
           </View>
         </Animated.View>
+
+        {/* Modal Personalizado */}
+        <ConfirmationModal
+          isVisible={isModalVisible}
+          onAccept={handleAccept}
+          onReject={handleReject}
+          onClose={handleCloseModal}
+        />
       </View>
     </ScrollView>
   )
@@ -219,25 +262,10 @@ const styles = StyleSheet.create({
     fontFamily: 'Copperplate',
     textAlign: 'center',
   },
-  sectionTitle2: {
+  mt4: {
     marginTop: 16,
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontFamily: 'Copperplate',
-    textAlign: 'center',
-  },
-
-  row: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  halfWidth: {
-    width: '48%',
   },
   fullWidth: {
     width: '100%',
-  },
-  mt4: {
-    marginTop: 16,
   },
 })

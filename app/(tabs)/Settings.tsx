@@ -5,7 +5,7 @@ import {
 } from 'react-native-safe-area-context'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import {useSession} from '@/hooks/SessionContext'
-import CustomAlert from '@/components/ui/Alert'
+import CustomAlert from '@/components/common/Alert'
 import useBackHandler from '@/hooks/Common/useBackHandler'
 import {
   View,

@@ -1,7 +1,7 @@
 import React from 'react'
 import useBackHandler from '@/hooks/Common/useBackHandler'
 import {useNavigation} from '@react-navigation/native'
-import ConfirmationModal from '@/components/ui/ConfirmationModal'
+import ConfirmationModal from '@/components/common/ConfirmationModal'
 import {useSession} from '@/hooks/SessionContext'
 
 interface SessionCloseProps {

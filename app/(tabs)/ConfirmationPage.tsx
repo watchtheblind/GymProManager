@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import {View, StyleSheet} from 'react-native'
-import ConfirmationModal from '@/components/ui/ConfirmationModal'
+import ConfirmationModal from '@/components/common/ConfirmationModal'
 import {useSession} from '@/hooks/SessionContext'
 import {useNavigation} from '@react-navigation/native'
 
