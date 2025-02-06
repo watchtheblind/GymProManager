@@ -4,7 +4,7 @@ import {
   useSafeAreaInsets,
 } from 'react-native-safe-area-context'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
-import {useSession} from '@/hooks/SessionContext'
+import {useSession} from '@/hooks/SessionContext' // Asegúrate de que esta ruta sea correcta
 import CustomAlert from '@/components/common/Alert'
 import useBackHandler from '@/hooks/Common/useBackHandler'
 import {
@@ -32,19 +32,19 @@ const Settings = () => {
 }
 
 function AccountInfo() {
-  const {user} = useSession()
+  const {user, updateUserField} = useSession() // Extraemos updateUserField del contexto
   const insets = useSafeAreaInsets()
   const navigation = useNavigation()
-  const [activeTab, setActiveTab] = useState('basic') // Estado para manejar la pestaña activa
-  const [editingField, setEditingField] = useState<string | null>(null) // Campo en edición
-  const [tempValue, setTempValue] = useState<string>('') // Valor temporal mientras se edita
+  const [activeTab, setActiveTab] = useState('basic')
+  const [editingField, setEditingField] = useState<string | null>(null)
+  const [tempValue, setTempValue] = useState<string>('')
   const [originalValue, setOriginalValue] = useState<string>('')
   const [alertVisible, setAlertVisible] = useState(false)
   const [alertMessage, setAlertMessage] = useState('')
   const [alertTitle, setAlertTitle] = useState('')
 
-  // Hook para actualizar datos del usuario
-  const {updateUserField, loading, error} = useUpdateUser()
+  // Hook para actualizar datos del usuario en el servidor
+  const {updateUserField: updateOnServer, loading, error} = useUpdateUser()
 
   // Lógica de BackHandler usando el hook personalizado
   useBackHandler(() => {
@@ -68,8 +68,8 @@ function AccountInfo() {
       return [
         {label: 'Usuario', value: user?.user_login || '(Vacío)'},
         {label: 'Email', value: user?.user_email || '(Vacío)'},
-        {label: 'Nombre', value: user?.first_name || '(Vacío)'},
-        {label: 'Apellido', value: user?.last_name || '(Vacío)'},
+        {label: 'Nombre', value: user?.meta?.backend_nombre || '(Vacío)'},
+        {label: 'Apellido', value: user?.meta?.backend_apellido || '(Vacío)'},
         {label: 'Descripción', value: user?.meta?.description || '(Vacío)'},
       ]
     } else if (activeTab === 'additional') {
@@ -112,16 +112,15 @@ function AccountInfo() {
   // Sincroniza el estado de avatarUri con imageUri
   useEffect(() => {
     if (imageUri) {
-      setAvatarUri(imageUri) // Actualiza el estado local cuando imageUri cambia
+      setAvatarUri(imageUri)
     }
   }, [imageUri])
 
   const handleAvatarPress = async () => {
     try {
-      await pickImage() // Seleccionar una nueva imagen
+      await pickImage()
       if (base64) {
-        // Mostrar el Base64 en un alert
-        alert('Base64 de la imagen' + base64.substring(0, 100) + '...') // Muestra solo los primeros 100 caracteres
+        alert('Base64 de la imagen' + base64.substring(0, 100) + '...')
       }
     } catch (error) {
       console.error('Error al seleccionar la imagen:', error)
@@ -131,11 +130,11 @@ function AccountInfo() {
   // Función para iniciar la edición de un campo
   const startEditing = (label: string, value: string | number) => {
     setEditingField(label)
-    setTempValue(String(value)) // Convierte el valor a cadena
-    setOriginalValue(String(value)) // Guarda el valor original como cadena
+    setTempValue(String(value))
+    setOriginalValue(String(value))
   }
 
-  // Función para guardar los cambios usando el hook
+  // Función para guardar los cambios
   const saveEdit = async (label: string) => {
     if (tempValue.trim() === '') {
       setTempValue(originalValue)
@@ -169,22 +168,25 @@ function AccountInfo() {
       }
 
       // Construir el valor a enviar al servidor
-      let valueToSend: string | number = tempValue // Por defecto, enviamos como string
+      let valueToSend: string | number = tempValue
       if (label === 'Altura' || label === 'Peso') {
-        const parsedValue = parseFloat(tempValue) // Convertir a número
+        const parsedValue = parseFloat(tempValue)
         if (isNaN(parsedValue)) {
           throw new Error('El valor debe ser un número válido.')
         }
-        valueToSend = parsedValue // Enviamos como número
+        valueToSend = parsedValue
       }
 
-      // Actualizar el campo usando el hook
-      await updateUserField(
-        'Contraseña...',
+      // Actualizar el campo en el servidor
+      await updateOnServer(
+        'Contraseña...', // Reemplaza con el token real
         String(user?.ID),
         serverField,
         valueToSend,
       )
+
+      // Actualizar el campo en el estado local y AsyncStorage
+      await updateUserField(serverField, valueToSend)
 
       // Mostrar mensaje de éxito
       setAlertVisible(true)
@@ -217,18 +219,16 @@ function AccountInfo() {
           onBackPress={handlePress}
         />
 
-        {/* Avatar Circle - Usando el componente reutilizable dentro de un TouchableOpacitiy */}
+        {/* Avatar Circle */}
         <View style={styles.avatarContainer}>
           <TouchableOpacity
             onPress={handleAvatarPress}
             activeOpacity={0.7}
             className='max-h-28 flex-col justify-center'>
-            {/* Avatar Original */}
             <Avatar
               imageUrl={avatarUri || undefined}
               initials={user?.first_name?.[0]}
             />
-            {/* Botón "+" Circular */}
             <View style={styles.addButton}>
               <MaterialIcons
                 name='add'
@@ -332,8 +332,8 @@ const styles = StyleSheet.create({
   },
   addButton: {
     position: 'absolute',
-    bottom: -8, // Ajusta la posición vertical
-    right: 0, // Ajusta la posición horizontal
+    bottom: -8,
+    right: 0,
     width: 30,
     height: 30,
     borderRadius: 15,
