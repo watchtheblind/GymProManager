@@ -70,7 +70,7 @@ function AccountInfo() {
         {label: 'Email', value: user?.user_email || '(Vacío)'},
         {label: 'Nombre', value: user?.meta?.backend_nombre || '(Vacío)'},
         {label: 'Apellido', value: user?.meta?.backend_apellido || '(Vacío)'},
-        {label: 'Descripción', value: user?.meta?.description || '(Vacío)'},
+        {label: 'Descripcion', value: user?.meta?.description || '(Vacío)'},
       ]
     } else if (activeTab === 'additional') {
       return [
@@ -150,8 +150,8 @@ function AccountInfo() {
         Usuario: 'user_login',
         Email: 'correo_electronico',
         Nombre: 'nombre',
-        Apellido: 'apellido',
-        Descripción: 'description',
+        Apellido: 'backend_apellido',
+        Descripcion: 'description',
         NIF: 'nif',
         Dirección: 'direccion',
         'Código País': 'codigo_pais',
