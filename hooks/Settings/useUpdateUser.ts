@@ -1,4 +1,5 @@
 import {useState} from 'react'
+import Fetch from '../FetchData'
 
 // Tipos para los datos del usuario
 interface UserUpdateData {
@@ -14,18 +15,21 @@ interface ServerResponse {
 
 // Hook personalizado para actualizar datos del usuario
 const useUpdateUser = () => {
-  const [loading, setLoading] = useState<boolean>(false) // Estado de carga
-  const [error, setError] = useState<string | null>(null) // Estado de error
+  const [loading, setLoading] = useState<boolean>(false)
+  const [error, setError] = useState<string | null>(null)
+
+  // Crea una instancia de FetchData para manejar las solicitudes HTTP
+  const fetchData = Fetch('https://gympromanager.com/')
 
   // Función para actualizar un campo específico del usuario
   const updateUserField = async (
     token: string,
     userId: string,
     field: string,
-    value: any, // El valor puede ser de cualquier tipo (string, number, objeto, etc.)
+    value: any,
   ): Promise<string | undefined> => {
-    setLoading(true) // Iniciar estado de carga
-    setError(null) // Limpiar errores previos
+    setLoading(true)
+    setError(null)
 
     try {
       // Construir el objeto de usuario con el campo específico
@@ -34,23 +38,14 @@ const useUpdateUser = () => {
         [field]: value,
       }
 
-      // Realizar la solicitud POST al servidor
-      const response = await fetch(
-        'https://gympromanager.com/app-user-update.php',
+      // Realizar la solicitud POST utilizando FetchData
+      const result: ServerResponse = await fetchData.post(
+        'app-user-update.php',
         {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            token: token,
-            usuario: userData,
-          }),
+          token: token,
+          usuario: userData,
         },
       )
-
-      // Parsear la respuesta JSON
-      const result: ServerResponse = await response.json()
 
       // Manejar errores del servidor
       if (result.error) {
@@ -60,10 +55,10 @@ const useUpdateUser = () => {
       // Retornar éxito
       return result.success
     } catch (err: any) {
-      setError(err.message) // Capturar el error
-      throw err // Propagar el error para manejarlo en el nivel superior si es necesario
+      setError(err.message)
+      throw err
     } finally {
-      setLoading(false) // Finalizar estado de carga
+      setLoading(false)
     }
   }
 

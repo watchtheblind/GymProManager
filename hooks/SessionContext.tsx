@@ -7,7 +7,7 @@ import React, {
 } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import moment from 'moment'
-import {useNavigation} from '@react-navigation/native' // Importar el hook de navegación
+import {useNavigation} from '@react-navigation/native'
 
 // Definir la interfaz para los datos del usuario
 interface UserData {
@@ -45,6 +45,7 @@ interface SessionContextType {
   isLoading: boolean
   login: (userData: UserData) => Promise<void>
   logout: () => Promise<void>
+  updateUserField: (field: string, value: any) => Promise<void> // Nueva función
 }
 
 const SessionContext = createContext<SessionContextType>({
@@ -52,13 +53,14 @@ const SessionContext = createContext<SessionContextType>({
   isLoading: true,
   login: async () => {},
   logout: async () => {},
+  updateUserField: async () => {}, // Nueva función
 })
 
 // Proveedor del contexto
 export const SessionProvider = ({children}: {children: ReactNode}) => {
   const [user, setUser] = useState<UserData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const navigation = useNavigation() // Obtener el objeto de navegación
+  const navigation = useNavigation()
 
   // Cargar la sesión al iniciar la aplicación
   useEffect(() => {
@@ -69,9 +71,9 @@ export const SessionProvider = ({children}: {children: ReactNode}) => {
           const parsedSession = JSON.parse(session)
           const {user, expiresAt} = parsedSession
           if (moment().isBefore(expiresAt)) {
-            setUser(user) // Restaurar la sesión si no ha expirado
+            setUser(user)
           } else {
-            await AsyncStorage.removeItem('userSession') // Eliminar sesión expirada
+            await AsyncStorage.removeItem('userSession')
           }
         }
       } catch (error) {
@@ -86,11 +88,11 @@ export const SessionProvider = ({children}: {children: ReactNode}) => {
   // Función para iniciar sesión
   const login = async (userData: UserData) => {
     try {
-      const expiresAt = moment().add(1, 'hour').toISOString() // Sesión expira en 1 hora
+      const expiresAt = moment().add(1, 'hour').toISOString()
       const session = {user: userData, expiresAt}
       await AsyncStorage.setItem('userSession', JSON.stringify(session))
       setUser(userData)
-      console.log('Datos del usuario guardados:', userData) // Depuración
+      console.log('Datos del usuario guardados:', userData)
     } catch (error) {
       console.error('Error during login:', error)
     }
@@ -101,14 +103,44 @@ export const SessionProvider = ({children}: {children: ReactNode}) => {
     try {
       await AsyncStorage.removeItem('userSession')
       setUser(null)
-      navigation.navigate('index' as never) // Navegar al componente Carousel
+      navigation.navigate('index' as never)
     } catch (error) {
       console.error('Error during logout:', error)
     }
   }
 
+  // Función para actualizar un campo específico del usuario
+  const updateUserField = async (field: string, value: any) => {
+    if (!user) {
+      throw new Error('No hay un usuario logueado')
+    }
+
+    try {
+      // Actualizar el campo en el estado local
+      const updatedUser = {
+        ...user,
+        meta: {
+          ...user.meta,
+          [field]: value,
+        },
+      }
+      setUser(updatedUser)
+
+      // Guardar los cambios en AsyncStorage
+      const expiresAt = moment().add(1, 'hour').toISOString()
+      const session = {user: updatedUser, expiresAt}
+      await AsyncStorage.setItem('userSession', JSON.stringify(session))
+
+      console.log(`Campo "${field}" actualizado:`, value)
+    } catch (error) {
+      console.error('Error updating user field:', error)
+      throw error
+    }
+  }
+
   return (
-    <SessionContext.Provider value={{user, isLoading, login, logout}}>
+    <SessionContext.Provider
+      value={{user, isLoading, login, logout, updateUserField}}>
       {children}
     </SessionContext.Provider>
   )
