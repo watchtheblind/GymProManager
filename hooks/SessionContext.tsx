@@ -132,6 +132,7 @@ export const SessionProvider = ({children}: {children: ReactNode}) => {
       await AsyncStorage.setItem('userSession', JSON.stringify(session))
 
       console.log(`Campo "${field}" actualizado:`, value)
+      console.log('Usuario actualizado:', updatedUser) // Usar updatedUser  aquí
     } catch (error) {
       console.error('Error updating user field:', error)
       throw error
