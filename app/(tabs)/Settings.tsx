@@ -121,14 +121,56 @@ function AccountInfo() {
     }
   }, [imageUri])
 
+  // Función para manejar la selección de la imagen
   const handleAvatarPress = async () => {
     try {
+      // Llamar al hook useImagePicker para seleccionar la imagen
       await pickImage()
-      if (base64) {
-        alert('Base64 de la imagen' + base64.substring(0, 100) + '...')
+
+      // Validar que se haya obtenido la imagen en base64
+      if (!base64) {
+        throw new Error('No se pudo obtener la imagen en formato base64.')
+        return
       }
-    } catch (error) {
-      showAlert('Ha ocurrido un error', `${error}`)
+
+      // Validar el formato del base64
+      if (!base64.startsWith('data:image/')) {
+        throw new Error('El formato de la imagen no es válido.')
+        return
+      }
+
+      // Mostrar un mensaje con el inicio del base64 para depuración
+      alert('Base64 de la imagen: ' + base64.substring(0, 100) + '...')
+
+      // Construir el objeto de imagen a enviar al servidor
+      const imageName = `perfil_${user?.ID || 'usuario'}.jpg` // Nombre dinámico
+      const imageToSend = {
+        nombre: imageName,
+        contenido: base64, // Contenido de la imagen en base64
+      }
+
+      // Actualizar el campo en el servidor
+      await updateOnServer(
+        'Contraseña...', // Reemplaza con el token real
+        String(user?.ID),
+        'imagen', // Campo en el servidor para la imagen
+        imageToSend,
+      )
+
+      // Actualizar el campo en el estado local y AsyncStorage
+      await updateUserField('backend_imagen', imageToSend)
+
+      // Mostrar mensaje de éxito
+      showAlert('¡Todo hecho!', 'Imagen actualizada correctamente.')
+    } catch (error: any) {
+      if (error.message.includes('imagen')) {
+        showAlert(
+          'Error',
+          'Hubo un problema al actualizar la imagen: ' + `${error.message}`,
+        )
+      } else {
+        showAlert('Ha ocurrido un error', `${error.message}`)
+      }
     }
   }
 
