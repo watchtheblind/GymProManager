@@ -241,7 +241,7 @@ function AccountInfo() {
           tabs={tabs}
           activeTab={activeTab}
           onTabPress={(id) => setActiveTab(id)}
-          containerStyle={{marginBottom: 20}}
+          containerStyle={{marginBottom: 20, marginInline: 10}}
         />
 
         {/* Tab Content */}
