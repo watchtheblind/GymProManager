@@ -152,7 +152,7 @@ function AccountInfo() {
         Email: 'user_email', // Asegúrate de que coincida con el nombre del campo en el servidor
         Nombre: 'backend_nombre',
         Apellido: 'backend_apellido',
-        Descripcion: 'escription',
+        Descripcion: 'description',
         NIF: 'backend_nif',
         Dirección: 'backend_direccion',
         'Código País': 'backend_codigo_pais',
