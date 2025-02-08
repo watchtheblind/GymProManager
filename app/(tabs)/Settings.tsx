@@ -43,7 +43,11 @@ function AccountInfo() {
   const [alertVisible, setAlertVisible] = useState(false)
   const [alertMessage, setAlertMessage] = useState('')
   const [alertTitle, setAlertTitle] = useState('')
-
+  const showAlert = (title: string, message: string) => {
+    setAlertVisible(true)
+    setAlertTitle(title)
+    setAlertMessage(message)
+  }
   // Hook para actualizar datos del usuario en el servidor
   const {updateUserField: updateOnServer, loading, error} = useUpdateUser()
 
@@ -129,7 +133,7 @@ function AccountInfo() {
   }
 
   // Función para iniciar la edición de un campo
-  const startEditing = (label: string, value: string | number) => {
+  const startEditing = (label: string, value: string | number | Date) => {
     setEditingField(label)
     setTempValue(String(value))
     setOriginalValue(String(value))
@@ -190,14 +194,9 @@ function AccountInfo() {
       await updateUserField(serverField, valueToSend)
 
       // Mostrar mensaje de éxito
-      setAlertVisible(true)
-      setAlertTitle('¡Todo hecho!')
-      setAlertMessage(`${label} ha sido editado correctamente.`)
+      showAlert('¡Todo hecho!', `${label} ha sido editado correctamente.`)
     } catch (err: any) {
-      console.error('Error al actualizar el campo:', err.message)
-      setAlertVisible(true)
-      setAlertTitle('Error')
-      setAlertMessage(`No se pudo actualizar ${label}: ${err.message}`)
+      showAlert('Error', `No se pudo actualizar ${label}: ${err.message}`)
     }
 
     setEditingField(null) // Sale del modo edición
