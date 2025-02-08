@@ -128,7 +128,7 @@ function AccountInfo() {
         alert('Base64 de la imagen' + base64.substring(0, 100) + '...')
       }
     } catch (error) {
-      console.error('Error al seleccionar la imagen:', error)
+      showAlert('Ha ocurrido un error', `${error}`)
     }
   }
 
@@ -163,11 +163,12 @@ function AccountInfo() {
         'Fecha de Nacimiento': 'backend_fecha_de_nacimiento',
         Altura: 'backend_altura',
         Peso: 'backend_peso',
+        Imagen: 'backend_imagen',
       }
 
       const serverField = fieldMapping[label]
       if (!serverField) {
-        throw new Error(`Campo desconocido: ${label}`)
+        showAlert('Error', 'No se encontró el campo en el servidor.')
       }
 
       // Construir el valor a enviar al servidor
