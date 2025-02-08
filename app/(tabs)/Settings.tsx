@@ -15,6 +15,7 @@ import {
   SafeAreaView,
   StyleSheet,
   TextInput,
+  ActivityIndicator,
 } from 'react-native'
 import {useNavigation} from '@react-navigation/native'
 import Tabs from '@/components/common/Tabs'
@@ -148,18 +149,18 @@ function AccountInfo() {
       // Mapear el campo al nombre esperado por el servidor
       const fieldMapping: Record<string, string> = {
         Usuario: 'user_login',
-        Email: 'correo_electronico',
-        Nombre: 'nombre',
+        Email: 'user_email', // Asegúrate de que coincida con el nombre del campo en el servidor
+        Nombre: 'backend_nombre',
         Apellido: 'backend_apellido',
-        Descripcion: 'description',
-        NIF: 'nif',
-        Dirección: 'direccion',
-        'Código País': 'codigo_pais',
-        Teléfono: 'telefono',
-        Género: 'genero',
-        'Fecha de Nacimiento': 'fecha_de_nacimiento',
-        Altura: 'altura.valor',
-        Peso: 'peso.valor',
+        Descripcion: 'escription',
+        NIF: 'backend_nif',
+        Dirección: 'backend_direccion',
+        'Código País': 'backend_codigo_pais',
+        Teléfono: 'backend_telefono',
+        Género: 'backend_genero',
+        'Fecha de Nacimiento': 'backend_fecha_de_nacimiento',
+        Altura: 'backend_altura',
+        Peso: 'backend_peso',
       }
 
       const serverField = fieldMapping[label]
@@ -201,7 +202,6 @@ function AccountInfo() {
 
     setEditingField(null) // Sale del modo edición
   }
-
   // Función para cancelar la edición
   const cancelEdit = () => {
     setEditingField(null)
@@ -264,13 +264,22 @@ function AccountInfo() {
               </Text>
               {editingField === item.label ? (
                 <View className='flex-row items-center justify-end space-x-2'>
-                  <TextInput
-                    style={{fontFamily: 'MyriadPro'}}
-                    value={tempValue}
-                    maxLength={50}
-                    onChangeText={setTempValue}
-                    className='border border-gray-300 px-2 py-0 mr-2 rounded max-w-[70%]'
-                  />
+                  {loading ? (
+                    <ActivityIndicator
+                      size='small'
+                      className='pr-2'
+                      color={`${index % 2 == 0 ? '#B5A97C' : '#F5E6C3'}`}
+                    />
+                  ) : (
+                    <TextInput
+                      style={{fontFamily: 'MyriadPro'}}
+                      value={tempValue}
+                      maxLength={50}
+                      onChangeText={setTempValue}
+                      className={`border px-2 py-0 mr-2 rounded max-w-[70%] ${index % 2 == 0 ? 'border-[#B5A97C]' : 'border-[#F5E6C3]'}`}
+                    />
+                  )}
+
                   <TouchableOpacity onPress={() => saveEdit(item.label)}>
                     <MaterialIcons
                       name='save'
