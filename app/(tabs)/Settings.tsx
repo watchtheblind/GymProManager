@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import {useState, useEffect} from 'react'
 import {
   SafeAreaProvider,
   useSafeAreaInsets,
@@ -16,6 +16,7 @@ import {
   StyleSheet,
   TextInput,
   ActivityIndicator,
+  type TextStyle,
 } from 'react-native'
 import {useNavigation} from '@react-navigation/native'
 import Tabs from '@/components/common/Tabs'
@@ -23,6 +24,12 @@ import Header from '@/components/common/Header'
 import Avatar from '@/components/common/Avatar'
 import {useImagePicker} from '@/hooks/Settings/useImagePicker'
 import useUpdateUser from '@/hooks/Settings/useUpdateUser'
+
+interface DateOfBirthValue {
+  day: string
+  month: string
+  year: string
+}
 
 const Settings = () => {
   return (
@@ -38,7 +45,7 @@ function AccountInfo() {
   const navigation = useNavigation()
   const [activeTab, setActiveTab] = useState('basic')
   const [editingField, setEditingField] = useState<string | null>(null)
-  const [tempValue, setTempValue] = useState<string>('')
+  const [tempValue, setTempValue] = useState<string | DateOfBirthValue>('')
   const [originalValue, setOriginalValue] = useState<string>('')
   const [alertVisible, setAlertVisible] = useState(false)
   const [alertMessage, setAlertMessage] = useState('')
@@ -90,6 +97,7 @@ function AccountInfo() {
         {
           label: 'Fecha de Nacimiento',
           value: user?.meta?.backend_fecha_de_nacimiento || '(Vacío)',
+          isDateOfBirth: true,
         },
         {
           label: 'Altura',
@@ -175,13 +183,18 @@ function AccountInfo() {
   // Función para iniciar la edición de un campo
   const startEditing = (label: string, value: string | number | Date) => {
     setEditingField(label)
-    setTempValue(String(value))
+    if (label === 'Fecha de Nacimiento') {
+      const [year, month, day] = (value as string).split('-')
+      setTempValue({day, month, year})
+    } else {
+      setTempValue(String(value))
+    }
     setOriginalValue(String(value))
   }
 
   // Función para guardar los cambios
   const saveEdit = async (label: string) => {
-    if (tempValue.trim() === '') {
+    if (typeof tempValue === 'string' && tempValue.trim() === '') {
       setTempValue(originalValue)
       showAlert('Error', 'El campo no puede estar vacío.')
       return
@@ -243,13 +256,17 @@ function AccountInfo() {
       }
 
       // Construir el valor a enviar al servidor
-      let valueToSend: string | number = tempValue
+      let valueToSend: string | number | DateOfBirthValue = tempValue
       if (label === 'Altura' || label === 'Peso') {
-        const parsedValue = parseFloat(tempValue)
+        const parsedValue = Number.parseFloat(tempValue as string)
         if (isNaN(parsedValue)) {
           throw new Error('El valor debe ser un número válido.')
         }
         valueToSend = parsedValue
+      }
+      if (label === 'Fecha de Nacimiento') {
+        const {day, month, year} = tempValue as DateOfBirthValue
+        valueToSend = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
       }
 
       // Actualizar el campo en el servidor
@@ -275,6 +292,58 @@ function AccountInfo() {
   const cancelEdit = () => {
     setEditingField(null)
     setTempValue('')
+  }
+
+  const DateOfBirthInput: React.FC<{
+    value: DateOfBirthValue
+    onChange: (value: DateOfBirthValue) => void
+    style: TextStyle
+  }> = ({value, onChange, style}) => {
+    const [localValue, setLocalValue] = useState(value)
+
+    const updateLocalValue = (field: keyof DateOfBirthValue, text: string) => {
+      const newValue = {...localValue, [field]: text}
+      setLocalValue(newValue)
+
+      // Solo actualiza el valor padre si todos los campos están completos
+      if (field === 'year' && text.length === 4) {
+        onChange(newValue)
+      } else if ((field === 'day' || field === 'month') && text.length === 2) {
+        onChange(newValue)
+      }
+    }
+
+    return (
+      <View className='flex-row gap-1 space-x-1 h-11 mr-2'>
+        <TextInput
+          className='border border-[#F5E6C3] text-center rounded-xl'
+          style={[{width: 'auto'}, style]}
+          value={localValue.day}
+          onChangeText={(text) => updateLocalValue('day', text)}
+          keyboardType='numeric'
+          maxLength={2}
+          placeholder='DD'
+        />
+        <TextInput
+          className='border border-[#F5E6C3] rounded-xl'
+          style={[{width: 'auto'}, style]}
+          value={localValue.month}
+          onChangeText={(text) => updateLocalValue('month', text)}
+          keyboardType='numeric'
+          maxLength={2}
+          placeholder='MM'
+        />
+        <TextInput
+          className='border border-[#F5E6C3] rounded-xl'
+          style={[{width: 43}, style]}
+          value={localValue.year}
+          onChangeText={(text) => updateLocalValue('year', text)}
+          keyboardType='numeric'
+          maxLength={4}
+          placeholder='AAAA'
+        />
+      </View>
+    )
   }
 
   return (
@@ -326,9 +395,7 @@ function AccountInfo() {
               }`}>
               <Text
                 style={{fontFamily: 'MyriadPro'}}
-                className={`text-base ${
-                  index % 2 === 0 ? 'text-black' : 'text-white'
-                }`}>
+                className={`text-base ${index % 2 === 0 ? 'text-black' : 'text-white'}`}>
                 {item.label}
               </Text>
               {editingField === item.label ? (
@@ -339,10 +406,25 @@ function AccountInfo() {
                       className='pr-2'
                       color={`${index % 2 == 0 ? '#B5A97C' : '#F5E6C3'}`}
                     />
+                  ) : item.isDateOfBirth ? (
+                    <DateOfBirthInput
+                      value={tempValue as DateOfBirthValue}
+                      onChange={(newValue) => {
+                        setTempValue(newValue)
+                        // No es necesario llamar a saveEdit aquí
+                      }}
+                      style={
+                        {
+                          borderStyle: 'solid',
+                          borderColor: index % 2 == 0 ? '#B5A97C' : '#F5E6C3',
+                          color: index % 2 === 0 ? '#5A543E' : '#F5E6C3',
+                        } as TextStyle
+                      }
+                    />
                   ) : (
                     <TextInput
                       style={{fontFamily: 'MyriadPro'}}
-                      value={tempValue}
+                      value={tempValue as string}
                       maxLength={50}
                       onChangeText={setTempValue}
                       className={`border px-2 py-0 mr-2 rounded max-w-[70%] ${index % 2 == 0 ? 'border-[#B5A97C]' : 'border-[#F5E6C3]'}`}
@@ -367,9 +449,7 @@ function AccountInfo() {
               ) : (
                 <View className='flex-row items-center space-x-2'>
                   <Text
-                    className={`mr-2 ${
-                      index % 2 === 0 ? 'text-zinc-600' : 'text-zinc-100'
-                    }`}
+                    className={`mr-2 ${index % 2 === 0 ? 'text-zinc-600' : 'text-zinc-100'}`}
                     numberOfLines={1}
                     ellipsizeMode='tail'>
                     {item.value}
