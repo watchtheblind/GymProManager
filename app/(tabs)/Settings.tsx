@@ -1,3 +1,5 @@
+'use client'
+
 import {useState, useEffect} from 'react'
 import {
   SafeAreaProvider,
@@ -24,6 +26,7 @@ import Header from '@/components/common/Header'
 import Avatar from '@/components/common/Avatar'
 import {useImagePicker} from '@/hooks/Settings/useImagePicker'
 import useUpdateUser from '@/hooks/Settings/useUpdateUser'
+import Dropdown from '@/components/common/Dropdown'
 
 interface DateOfBirthValue {
   day: string
@@ -50,6 +53,10 @@ function AccountInfo() {
   const [alertVisible, setAlertVisible] = useState(false)
   const [alertMessage, setAlertMessage] = useState('')
   const [alertTitle, setAlertTitle] = useState('')
+  const [heightValue, setHeightValue] = useState('')
+  const [heightUnit, setHeightUnit] = useState('cm')
+  const [weightValue, setWeightValue] = useState('')
+  const [weightUnit, setWeightUnit] = useState('kg')
   const showAlert = (title: string, message: string) => {
     setAlertVisible(true)
     setAlertTitle(title)
@@ -101,11 +108,11 @@ function AccountInfo() {
         },
         {
           label: 'Altura',
-          value: JSON.parse(user?.meta?.backend_altura ?? '{}')?.valor + ' in',
+          value: `${JSON.parse(user?.meta?.backend_altura ?? '{"valor": 0, "unidad": "cm"}').valor} ${JSON.parse(user?.meta?.backend_altura ?? '{"valor": 0, "unidad": "cm"}').unidad}`,
         },
         {
           label: 'Peso',
-          value: JSON.parse(user?.meta?.backend_peso ?? '{}')?.valor + ' kg',
+          value: `${JSON.parse(user?.meta?.backend_peso ?? '{"valor": 0, "unidad": "kg"}').valor} ${JSON.parse(user?.meta?.backend_peso ?? '{"valor": 0, "unidad": "kg"}').unidad}`,
         },
       ]
     }
@@ -258,11 +265,13 @@ function AccountInfo() {
       // Construir el valor a enviar al servidor
       let valueToSend: string | number | DateOfBirthValue = tempValue
       if (label === 'Altura' || label === 'Peso') {
-        const parsedValue = Number.parseFloat(tempValue as string)
+        const value = label === 'Altura' ? heightValue : weightValue
+        const unit = label === 'Altura' ? heightUnit : weightUnit
+        const parsedValue = Number.parseFloat(value)
         if (isNaN(parsedValue)) {
           throw new Error('El valor debe ser un número válido.')
         }
-        valueToSend = parsedValue
+        valueToSend = JSON.stringify({valor: parsedValue, unidad: unit})
       }
       if (label === 'Fecha de Nacimiento') {
         const {day, month, year} = tempValue as DateOfBirthValue
@@ -406,6 +415,36 @@ function AccountInfo() {
                       className='pr-2'
                       color={`${index % 2 == 0 ? '#B5A97C' : '#F5E6C3'}`}
                     />
+                  ) : item.label === 'Altura' || item.label === 'Peso' ? (
+                    <View className='flex-row items-center justify-end'>
+                      <TextInput
+                        style={{fontFamily: 'MyriadPro'}}
+                        value={
+                          item.label === 'Altura' ? heightValue : weightValue
+                        }
+                        onChangeText={
+                          item.label === 'Altura'
+                            ? setHeightValue
+                            : setWeightValue
+                        }
+                        keyboardType='numeric'
+                        className={`border px-2 py-0 mr-2 rounded w-20 ${index % 2 == 0 ? 'border-[#B5A97C]' : 'border-[#F5E6C3]'}`}
+                      />
+                      <Dropdown
+                        options={
+                          item.label === 'Altura' ? ['cm', 'in'] : ['kg', 'lb']
+                        }
+                        selectedValue={
+                          item.label === 'Altura' ? heightUnit : weightUnit
+                        }
+                        onSelect={
+                          item.label === 'Altura'
+                            ? setHeightUnit
+                            : setWeightUnit
+                        }
+                        placeholder='Unidad'
+                      />
+                    </View>
                   ) : item.isDateOfBirth ? (
                     <DateOfBirthInput
                       value={tempValue as DateOfBirthValue}
