@@ -13,6 +13,22 @@ interface ServerResponse {
   error?: string
 }
 
+// Lista de campos permitidos para actualizar
+const ALLOWED_FIELDS = [
+  'nombre',
+  'apellido',
+  'nif',
+  'direccion',
+  'codigo_pais',
+  'telefono',
+  'correo_electronico',
+  'genero',
+  'fecha_de_nacimiento',
+  'altura',
+  'peso',
+  'imagen',
+]
+
 // Hook personalizado para actualizar datos del usuario
 const useUpdateUser = () => {
   const [loading, setLoading] = useState<boolean>(false)
@@ -32,6 +48,11 @@ const useUpdateUser = () => {
     setError(null)
 
     try {
+      // Validar si el campo está en la lista de campos permitidos
+      if (!ALLOWED_FIELDS.includes(field)) {
+        throw new Error(`El campo "${field}" no está permitido.`)
+      }
+
       // Construir el objeto de usuario con el campo específico
       const userData: UserUpdateData = {
         ID: userId,
