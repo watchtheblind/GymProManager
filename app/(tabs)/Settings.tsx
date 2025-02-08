@@ -143,9 +143,7 @@ function AccountInfo() {
   const saveEdit = async (label: string) => {
     if (tempValue.trim() === '') {
       setTempValue(originalValue)
-      setAlertVisible(true)
-      setAlertMessage('El campo no puede estar vacío.')
-      setAlertTitle('Error')
+      showAlert('Error', 'El campo no puede estar vacío.')
       return
     }
 
