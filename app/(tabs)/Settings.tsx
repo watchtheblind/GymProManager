@@ -130,13 +130,11 @@ function AccountInfo() {
       // Validar que se haya obtenido la imagen en base64
       if (!base64) {
         throw new Error('No se pudo obtener la imagen en formato base64.')
-        return
       }
 
       // Validar el formato del base64
       if (!base64.startsWith('data:image/')) {
         throw new Error('El formato de la imagen no es válido.')
-        return
       }
 
       // Mostrar un mensaje con el inicio del base64 para depuración
