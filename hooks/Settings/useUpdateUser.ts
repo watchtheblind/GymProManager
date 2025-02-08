@@ -15,13 +15,13 @@ interface ServerResponse {
 
 // Lista de campos permitidos para actualizar
 const ALLOWED_FIELDS = [
+  'correo_electronico',
   'nombre',
   'apellido',
   'nif',
   'direccion',
   'codigo_pais',
   'telefono',
-  'correo_electronico',
   'genero',
   'fecha_de_nacimiento',
   'altura',

@@ -148,7 +148,7 @@ function AccountInfo() {
     }
 
     try {
-      // Mapear el campo al nombre esperado por el servidor
+      // Mapeo original (fieldMapping) - NO SE MODIFICA
       const fieldMapping: Record<string, string> = {
         Usuario: 'user_login',
         Email: 'user_email', // Asegúrate de que coincida con el nombre del campo en el servidor
@@ -166,9 +166,40 @@ function AccountInfo() {
         Imagen: 'backend_imagen',
       }
 
-      const serverField = fieldMapping[label]
-      if (!serverField) {
+      // Nuevo mapeo para convertir los nombres del servidor a los nombres deseados
+      const serverFieldMapping: Record<string, string> = {
+        user_login: 'user_login', // No cambia
+        user_email: 'correo_electronico',
+        backend_nombre: 'nombre',
+        backend_apellido: 'apellido',
+        description: 'description', // No cambia
+        backend_nif: 'nif',
+        backend_direccion: 'direccion',
+        backend_codigo_pais: 'codigo_pais',
+        backend_telefono: 'telefono',
+        backend_genero: 'genero',
+        backend_fecha_de_nacimiento: 'fecha_de_nacimiento',
+        backend_altura: 'altura',
+        backend_peso: 'peso',
+        backend_imagen: 'imagen',
+      }
+
+      // Obtener el campo del fieldMapping
+      const mappedField = fieldMapping[label]
+      if (!mappedField) {
         showAlert('Error', 'No se encontró el campo en el servidor.')
+        return
+      }
+
+      // Convertir el campo al nombre deseado usando serverFieldMapping
+      const serverField = serverFieldMapping[mappedField]
+      const LocalField = fieldMapping[label]
+      if (!serverField) {
+        showAlert(
+          'Error',
+          'No se pudo mapear el campo al formato del servidor.',
+        )
+        return
       }
 
       // Construir el valor a enviar al servidor
@@ -190,7 +221,7 @@ function AccountInfo() {
       )
 
       // Actualizar el campo en el estado local y AsyncStorage
-      await updateUserField(serverField, valueToSend)
+      await updateUserField(LocalField, valueToSend)
 
       // Mostrar mensaje de éxito
       showAlert('¡Todo hecho!', `${label} ha sido editado correctamente.`)
