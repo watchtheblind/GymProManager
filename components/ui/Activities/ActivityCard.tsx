@@ -14,6 +14,7 @@ interface ActivityCardProps {
   onToggleFavorite: () => void
   userId: string
   token: string
+  action: string
 }
 
 export const ActivityCard: React.FC<ActivityCardProps> = ({
@@ -22,6 +23,7 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
   onToggleFavorite,
   userId,
   token,
+  action,
 }) => {
   const activityDateTime = moment(activity.fechahora, 'YYYY-MM-DD HH:mm:ss')
   const activityTime = activityDateTime.format('h:mm A')
@@ -36,7 +38,13 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
   const closeAlert = () => setIsAlertVisible(false)
 
   const confirmSignUp = async () => {
-    const result = await handleSignUp(token, userId, activity.ID)
+    const result = await handleSignUp(
+      token,
+      userId,
+      activity.ID,
+      activity.fechahora,
+      action,
+    )
     if (result.success) {
       setAlertTitle('Éxito')
       setAlertMessage('Te has inscrito correctamente en la actividad.')
