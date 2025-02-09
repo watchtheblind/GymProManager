@@ -14,7 +14,9 @@ interface ActivityCardProps {
   onToggleFavorite: () => void
   userId: string
   token: string
-  action: string
+  isSignedUp: boolean // Nuevo prop para indicar si el usuario está anotado
+  onSignUpChange: (isSignedUp: boolean) => void // Nuevo prop para notificar cambios
+  action?: string // Agregar action como propiedad opcional
 }
 
 export const ActivityCard: React.FC<ActivityCardProps> = ({
@@ -23,7 +25,8 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
   onToggleFavorite,
   userId,
   token,
-  action,
+  isSignedUp: initialIsSignedUp,
+  onSignUpChange,
 }) => {
   const activityDateTime = moment(activity.fechahora, 'YYYY-MM-DD HH:mm:ss')
   const activityTime = activityDateTime.format('h:mm A')
@@ -32,22 +35,30 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
   const [isAlertVisible, setIsAlertVisible] = useState(false)
   const [alertTitle, setAlertTitle] = useState('')
   const [alertMessage, setAlertMessage] = useState('')
+  const [isSignedUp, setIsSignedUp] = useState(initialIsSignedUp)
 
   const openModal = () => setIsModalVisible(true)
   const closeModal = () => setIsModalVisible(false)
   const closeAlert = () => setIsAlertVisible(false)
 
   const confirmSignUp = async () => {
+    const actionToUse = isSignedUp ? 'delete' : 'add' // Usa un nombre diferente para evitar conflictos
     const result = await handleSignUp(
       token,
       userId,
       activity.ID,
       activity.fechahora,
-      action,
+      actionToUse, // Usa la variable local `actionToUse`
     )
     if (result.success) {
+      setIsSignedUp(!isSignedUp) // Cambiar el estado local
+      onSignUpChange(!isSignedUp) // Notificar al componente padre
       setAlertTitle('Éxito')
-      setAlertMessage('Te has inscrito correctamente en la actividad.')
+      setAlertMessage(
+        isSignedUp
+          ? 'Te has salido correctamente de la actividad.'
+          : 'Te has inscrito correctamente en la actividad.',
+      )
     } else {
       setAlertTitle('Error')
       setAlertMessage(result.error || 'Ocurrió un error inesperado.')
@@ -100,14 +111,24 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
 
       <TouchableOpacity
         onPress={openModal}
-        style={styles.badgeContainer}>
-        <Text style={styles.badgeText}>Anotarme</Text>
+        style={[
+          styles.badgeContainer,
+          isSignedUp && styles.badgeContainerSignedUp, // Aplicar estilo condicional
+        ]}>
+        <Text
+          style={[styles.badgeText, isSignedUp && styles.badgeTextSignedUp]}>
+          {isSignedUp ? 'Salirme' : 'Anotarme'}
+        </Text>
       </TouchableOpacity>
 
       <ConfirmationModal
         visible={isModalVisible}
         title='Confirmar'
-        message='¿Estás seguro de querer anotarte?'
+        message={
+          isSignedUp
+            ? '¿Estás seguro de querer salirte de la actividad?'
+            : '¿Estás seguro de querer anotarte en la actividad?'
+        }
         onAccept={confirmSignUp}
         onClose={closeModal}
       />
@@ -171,18 +192,24 @@ const styles = StyleSheet.create({
   },
   badgeContainer: {
     position: 'absolute',
-    bottom: 8,
-    right: 8,
-    backgroundColor: '#14b8a6',
+    bottom: 14,
+    right: 15,
+    backgroundColor: '#14b8a6', // Color por defecto (verde)
     paddingVertical: 4,
     paddingHorizontal: 8,
     borderRadius: 12,
+  },
+  badgeContainerSignedUp: {
+    backgroundColor: '#ef4444', // Color rojizo cuando el usuario está anotado
   },
   badgeText: {
     color: 'white',
     fontSize: 12,
     fontWeight: '500',
     fontFamily: 'MyriadPro',
+  },
+  badgeTextSignedUp: {
+    color: 'white', // Color del texto cuando el usuario está anotado
   },
 })
 

@@ -17,6 +17,7 @@ export interface Activity {
   capacidad: number
   inscritos: string // Cambiado a string para coincidir con la respuesta JSON
   disponibles: number
+  action?: string
 }
 
 export const useActivities = (selectedDate: Date) => {
