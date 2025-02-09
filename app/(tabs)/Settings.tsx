@@ -107,11 +107,11 @@ function AccountInfo() {
           isDateOfBirth: true,
         },
         {
-          label: 'Altura',
+          label: 'altura',
           value: `${JSON.parse(user?.meta?.backend_altura ?? '{"valor": 0, "unidad": "cm"}').valor} ${JSON.parse(user?.meta?.backend_altura ?? '{"valor": 0, "unidad": "cm"}').unidad}`,
         },
         {
-          label: 'Peso',
+          label: 'peso',
           value: `${JSON.parse(user?.meta?.backend_peso ?? '{"valor": 0, "unidad": "kg"}').valor} ${JSON.parse(user?.meta?.backend_peso ?? '{"valor": 0, "unidad": "kg"}').unidad}`,
         },
       ]
@@ -221,8 +221,8 @@ function AccountInfo() {
         Teléfono: 'backend_telefono',
         Género: 'backend_genero',
         'Fecha de Nacimiento': 'backend_fecha_de_nacimiento',
-        Altura: 'backend_altura',
-        Peso: 'backend_peso',
+        altura: 'backend_altura',
+        peso: 'backend_peso',
         Imagen: 'backend_imagen',
       }
 
@@ -261,17 +261,27 @@ function AccountInfo() {
         )
         return
       }
+      type MeasurementValue = {
+        valor: number
+        unidad: string
+      }
 
       // Construir el valor a enviar al servidor
-      let valueToSend: string | number | DateOfBirthValue = tempValue
-      if (label === 'Altura' || label === 'Peso') {
-        const value = label === 'Altura' ? heightValue : weightValue
-        const unit = label === 'Altura' ? heightUnit : weightUnit
+      let valueToSend: string | number | DateOfBirthValue | MeasurementValue =
+        tempValue
+      if (label === 'altura' || label === 'peso') {
+        const value = label === 'altura' ? heightValue : weightValue
+        const unit = label === 'altura' ? heightUnit : weightUnit
         const parsedValue = Number.parseFloat(value)
         if (isNaN(parsedValue)) {
           throw new Error('El valor debe ser un número válido.')
         }
-        valueToSend = JSON.stringify({valor: parsedValue, unidad: unit})
+        const measurementValue: MeasurementValue = {
+          valor: parsedValue,
+          unidad: unit,
+        }
+        valueToSend = measurementValue
+        alert(valueToSend)
       }
       if (label === 'Fecha de Nacimiento') {
         const {day, month, year} = tempValue as DateOfBirthValue
@@ -415,15 +425,15 @@ function AccountInfo() {
                       className='pr-2'
                       color={`${index % 2 == 0 ? '#B5A97C' : '#F5E6C3'}`}
                     />
-                  ) : item.label === 'Altura' || item.label === 'Peso' ? (
+                  ) : item.label === 'altura' || item.label === 'peso' ? (
                     <View className='flex-row items-center justify-end'>
                       <TextInput
                         style={{fontFamily: 'MyriadPro'}}
                         value={
-                          item.label === 'Altura' ? heightValue : weightValue
+                          item.label === 'altura' ? heightValue : weightValue
                         }
                         onChangeText={
-                          item.label === 'Altura'
+                          item.label === 'altura'
                             ? setHeightValue
                             : setWeightValue
                         }
@@ -432,13 +442,13 @@ function AccountInfo() {
                       />
                       <Dropdown
                         options={
-                          item.label === 'Altura' ? ['cm', 'in'] : ['kg', 'lb']
+                          item.label === 'altura' ? ['cm', 'in'] : ['kg', 'lb']
                         }
                         selectedValue={
-                          item.label === 'Altura' ? heightUnit : weightUnit
+                          item.label === 'altura' ? heightUnit : weightUnit
                         }
                         onSelect={
-                          item.label === 'Altura'
+                          item.label === 'altura'
                             ? setHeightUnit
                             : setWeightUnit
                         }
