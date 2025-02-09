@@ -1,14 +1,19 @@
-import type React from 'react'
+import React from 'react'
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native'
 import {GestureHandlerRootView} from 'react-native-gesture-handler'
-import {Swipeable} from 'react-native-gesture-handler'
-import type {Notification} from '@/hooks/Notifications/useFetchNotifications'
 
+// Interfaz para las props
 interface NotificationCardProps {
-  notification: Notification
-  onDelete: () => void
+  notification: {
+    titulo: string
+    texto: string
+    fechahora: string
+    tipo: string
+  }
+  onDelete?: () => void // Función opcional para eliminar
 }
 
+// Función para determinar los colores según el tipo de notificación
 const getBackgroundColor = (tipo: string) => {
   switch (tipo.toLowerCase()) {
     case 'aviso':
@@ -22,48 +27,41 @@ const getBackgroundColor = (tipo: string) => {
   }
 }
 
+// Componente principal
 const NotificationCard: React.FC<NotificationCardProps> = ({
   notification,
   onDelete,
 }) => {
   const colors = getBackgroundColor(notification.tipo)
 
-  const handleSwipeableOpen = (direction: 'left' | 'right') => {
-    if (direction === 'left') {
-      onDelete()
-    }
-  }
-
   return (
     <GestureHandlerRootView>
-      <Swipeable
-        onSwipeableOpen={handleSwipeableOpen}
-        friction={2}
-        leftThreshold={80}>
-        <TouchableOpacity
-          style={[
-            styles.notificationItem,
-            {
-              backgroundColor: colors.backgroundColor,
-              borderColor: colors.borderColor,
-              borderWidth: 2,
-            },
-          ]}>
-          <View style={styles.leftContent}>
-            <View style={styles.textContainer}>
-              <Text style={styles.title}>{notification.titulo}</Text>
-              <Text style={styles.text}>{notification.texto}</Text>
-              <Text style={styles.time}>
-                {new Date(notification.fechahora).toLocaleString()}
-              </Text>
-            </View>
+      <TouchableOpacity
+        style={[
+          styles.notificationItem,
+          {
+            backgroundColor: colors.backgroundColor,
+            borderColor: colors.borderColor,
+            borderWidth: 2,
+          },
+        ]}
+        onPress={onDelete} // Ejecuta onDelete cuando se presiona el card
+      >
+        <View style={styles.leftContent}>
+          <View style={styles.textContainer}>
+            <Text style={styles.title}>{notification.titulo}</Text>
+            <Text style={styles.text}>{notification.texto}</Text>
+            <Text style={styles.time}>
+              {new Date(notification.fechahora).toLocaleString()}
+            </Text>
           </View>
-        </TouchableOpacity>
-      </Swipeable>
+        </View>
+      </TouchableOpacity>
     </GestureHandlerRootView>
   )
 }
 
+// Estilos
 const styles = StyleSheet.create({
   notificationItem: {
     flexDirection: 'row',
