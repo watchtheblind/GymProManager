@@ -4,20 +4,13 @@ import {MaterialIcons} from '@expo/vector-icons' // Importamos MaterialIcons
 import moment from 'moment'
 import ConfirmationModal from '../../common/ConfirmationModal'
 import CustomAlert from '../../common/Alert'
+import {Activity} from '@/hooks/Activities/useActivities'
 
 interface ActivityCardProps {
-  activity: {
-    id: number
-    name: string
-    time: string
-    Instructor: string
-    available: number
-    capacity: number
-    type: 'yoga' | 'cardio' | 'pilates' | 'strength' | 'dance' | string
-  }
+  activity: Activity // Usamos la interfaz Activity
   isFavorite: boolean
   onToggleFavorite: () => void
-  userId: number // ID del usuario
+  userId: string // ID del usuario
   token: string // Token de autorización
 }
 
@@ -39,7 +32,7 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
   userId,
   token,
 }) => {
-  const activityDateTime = moment(activity.time, 'MMM DD, YYYY h:mm A')
+  const activityDateTime = moment(activity.fechahora, 'YYYY-MM-DD HH:mm:ss') // Ajustamos el formato de fecha
   const activityTime = activityDateTime.format('h:mm A')
 
   // Estados para controlar los modales
@@ -58,15 +51,15 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
           },
-          body: `token=${token}&userid=${userId}&activityid=${activity.id}`,
+          body: `token=${token}&userid=${userId}&activityid=${activity.ID}`, // Usamos activity.ID
         },
       )
 
       const data = await response.json()
-      console.log('Activity ID:', activity.id)
+      console.log('Activity ID:', activity.ID)
       console.log(
         'Request body:',
-        `token=${token}&activityid=${activity.id}&userid=${userId}`,
+        `token=${token}&activityid=${activity.ID}&userid=${userId}`,
       )
       if (data.success) {
         setAlertTitle('Éxito')
@@ -111,24 +104,27 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
     <View
       style={[
         styles.card,
-        {backgroundColor: `${getActivityTypeColor(activity.type)}20`},
+        {backgroundColor: `${getActivityTypeColor(activity.tipo)}20`}, // Usamos activity.tipo
       ]}>
       <View style={styles.contentContainer}>
         <View style={styles.typeContainer}>
           <Text
             style={[
               styles.typeText,
-              {color: getActivityTypeColor(activity.type)},
+              {color: getActivityTypeColor(activity.tipo)}, // Usamos activity.tipo
             ]}>
-            {activity.type.toUpperCase() + activity.id + typeof userId}
+            {activity.tipo.toUpperCase() + activity.ID + typeof userId}
           </Text>
         </View>
-        <Text style={styles.name}>{activity.name}</Text>
+        <Text style={styles.name}>{activity.nombre}</Text>{' '}
+        {/* Usamos activity.nombre */}
         <Text style={styles.details}>
-          {activityTime} - {activity.Instructor}
+          {activityTime} - {activity.entrenador}{' '}
+          {/* Usamos activity.entrenador */}
         </Text>
         <Text style={styles.details}>
-          Disponibles: {activity.available}/{activity.capacity}
+          Disponibles: {activity.disponibles}/{activity.capacidad}{' '}
+          {/* Usamos activity.disponibles y activity.capacidad */}
         </Text>
       </View>
 

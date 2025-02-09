@@ -4,14 +4,19 @@ import moment from 'moment'
 const API_URL = 'https://gympromanager.com/app-activities.php'
 const TOKEN = 'Contraseña...'
 
-interface Activity {
-  id: number
-  name: string
-  time: string
-  type: string
-  capacity: number
-  available: number
-  Instructor: string
+export interface Activity {
+  ID: string // Cambiado a string para coincidir con la respuesta JSON
+  nombre: string
+  descripcion: string
+  tipo: string
+  fechahora: string // Formato: YYYY-MM-DD HH:mm:ss
+  duracion: string
+  lugar: string
+  recurrencia: string
+  entrenador: string
+  capacidad: number
+  inscritos: string // Cambiado a string para coincidir con la respuesta JSON
+  disponibles: number
 }
 
 export const useActivities = (selectedDate: Date) => {
@@ -41,9 +46,7 @@ export const useActivities = (selectedDate: Date) => {
         const formattedDate = moment(selectedDate).format('YYYY-MM-DD')
         const filteredData = data.filter(
           (activity: Activity) =>
-            moment(activity.time, 'MMM DD, YYYY h:mm A').format(
-              'YYYY-MM-DD',
-            ) === formattedDate,
+            moment(activity.fechahora).format('YYYY-MM-DD') === formattedDate,
         )
 
         setActivities(filteredData)

@@ -18,22 +18,12 @@ import Settingsbutton from '@/components/ui/Settingsbutton'
 import useBackHandler from '@/hooks/Common/useBackHandler'
 import {useFilter} from '@/hooks/Common/useFilter'
 import {useSession} from '@/hooks/SessionContext'
+import {Activity} from '@/hooks/Activities/useActivities'
 // Definimos la interfaz para las fechas
 interface DateInfo {
   date: Date
   day: number
   month: string
-}
-
-// Definimos la interfaz para las actividades
-interface Activity {
-  id: number
-  name: string
-  time: string
-  type: string
-  capacity: number
-  available: number
-  Instructor: string
 }
 
 const getNextTwoWeeks = (): DateInfo[] => {
@@ -68,17 +58,16 @@ const Activities: React.FC = () => {
     return true
   })
 
-  // Usamos el hook useFilter para filtrar las actividades
+  // Usamos el hook useFilter para filtrar las actividades favoritas
   const filteredActivities = useFilter<Activity>({
     searchQuery,
     showFavorites,
-    favorites: favorites.map(Number), // Convertimos los favoritos a strings
+    favorites: favorites.map(String), // Convertimos los favoritos a strings
     data: activities,
-    searchKeys: ['name'], // Clave de búsqueda
+    searchKeys: ['nombre'], // Clave de búsqueda
   })
 
   const dates = getNextTwoWeeks()
-
   return (
     <SafeAreaView style={styles.container}>
       <View
@@ -87,12 +76,10 @@ const Activities: React.FC = () => {
         <Text style={styles.title}>ACTIVIDADES</Text>
         <Settingsbutton />
       </View>
-
       <SearchBar
         onSearch={setSearchQuery}
         onClear={() => setSearchQuery('')}
       />
-
       <View style={styles.favoritesToggle}>
         <Switch
           value={showFavorites}
@@ -106,13 +93,12 @@ const Activities: React.FC = () => {
           Ver mis favoritas
         </Text>
       </View>
-
       <Text
         style={styles.dateInstructions}
         className='text-xl'>
         Selecciona una <Text style={styles.highlightText}>fecha</Text>
       </Text>
-
+      {/*carrusel de fechas (hasta 2 semanas) */}
       <FlatList
         horizontal
         data={dates}
@@ -130,7 +116,6 @@ const Activities: React.FC = () => {
         keyExtractor={(item) => item.date.toISOString()}
         style={styles.dateList}
       />
-
       {error ? (
         <Text style={styles.error}>{error}</Text>
       ) : loading ? (
@@ -144,25 +129,25 @@ const Activities: React.FC = () => {
           No hay actividades disponibles para esta fecha.
         </Text>
       ) : (
+        /*lista de actividades para el día */
         <FlatList
           data={filteredActivities}
           renderItem={({item}) => (
             <ActivityCard
               activity={{
                 ...item,
-                id: item.id, // Convertir id a string para ActivityCard
+                ID: item.ID,
               }}
-              isFavorite={favorites.includes(item.id)} // Convertir id a string para comparar
-              onToggleFavorite={() => toggleFavorite(item.id)} // Convertir id a string
-              userId={user?.ID || NaN} // Pasar el ID del usuario
+              isFavorite={favorites.includes(item.ID)} // Convertir id a string para comparar
+              onToggleFavorite={() => toggleFavorite(item.ID)} // Convertir id a string
+              userId={user?.ID.toString() || ''} // Pasar el ID del usuario
               token={'Contraseña...'} // Pasar el token de autorización
             />
           )}
-          keyExtractor={(item) => item.id.toString()} // Convertir id a string
+          keyExtractor={(item) => item.ID} // Convertir id a string
           style={styles.activityList}
         />
       )}
-
       <Text style={styles.footer}>GYM PRO MANAGER</Text>
     </SafeAreaView>
   )
