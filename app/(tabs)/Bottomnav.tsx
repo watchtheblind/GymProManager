@@ -3,7 +3,7 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
 import {View, Text, StyleSheet, Platform} from 'react-native'
 import Home from './Home'
 import Profile from './Profile'
-import NotificationsScreen from './Homesections/Notifications'
+import Notifications from './Homesections/Notifications'
 import {
   Dumbbellicon,
   Profileicon,
@@ -38,7 +38,7 @@ export default function BottomTabs() {
         />
         <Tab.Screen
           name='HoyTienes'
-          component={NotificationsScreen}
+          component={Notifications}
           options={{
             tabBarLabel: 'Hoy tienes',
             tabBarIcon: ({color, size}) => (
