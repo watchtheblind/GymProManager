@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {act, useState} from 'react'
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native'
 import {MaterialIcons} from '@expo/vector-icons' // Importamos MaterialIcons
 import moment from 'moment'
@@ -16,7 +16,7 @@ interface ActivityCardProps {
 
 const getActivityTypeColor = (type: string): string => {
   const colors: Record<string, string> = {
-    yoga: '#4FD1C5',
+    YOGA: '#4FD1C5',
     cardio: '#ED8936',
     pilates: '#A0D2EB',
     strength: '#F06292',
@@ -104,38 +104,41 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
     <View
       style={[
         styles.card,
-        {backgroundColor: `${getActivityTypeColor(activity.tipo)}20`}, // Usamos activity.tipo
+        {backgroundColor: `${getActivityTypeColor(activity.tipo)}20`},
       ]}>
       <View style={styles.contentContainer}>
         <View style={styles.typeContainer}>
           <Text
             style={[
               styles.typeText,
-              {color: getActivityTypeColor(activity.tipo)}, // Usamos activity.tipo
+              {color: getActivityTypeColor(activity.tipo)},
             ]}>
-            {activity.tipo.toUpperCase() + activity.ID + typeof userId}
+            {activity.tipo.toUpperCase()}
           </Text>
         </View>
-        <Text style={styles.name}>{activity.nombre}</Text>{' '}
-        {/* Usamos activity.nombre */}
+        <Text style={styles.name}>{activity.nombre}</Text>
         <Text style={styles.details}>
-          {activityTime} - {activity.entrenador}{' '}
-          {/* Usamos activity.entrenador */}
+          {activityTime} - {activity.entrenador} | {activity.lugar}
         </Text>
-        <Text style={styles.details}>
-          Disponibles: {activity.disponibles}/{activity.capacidad}{' '}
-          {/* Usamos activity.disponibles y activity.capacidad */}
-        </Text>
+        <Text style={styles.details}>Duración: {activity.duracion}</Text>
+        {activity.disponibles === 0 ? (
+          <Text style={styles.textUnavailable}>
+            Agotados: {activity.inscritos}/{activity.capacidad}
+          </Text>
+        ) : (
+          <Text style={styles.textAvailable}>
+            Disponibles: {activity.disponibles}/{activity.capacidad}
+          </Text>
+        )}
       </View>
 
-      {/* Botón de favoritos */}
       <TouchableOpacity
         onPress={onToggleFavorite}
         style={styles.favoriteButton}>
         <MaterialIcons
-          name={isFavorite ? 'favorite' : 'favorite-border'} // Ícono de favorito
+          name={isFavorite ? 'favorite' : 'favorite-border'}
           size={24}
-          color={isFavorite ? '#fbbf24' : '#fff'} // Color amarillo si está favorito, blanco si no
+          color={isFavorite ? '#fbbf24' : '#fff'}
         />
       </TouchableOpacity>
 
@@ -186,6 +189,16 @@ const styles = StyleSheet.create({
   typeText: {
     fontSize: 12,
     fontWeight: '500',
+    fontFamily: 'MyriadPro',
+  },
+  textUnavailable: {
+    color: '#ef4444',
+    fontSize: 14,
+    fontFamily: 'MyriadPro',
+  },
+  textAvailable: {
+    color: '#4ade80',
+    fontSize: 14,
     fontFamily: 'MyriadPro',
   },
   name: {
