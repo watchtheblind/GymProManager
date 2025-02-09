@@ -29,7 +29,7 @@ export default function Login() {
   const [isFormValid, setIsFormValid] = useState(false)
 
   const redirectToRegister = useCallback(() => {
-    router.navigate('./Signup')
+    null
   }, [])
 
   const validateField = (field: keyof LoginFormData, value: string) => {
