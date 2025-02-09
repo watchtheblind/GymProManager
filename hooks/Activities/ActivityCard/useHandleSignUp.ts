@@ -2,6 +2,8 @@ export const handleSignUp = async (
   token: string,
   userId: string,
   activityId: string,
+  fechahora: string,
+  action: string,
 ) => {
   try {
     const response = await fetch(
@@ -11,7 +13,7 @@ export const handleSignUp = async (
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: `token=${token}&userid=${userId}&activityid=${activityId}`,
+        body: `token=${token}&userid=${userId}&activityid=${activityId}&fechahora=${fechahora}&action=${action}`,
       },
     )
 
