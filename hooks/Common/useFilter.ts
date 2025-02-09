@@ -3,12 +3,12 @@ import {useCallback} from 'react'
 interface FilterOptions<T> {
   searchQuery: string
   showFavorites: boolean
-  favorites: Number[]
+  favorites: String[]
   data: T[]
   searchKeys: (keyof T)[]
 }
 
-export const useFilter = <T extends {id: number}>({
+export const useFilter = <T extends {ID: string}>({
   searchQuery,
   showFavorites,
   favorites,
@@ -29,7 +29,7 @@ export const useFilter = <T extends {id: number}>({
 
     // Filtrado por favoritos
     if (showFavorites) {
-      filtered = filtered.filter((item) => favorites.includes(item.id))
+      filtered = filtered.filter((item) => favorites.includes(item.ID))
     }
 
     return filtered
