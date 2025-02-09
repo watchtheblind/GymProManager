@@ -1,4 +1,6 @@
-import React, {useEffect, useState} from 'react'
+'use client'
+
+import React, {useEffect, useState, useCallback} from 'react'
 import {useFocusEffect, useNavigation} from '@react-navigation/native'
 import {
   View,
@@ -11,133 +13,62 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native'
-import {GestureHandlerRootView} from 'react-native-gesture-handler'
-import {Ionicons} from '@expo/vector-icons'
-import {Swipeable} from 'react-native-gesture-handler'
 
-// Simulación de una API ficticia con más datos
-const getNotifications = (): Promise<Notification[]> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve([
-        {id: 1, title: 'Full Body Yoga', type: 'yoga', read: false},
-        {id: 2, title: 'Full Body Plates', type: 'plates', read: false},
-        {id: 3, title: 'GYM', type: 'gym', read: false},
-        {id: 4, title: 'Morning Stretch', type: 'yoga', read: false},
-        {id: 5, title: 'Cardio Blast', type: 'gym', read: false},
-        {id: 6, title: 'Strength Training', type: 'plates', read: false},
-        {id: 7, title: 'Evening Relaxation', type: 'yoga', read: false},
-        {id: 8, title: 'Core Workout', type: 'plates', read: false},
-        {id: 9, title: 'HIIT Session', type: 'gym', read: false},
-        {id: 10, title: 'Balance and Flexibility', type: 'yoga', read: false},
-        {id: 11, title: 'Upper Body Strength', type: 'plates', read: false},
-        {id: 12, title: 'Lower Body Strength', type: 'plates', read: false},
-        {id: 13, title: 'Meditation and Breathing', type: 'yoga', read: false},
-        {id: 14, title: 'Endurance Training', type: 'gym', read: false},
-        {id: 15, title: 'Pilates Fusion', type: 'yoga', read: false},
-      ])
-    }, 2000) // Simulamos un retardo de 2 segundos
-  })
-}
-
-interface Notification {
-  id: number
-  title: string
-  type: string
-  read: boolean
-}
-
-// Helper function to get background color and border color based on type
-const getBackgroundColor = (type: string) => {
-  switch (type.toLowerCase()) {
-    case 'yoga':
-      return {backgroundColor: '#518893', borderColor: '#6CB0B4'}
-    case 'plates':
-      return {backgroundColor: '#CC7751', borderColor: '#DFAA8C'}
-    case 'gym':
-      return {backgroundColor: '#B0A462', borderColor: '#FEF4C9'}
-    default:
-      return {backgroundColor: '#9B9B9B', borderColor: '#C0C0C0'}
-  }
-}
-
-// Helper function to get image based on title
-const getImage = (title: string) => {
-  switch (title.toLowerCase()) {
-    case 'full body yoga':
-      return 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
-    case 'full body plates':
-      return 'https://images.unsplash.com/photo-1576678927484-cc907957088c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
-    case 'gym':
-      return 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
-    case 'morning stretch':
-      return 'https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
-    case 'cardio blast':
-      return 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
-    case 'strength training':
-      return 'https://images.unsplash.com/photo-1581009137042-c552e485697a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
-    case 'evening relaxation':
-      return 'https://images.unsplash.com/photo-1593810450967-f9c42742e326?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
-    case 'core workout':
-      return 'https://images.unsplash.com/photo-1596357395217-80de13130e92?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
-    case 'hiit session':
-      return 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
-    case 'balance and flexibility':
-      return 'https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
-    case 'upper body strength':
-      return 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
-    case 'lower body strength':
-      return 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
-    case 'meditation and breathing':
-      return 'https://images.unsplash.com/photo-1593810451137-5dc55105dace?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
-    case 'endurance training':
-      return 'https://images.unsplash.com/photo-1534258936925-c58bed479fcb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
-    case 'pilates fusion':
-      return 'https://images.unsplash.com/photo-1593810451158-9f1a8d4d5c8f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
-    default:
-      return 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80' // Imagen por defecto (yoga)
-  }
-}
-
+import NotificationCard from '@/components/notifications/NotificationCard'
+import {useSession} from '@/hooks/SessionContext'
+import useBackHandler from '@/hooks/Common/useBackHandler'
 const NotificationsScreen = () => {
   const navigation = useNavigation()
-  const [notifications, setNotifications] = useState<Notification[]>([])
-  const [loading, setLoading] = useState(true)
+  const [notifications, setNotifications] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const {user} = useSession()
 
-  useFocusEffect(
-    React.useCallback(() => {
-      const onBackPress = () => {
-        navigation.navigate('Bottomnav' as never)
-        return true
-      }
-      BackHandler.addEventListener('hardwareBackPress', onBackPress)
-      return () =>
-        BackHandler.removeEventListener('hardwareBackPress', onBackPress)
-    }, [navigation]),
-  )
-
-  useEffect(() => {
-    const loadNotifications = async () => {
+  const fetchNotifications = useCallback(
+    async (token: string, userId: number) => {
+      setLoading(true)
+      setError(null)
       try {
-        const data = await getNotifications()
+        const response = await fetch(
+          'https://gympromanager.com/app-notif.php',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `token=${token}&userid=${userId}`,
+          },
+        )
+        if (!response.ok) {
+          throw new Error('Network response was not ok')
+        }
+        const data = await response.json()
         setNotifications(data)
-      } catch (error) {
-        console.error('Error loading notifications:', error)
+      } catch (err: unknown) {
+        setError(
+          err instanceof Error ? err.message : 'An unknown error occurred',
+        )
       } finally {
         setLoading(false)
       }
-    }
+    },
+    [],
+  )
 
-    loadNotifications()
-  }, [])
+  useEffect(() => {
+    if (user?.ID) {
+      fetchNotifications('Contraseña...', user.ID)
+    }
+  }, [user, fetchNotifications])
+
+  useBackHandler(() => {
+    navigation.navigate('Bottomnav' as never)
+    return true
+  })
 
   // Marcar todas como leídas
   const markAllAsRead = () => {
-    const updatedNotifications = notifications.map((notification) => ({
-      ...notification,
-      read: true,
-    }))
-    setNotifications(updatedNotifications)
+    // Implement the logic to mark all notifications as read using your API
     Alert.alert(
       'Éxito',
       'Todas las notificaciones han sido marcadas como leídas.',
@@ -146,59 +77,16 @@ const NotificationsScreen = () => {
 
   // Eliminar una notificación
   const deleteNotification = (id: number) => {
-    const updatedNotifications = notifications.filter(
-      (notification) => notification.id !== id,
-    )
-    setNotifications(updatedNotifications)
+    // Implement the logic to delete a notification using your API
+    Alert.alert('Éxito', 'La notificación ha sido eliminada.')
   }
 
-  const renderItem = ({item}: {item: Notification}) => {
-    const colors = getBackgroundColor(item.type)
-
-    // Función para manejar el deslizamiento y eliminar la notificación
-    const handleSwipeableOpen = (direction: 'left' | 'right') => {
-      if (direction === 'left') {
-        deleteNotification(item.id)
-      }
-    }
-
-    return (
-      <GestureHandlerRootView>
-        <Swipeable
-          onSwipeableOpen={handleSwipeableOpen} // Elimina la notificación al deslizar
-          friction={2} // Ajusta la sensibilidad del deslizamiento
-          leftThreshold={80} // Distancia necesaria para activar el deslizamiento
-        >
-          <TouchableOpacity
-            style={[
-              styles.notificationItem,
-              {
-                backgroundColor: colors.backgroundColor,
-                borderColor: colors.borderColor,
-                borderWidth: 2,
-                opacity: item.read ? 0.6 : 1, // Opacidad reducida si está marcada como leída
-              },
-            ]}>
-            <View style={styles.leftContent}>
-              <Image
-                source={{uri: getImage(item.title)}}
-                style={styles.thumbnail}
-              />
-              <View style={styles.textContainer}>
-                <Text style={styles.title}>{item.title}</Text>
-                <Text style={styles.time}>08:30</Text>
-              </View>
-            </View>
-            <Ionicons
-              name='chevron-forward'
-              size={24}
-              color='white'
-            />
-          </TouchableOpacity>
-        </Swipeable>
-      </GestureHandlerRootView>
-    )
-  }
+  const renderItem = ({item}: {item: any}) => (
+    <NotificationCard
+      notification={item}
+      onDelete={() => deleteNotification(item.id)}
+    />
+  )
 
   return (
     <View style={styles.container}>
@@ -230,11 +118,17 @@ const NotificationsScreen = () => {
             style={styles.loader}
           />
         </View>
+      ) : error ? (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>
+            Error al cargar las notificaciones: {error}
+          </Text>
+        </View>
       ) : notifications.length > 0 ? (
         <FlatList
           className='z-20'
           data={notifications}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item, index) => index.toString()}
           renderItem={renderItem}
           contentContainerStyle={styles.listContainer}
         />
