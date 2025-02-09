@@ -118,10 +118,12 @@ const styles = StyleSheet.create({
     fontFamily: 'MyriadPro',
     color: 'white',
     marginLeft: 8,
+    fontSize: 15,
   },
   dateInstructions: {
     color: 'white',
     marginBottom: 16,
+    fontSize: 17,
     fontFamily: 'MyriadPro',
   },
   highlightText: {
