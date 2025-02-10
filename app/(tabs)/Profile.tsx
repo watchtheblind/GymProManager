@@ -18,7 +18,9 @@ export default function Profile() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
           {/* Contenedor para la imagen de perfil y nombre */}
           <View style={styles.profileWrapper}>
@@ -29,12 +31,14 @@ export default function Profile() {
               <Avatar
                 imageUrl={user?.meta?.backend_imagen || undefined}
                 initials={user?.first_name?.[0]}></Avatar>
-              <Text style={styles.profileName}>
-                {user?.first_name + ' ' + user?.last_name}
-              </Text>
+              <Text style={styles.profileName}>{user?.meta.nickname}</Text>
             </View>
           </View>
-
+          <View style={styles.profileContainer}>
+            <Text style={styles.fullName}>
+              {user?.meta.backend_nombre + ' ' + user?.meta.backend_apellido}
+            </Text>
+          </View>
           {/* Usa el componente Tabs */}
           <Tabs
             tabs={tabs}
@@ -55,6 +59,7 @@ export default function Profile() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+    paddingInline: 15,
     backgroundColor: '#1A1A1A',
   },
   scrollContainer: {
@@ -100,6 +105,13 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginTop: -10,
     textTransform: 'uppercase',
+  },
+  fullName: {
+    color: 'white',
+    fontFamily: 'MyriadPro',
+    fontSize: 20,
+    marginTop: -15,
+    marginBottom: 20,
   },
   contentContainer: {
     flex: 1,
