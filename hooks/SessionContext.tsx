@@ -45,7 +45,8 @@ interface SessionContextType {
   isLoading: boolean
   login: (userData: UserData) => Promise<void>
   logout: () => Promise<void>
-  updateUserField: (field: string, value: any) => Promise<void> // Nueva función
+  updateUserField: (field: string, value: any) => Promise<void>
+  refreshSession: () => Promise<void> // Nueva función
 }
 
 const SessionContext = createContext<SessionContextType>({
@@ -53,10 +54,10 @@ const SessionContext = createContext<SessionContextType>({
   isLoading: true,
   login: async () => {},
   logout: async () => {},
-  updateUserField: async () => {}, // Nueva función
+  updateUserField: async () => {},
+  refreshSession: async () => {}, // Nueva función
 })
 
-// Proveedor del contexto
 export const SessionProvider = ({children}: {children: ReactNode}) => {
   const [user, setUser] = useState<UserData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -105,7 +106,46 @@ export const SessionProvider = ({children}: {children: ReactNode}) => {
       setUser(null)
       navigation.navigate('index' as never)
     } catch (error) {
-      console.error('Error during logout:', error)
+      console.error('Error durante el cierre:', error)
+    }
+  }
+
+  // Función para actualizar un campo en el servidor
+  const updateOnServer = async (field: string, value: any) => {
+    if (!user) {
+      throw new Error('No hay una sesión activa')
+    }
+
+    try {
+      // Aquí haces la llamada al servidor para actualizar el campo
+      const response = await fetch(
+        'https://gympromanager.com/update-user.php',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: user.ID, // ID del usuario
+            field, // Campo a actualizar
+            value, // Nuevo valor
+          }),
+        },
+      )
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(
+          data.error || 'Error al actualizar el campo en el servidor',
+        )
+      }
+
+      console.log('Campo actualizado en el servidor:', data)
+      return data
+    } catch (error) {
+      console.error('Error en updateOnServer:', error)
+      throw error
     }
   }
 
@@ -116,36 +156,52 @@ export const SessionProvider = ({children}: {children: ReactNode}) => {
     }
 
     try {
-      // Actualizar el campo en el estado local
-      const updatedUser = {
-        ...user,
-        meta: {
-          ...user.meta,
-          [field]: value,
-        },
-      }
-      setUser(updatedUser)
+      // Actualizar el campo en el servidor
+      await updateOnServer(field, value)
 
-      // Guardar los cambios en AsyncStorage
-      const expiresAt = moment().add(1, 'hour').toISOString()
-      const session = {user: updatedUser, expiresAt}
-      await AsyncStorage.setItem('userSession', JSON.stringify(session))
-
-      console.log(`Campo "${field}" actualizado:`, value)
-      console.log('Usuario actualizado:', updatedUser) // Usar updatedUser  aquí
+      // Refrescar la sesión para obtener los datos actualizados
+      await refreshSession()
     } catch (error) {
       console.error('Error updating user field:', error)
       throw error
     }
   }
 
+  // Función para refrescar la sesión
+  const refreshSession = async () => {
+    if (!user) {
+      throw new Error('No hay un usuario logueado')
+    }
+
+    try {
+      // Hacer una solicitud al servidor para obtener los datos actualizados del usuario
+      const response = await fetch('https://gympromanager.com/app-login.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `email=${encodeURIComponent(user.user_email)}&password=${encodeURIComponent('admin')}`, // Aquí deberías manejar la contraseña de manera segura
+      })
+
+      const data = await response.json()
+
+      if (data.user_email) {
+        await login(data) // Guardar los datos actualizados en el contexto
+      } else {
+        throw new Error('No se pudo actualizar la sesión')
+      }
+    } catch (error) {
+      console.error('Error refreshing session:', error)
+      throw error
+    }
+  }
+
   return (
     <SessionContext.Provider
-      value={{user, isLoading, login, logout, updateUserField}}>
+      value={{user, isLoading, login, logout, updateUserField, refreshSession}}>
       {children}
     </SessionContext.Provider>
   )
 }
 
-// Hook personalizado para usar el contexto
 export const useSession = () => useContext(SessionContext)
