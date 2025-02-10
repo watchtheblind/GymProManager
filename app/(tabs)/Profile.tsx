@@ -9,7 +9,9 @@ import {useSession} from '@/hooks/SessionContext'
 export default function Profile() {
   const {user} = useSession()
   const [activeTab, setActiveTab] = useState('progress')
-
+  const [avatarUri, setAvatarUri] = useState<string | null>(
+    user?.meta?.backend_imagen || null,
+  )
   // Define las pestañas
   const tabs = [
     {id: 'progress', label: 'Mi progreso'},
@@ -29,8 +31,9 @@ export default function Profile() {
             </View>
             <View style={styles.profileContainer}>
               <Avatar
-                imageUrl={user?.meta?.backend_imagen || undefined}
-                initials={user?.first_name?.[0]}></Avatar>
+                imageUrl={avatarUri || undefined}
+                initials={user?.first_name?.[0]}
+              />
               <Text style={styles.profileName}>{user?.meta.nickname}</Text>
             </View>
           </View>

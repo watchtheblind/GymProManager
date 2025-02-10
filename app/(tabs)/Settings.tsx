@@ -89,7 +89,7 @@ function AccountInfo() {
         {label: 'Email', value: user?.user_email || '(Vacío)'},
         {label: 'Nombre', value: user?.meta?.backend_nombre || '(Vacío)'},
         {label: 'Apellido', value: user?.meta?.backend_apellido || '(Vacío)'},
-        {label: 'Descripcion', value: user?.meta?.description || '(Vacío)'},
+        // {label: 'Descripcion', value: user?.meta?.description || '(Vacío)'},
       ]
     } else if (activeTab === 'additional') {
       return [
@@ -214,7 +214,7 @@ function AccountInfo() {
         Email: 'user_email', // Asegúrate de que coincida con el nombre del campo en el servidor
         Nombre: 'backend_nombre',
         Apellido: 'backend_apellido',
-        Descripcion: 'description',
+        // Descripcion: 'description',
         NIF: 'backend_nif',
         Dirección: 'backend_direccion',
         'Código País': 'backend_codigo_pais',
@@ -232,7 +232,7 @@ function AccountInfo() {
         user_email: 'correo_electronico',
         backend_nombre: 'nombre',
         backend_apellido: 'apellido',
-        description: 'description', // No cambia
+        // description: 'description', // No cambia
         backend_nif: 'nif',
         backend_direccion: 'direccion',
         backend_codigo_pais: 'codigo_pais',
