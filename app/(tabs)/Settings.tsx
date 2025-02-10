@@ -123,7 +123,7 @@ function AccountInfo() {
 
   // Lógica para la imagen del avatar
   const {imageUri, base64, pickImage, reset} = useImagePicker({
-    maxSizeInKB: 150,
+    maxSizeInKB: 300,
   })
   const [avatarUri, setAvatarUri] = useState<string | null>(
     user?.meta?.backend_imagen || null,
@@ -163,6 +163,7 @@ function AccountInfo() {
       }
 
       // Actualizar el campo en el servidor
+      alert('Datos enviados al servidor:' + imageToSend)
       await updateOnServer(
         'Contraseña...', // Reemplaza con el token real
         String(user?.ID),
