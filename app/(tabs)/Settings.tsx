@@ -438,22 +438,27 @@ function AccountInfo() {
                             : setWeightValue
                         }
                         keyboardType='numeric'
-                        className={`border px-2 py-0 mr-2 rounded w-20 ${index % 2 == 0 ? 'border-[#B5A97C]' : 'border-[#F5E6C3]'}`}
+                        className={`border px-2 py-0 mr-2 rounded w-auto ${index % 2 == 0 ? 'border-[#B5A97C]' : 'border-[#F5E6C3]'}`}
                       />
-                      <Dropdown
-                        options={
-                          item.label === 'altura' ? ['cm', 'in'] : ['kg', 'lb']
-                        }
-                        selectedValue={
-                          item.label === 'altura' ? heightUnit : weightUnit
-                        }
-                        onSelect={
-                          item.label === 'altura'
-                            ? setHeightUnit
-                            : setWeightUnit
-                        }
-                        placeholder='Unidad'
-                      />
+                      <View
+                        className={` border rounded-md mr-1 ${index % 2 == 0 ? 'border-[#B5A97C]' : 'border-[#F5E6C3]'}`}>
+                        <Dropdown
+                          options={
+                            item.label === 'altura'
+                              ? ['cm', 'in']
+                              : ['kg', 'lb']
+                          }
+                          selectedValue={
+                            item.label === 'altura' ? heightUnit : weightUnit
+                          }
+                          onSelect={
+                            item.label === 'altura'
+                              ? setHeightUnit
+                              : setWeightUnit
+                          }
+                          placeholder='Unidad'
+                        />
+                      </View>
                     </View>
                   ) : item.isDateOfBirth ? (
                     <DateOfBirthInput
