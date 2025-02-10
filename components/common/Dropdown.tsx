@@ -66,13 +66,10 @@ const Dropdown: React.FC<DropdownProps> = ({
 
 const styles = StyleSheet.create({
   dropdownButton: {
-    borderWidth: 1,
-    borderColor: 'black',
-    borderRadius: 8,
-    padding: 5,
-    marginRight: 3,
+    paddingInline: 3,
     minWidth: 'auto',
   },
+
   modalOverlay: {
     flex: 1,
     justifyContent: 'center',
