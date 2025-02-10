@@ -6,7 +6,7 @@ import {
   useSafeAreaInsets,
 } from 'react-native-safe-area-context'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
-import {useSession} from '@/hooks/SessionContext' // Asegúrate de que esta ruta sea correcta
+import {useSession} from '@/hooks/SessionContext'
 import CustomAlert from '@/components/common/Alert'
 import useBackHandler from '@/hooks/Common/useBackHandler'
 import {
@@ -43,7 +43,7 @@ const Settings = () => {
 }
 
 function AccountInfo() {
-  const {user, updateUserField} = useSession() // Extraemos updateUserField del contexto
+  const {user, updateUserField, refreshSession} = useSession() // Extraemos refreshSession del contexto
   const insets = useSafeAreaInsets()
   const navigation = useNavigation()
   const [activeTab, setActiveTab] = useState('basic')
@@ -170,8 +170,8 @@ function AccountInfo() {
         imageToSend,
       )
 
-      // Actualizar el campo en el estado local y AsyncStorage
-      await updateUserField('backend_imagen', imageToSend)
+      // Refrescar la sesión para obtener los datos actualizados
+      await refreshSession()
 
       // Mostrar mensaje de éxito
       showAlert('¡Todo hecho!', 'Imagen actualizada correctamente.')
@@ -281,7 +281,6 @@ function AccountInfo() {
           unidad: unit,
         }
         valueToSend = measurementValue
-        alert(valueToSend)
       }
       if (label === 'Fecha de Nacimiento') {
         const {day, month, year} = tempValue as DateOfBirthValue
@@ -296,8 +295,8 @@ function AccountInfo() {
         valueToSend,
       )
 
-      // Actualizar el campo en el estado local y AsyncStorage
-      await updateUserField(LocalField, valueToSend)
+      // Refrescar la sesión para obtener los datos actualizados
+      await refreshSession()
 
       // Mostrar mensaje de éxito
       showAlert('¡Todo hecho!', `${label} ha sido editado correctamente.`)
@@ -307,6 +306,7 @@ function AccountInfo() {
 
     setEditingField(null) // Sale del modo edición
   }
+
   // Función para cancelar la edición
   const cancelEdit = () => {
     setEditingField(null)
