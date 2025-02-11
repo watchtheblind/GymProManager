@@ -1,35 +1,22 @@
 import React, {useState} from 'react'
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native'
-import {MaterialIcons} from '@expo/vector-icons' // Importamos MaterialIcons
+import {MaterialIcons} from '@expo/vector-icons'
 import moment from 'moment'
-import ConfirmationModal from '../ConfirmationModal'
-import CustomAlert from '../Alert'
+import ConfirmationModal from '../../common/ConfirmationModal'
+import CustomAlert from '../../common/Alert'
+import {Activity} from '@/hooks/Activities/useActivities'
+import {getActivityTypeColor} from '@/hooks/Activities/ActivityCard/useGetActivityTypeColor'
+import {handleSignUp} from '@/hooks/Activities/ActivityCard/useHandleSignUp'
 
 interface ActivityCardProps {
-  activity: {
-    id: string
-    name: string
-    time: string
-    Instructor: string
-    available: number
-    capacity: number
-    type: 'yoga' | 'cardio' | 'pilates' | 'strength' | 'dance' | string
-  }
+  activity: Activity
   isFavorite: boolean
   onToggleFavorite: () => void
-  userId: number // ID del usuario
-  token: string // Token de autorización
-}
-
-const getActivityTypeColor = (type: string): string => {
-  const colors: Record<string, string> = {
-    yoga: '#4FD1C5',
-    cardio: '#ED8936',
-    pilates: '#A0D2EB',
-    strength: '#F06292',
-    dance: '#B5AD6F',
-  }
-  return colors[type] || '#9A9A98'
+  userId: string
+  token: string
+  isSignedUp: boolean // Nuevo prop para indicar si el usuario está anotado
+  onSignUpChange: (isSignedUp: boolean) => void // Nuevo prop para notificar cambios
+  action?: string // Agregar action como propiedad opcional
 }
 
 export const ActivityCard: React.FC<ActivityCardProps> = ({
@@ -38,124 +25,114 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
   onToggleFavorite,
   userId,
   token,
+  isSignedUp: initialIsSignedUp,
+  onSignUpChange,
 }) => {
-  const activityDateTime = moment(activity.time, 'MMM DD, YYYY h:mm A')
+  const activityDateTime = moment(activity.fechahora, 'YYYY-MM-DD HH:mm:ss')
   const activityTime = activityDateTime.format('h:mm A')
 
-  // Estados para controlar los modales
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [isAlertVisible, setIsAlertVisible] = useState(false)
   const [alertTitle, setAlertTitle] = useState('')
   const [alertMessage, setAlertMessage] = useState('')
+  const [isSignedUp, setIsSignedUp] = useState(initialIsSignedUp)
 
-  // Función para manejar la inscripción
-  const handleSignUp = async () => {
-    try {
-      const response = await fetch(
-        'https://gympromanager.com/app-activities-enroll.php',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: `token=${token}&activityid=${activity.id}&userid=${userId}`,
-        },
+  const openModal = () => setIsModalVisible(true)
+  const closeModal = () => setIsModalVisible(false)
+  const closeAlert = () => setIsAlertVisible(false)
+
+  const confirmSignUp = async () => {
+    const actionToUse = isSignedUp ? 'delete' : 'add' // Usa un nombre diferente para evitar conflictos
+    const result = await handleSignUp(
+      token,
+      userId,
+      activity.ID,
+      activity.fechahora,
+      actionToUse, // Usa la variable local `actionToUse`
+    )
+    if (result.success) {
+      setIsSignedUp(!isSignedUp) // Cambiar el estado local
+      onSignUpChange(!isSignedUp) // Notificar al componente padre
+      setAlertTitle('Éxito')
+      setAlertMessage(
+        isSignedUp
+          ? 'Te has salido correctamente de la actividad.'
+          : 'Te has inscrito correctamente en la actividad.',
       )
-
-      const data = await response.json()
-
-      if (data.success) {
-        setAlertTitle('Éxito')
-        setAlertMessage('Te has inscrito correctamente en la actividad.')
-      } else if (data.error) {
-        setAlertTitle('Error')
-        setAlertMessage(data.error)
-      } else {
-        setAlertTitle('Error')
-        setAlertMessage('Ocurrió un error inesperado.')
-      }
-    } catch (error) {
+    } else {
       setAlertTitle('Error')
-      setAlertMessage('No se pudo conectar al servidor.')
-    } finally {
-      setIsAlertVisible(true) // Mostrar el modal de alerta
+      setAlertMessage(result.error || 'Ocurrió un error inesperado.')
     }
-  }
-
-  // Función para abrir el modal de confirmación
-  const openModal = () => {
-    setIsModalVisible(true)
-  }
-
-  // Función para cerrar el modal de confirmación
-  const closeModal = () => {
-    setIsModalVisible(false)
-  }
-
-  // Función para confirmar la inscripción
-  const confirmSignUp = () => {
-    handleSignUp() // Ejecuta la lógica de inscripción
-    closeModal() // Cierra el modal de confirmación
-  }
-
-  // Función para cerrar el modal de alerta
-  const closeAlert = () => {
-    setIsAlertVisible(false)
+    setIsAlertVisible(true)
+    closeModal()
   }
 
   return (
     <View
       style={[
         styles.card,
-        {backgroundColor: `${getActivityTypeColor(activity.type)}20`},
+        {backgroundColor: `${getActivityTypeColor(activity.tipo)}20`},
       ]}>
       <View style={styles.contentContainer}>
         <View style={styles.typeContainer}>
           <Text
             style={[
               styles.typeText,
-              {color: getActivityTypeColor(activity.type)},
+              {color: getActivityTypeColor(activity.tipo)},
             ]}>
-            {activity.type.toUpperCase()}
+            {activity.tipo.toUpperCase()}
           </Text>
         </View>
-        <Text style={styles.name}>{activity.name}</Text>
+        <Text style={styles.name}>{activity.nombre}</Text>
         <Text style={styles.details}>
-          {activityTime} - {activity.Instructor}
+          {activityTime} - {activity.entrenador} | {activity.lugar}
         </Text>
-        <Text style={styles.details}>
-          Disponibles: {activity.available}/{activity.capacity}
-        </Text>
+        <Text style={styles.details}>Duración: {activity.duracion}</Text>
+        {activity.disponibles === activity.capacidad ? (
+          <Text style={styles.textUnavailable}>
+            Agotados: {activity.disponibles}/{activity.capacidad}
+          </Text>
+        ) : (
+          <Text style={styles.textAvailable}>
+            Disponibles: {activity.disponibles}/{activity.capacidad}
+          </Text>
+        )}
       </View>
 
-      {/* Botón de favoritos */}
       <TouchableOpacity
         onPress={onToggleFavorite}
         style={styles.favoriteButton}>
         <MaterialIcons
-          name={isFavorite ? 'favorite' : 'favorite-border'} // Ícono de favorito
+          name={isFavorite ? 'favorite' : 'favorite-border'}
           size={24}
-          color={isFavorite ? '#fbbf24' : '#fff'} // Color amarillo si está favorito, blanco si no
+          color={isFavorite ? '#fbbf24' : '#fff'}
         />
       </TouchableOpacity>
 
-      {/* Botón "Anotarme" */}
       <TouchableOpacity
         onPress={openModal}
-        style={styles.badgeContainer}>
-        <Text style={styles.badgeText}>Anotarme</Text>
+        style={[
+          styles.badgeContainer,
+          isSignedUp && styles.badgeContainerSignedUp, // Aplicar estilo condicional
+        ]}>
+        <Text
+          style={[styles.badgeText, isSignedUp && styles.badgeTextSignedUp]}>
+          {isSignedUp ? 'Salirme' : 'Anotarme'}
+        </Text>
       </TouchableOpacity>
 
-      {/* Modal de confirmación */}
       <ConfirmationModal
         visible={isModalVisible}
         title='Confirmar'
-        message='¿Estás seguro de querer anotarte?'
+        message={
+          isSignedUp
+            ? '¿Estás seguro de querer salirte de la actividad?'
+            : '¿Estás seguro de querer anotarte en la actividad?'
+        }
         onAccept={confirmSignUp}
         onClose={closeModal}
       />
 
-      {/* Modal de alerta personalizado */}
       <CustomAlert
         visible={isAlertVisible}
         title={alertTitle}
@@ -175,7 +152,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 12,
     backgroundColor: '#1A1A1A',
-    position: 'relative', // Necesario para posicionar la badge
+    position: 'relative',
   },
   contentContainer: {
     flex: 1,
@@ -186,6 +163,16 @@ const styles = StyleSheet.create({
   typeText: {
     fontSize: 12,
     fontWeight: '500',
+    fontFamily: 'MyriadPro',
+  },
+  textUnavailable: {
+    color: '#ef4444',
+    fontSize: 14,
+    fontFamily: 'MyriadPro',
+  },
+  textAvailable: {
+    color: '#4ade80',
+    fontSize: 14,
     fontFamily: 'MyriadPro',
   },
   name: {
@@ -203,21 +190,26 @@ const styles = StyleSheet.create({
   favoriteButton: {
     paddingBottom: 65,
   },
-  // Estilos para la badge (ahora un botón)
   badgeContainer: {
-    position: 'absolute', // Posición absoluta para colocarla en la esquina
-    bottom: 8, // Distancia desde la parte inferior
-    right: 8, // Distancia desde la derecha
-    backgroundColor: '#14b8a6', // Color de fondo de la badge
+    position: 'absolute',
+    bottom: 14,
+    right: 15,
+    backgroundColor: '#14b8a6', // Color por defecto (verde)
     paddingVertical: 4,
     paddingHorizontal: 8,
-    borderRadius: 12, // Bordes redondeados
+    borderRadius: 12,
+  },
+  badgeContainerSignedUp: {
+    backgroundColor: '#ef4444', // Color rojizo cuando el usuario está anotado
   },
   badgeText: {
-    color: 'white', // Color del texto
+    color: 'white',
     fontSize: 12,
     fontWeight: '500',
     fontFamily: 'MyriadPro',
+  },
+  badgeTextSignedUp: {
+    color: 'white', // Color del texto cuando el usuario está anotado
   },
 })
 

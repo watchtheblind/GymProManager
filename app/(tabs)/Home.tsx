@@ -1,4 +1,5 @@
-import React, {useEffect} from 'react'
+// Home.tsx
+import React from 'react'
 import {
   View,
   Text,
@@ -6,8 +7,10 @@ import {
   Image,
   ScrollView,
   useWindowDimensions,
+  TouchableOpacity,
 } from 'react-native'
 import ButtonImage from '@/components/ui/ButtonImage'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import Animated, {
   FadeInDown,
   FadeInRight,
@@ -17,7 +20,9 @@ import Animated, {
   withDelay,
 } from 'react-native-reanimated'
 import Settingsbutton from '@/components/ui/Settingsbutton'
-import {green} from 'react-native-reanimated/lib/typescript/Colors'
+import {useNavigation, useFocusEffect} from '@react-navigation/native'
+import ConfirmationModal from './ConfirmModal'
+import {useSession} from '@/hooks/SessionContext'
 
 // Animaciones reutilizables
 const animations = {
@@ -27,11 +32,43 @@ const animations = {
 }
 
 export default function Home() {
+  const {logout} = useSession()
   const {width} = useWindowDimensions()
+  const [isModalVisible, setIsModalVisible] = React.useState(false)
+  const navigation = useNavigation()
 
+  // Ocultar el modal cuando la pantalla pierde el foco
+  useFocusEffect(
+    React.useCallback(() => {
+      return () => {
+        setIsModalVisible(false) // Oculta el modal cuando el componente no está en foco
+      }
+    }, []),
+  )
+
+  // Animación del logo
   const logoStyle = useAnimatedStyle(() => ({
     opacity: withDelay(500, withTiming(1, {duration: 1000})),
   }))
+
+  // Funciones para manejar el modal
+  const handleOpenModal = () => {
+    setIsModalVisible(true)
+  }
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false)
+  }
+
+  const handleAccept = () => {
+    logout()
+    handleCloseModal()
+  }
+
+  const handleReject = () => {
+    console.log('Usuario rechazó')
+    handleCloseModal()
+  }
 
   return (
     <ScrollView style={styles.container}>
@@ -46,11 +83,22 @@ export default function Home() {
           />
         </Animated.View>
 
-        {/* Botón de configuración */}
+        {/* Botón de configuración y salida */}
         <Animated.View
+          className={'flex-row-reverse justify-between'}
           entering={animations.fadeInDown(300)}
           style={styles.settingsButton}>
           <Settingsbutton />
+          <TouchableOpacity
+            className='flex items-center justify-center h-12 w-11'
+            onPress={handleOpenModal}>
+            <MaterialIcons
+              className='transform scale-x-[-1]'
+              name='exit-to-app'
+              size={32}
+              color='red'
+            />
+          </TouchableOpacity>
         </Animated.View>
 
         {/* Polígono derecho */}
@@ -108,29 +156,22 @@ export default function Home() {
           <Text style={styles.sectionTitle}>ENTRENAMIENTOS</Text>
         </Animated.View>
 
-        {/* Sección de Notificaciones y Cuestionarios */}
+        {/* Sección de Cuestionarios */}
         <Animated.View
-          entering={animations.fadeInDown(900)}
+          entering={animations.fadeInDown(1000)}
           style={styles.mt4}>
-          <View style={styles.row}>
-            <View style={styles.halfWidth}>
-              <ButtonImage href='/Homesections/Notifications'>
-                <Image
-                  style={[styles.miniImage, styles.borderLeft]}
-                  source={require('@/assets/images/notifications.jpeg')}
-                />
-              </ButtonImage>
-              <Text style={styles.sectionTitle2}>NOTIFICACIONES</Text>
-            </View>
-            <View style={styles.halfWidth}>
-              <ButtonImage href='/Homesections/Questionnaires'>
-                <Image
-                  style={[styles.miniImage, styles.borderLeft]}
-                  source={require('@/assets/images/cuestionarios.jpeg')}
-                />
-              </ButtonImage>
-              <Text style={styles.sectionTitle2}>CUESTIONARIOS</Text>
-            </View>
+          <View style={styles.fullWidth}>
+            <ButtonImage href='/Homesections/Questionnaires'>
+              <Image
+                style={[
+                  styles.miniImage,
+                  styles.borderRight,
+                  styles.improvedImage,
+                ]}
+                source={require('@/assets/images/cuestionarios.jpeg')}
+              />
+            </ButtonImage>
+            <Text style={styles.sectionTitle}>CUESTIONARIOS</Text>
           </View>
         </Animated.View>
 
@@ -152,6 +193,14 @@ export default function Home() {
             <Text style={styles.sectionTitle}>SERVICIOS</Text>
           </View>
         </Animated.View>
+
+        {/* Modal Personalizado */}
+        <ConfirmationModal
+          isVisible={isModalVisible}
+          onAccept={handleAccept}
+          onReject={handleReject}
+          onClose={handleCloseModal}
+        />
       </View>
     </ScrollView>
   )
@@ -224,25 +273,10 @@ const styles = StyleSheet.create({
     fontFamily: 'Copperplate',
     textAlign: 'center',
   },
-  sectionTitle2: {
+  mt4: {
     marginTop: 16,
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontFamily: 'Copperplate',
-    textAlign: 'center',
-  },
-
-  row: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  halfWidth: {
-    width: '48%',
   },
   fullWidth: {
     width: '100%',
-  },
-  mt4: {
-    marginTop: 16,
   },
 })

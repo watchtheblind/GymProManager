@@ -8,7 +8,7 @@ import {
   Linking,
 } from 'react-native'
 import {MaterialCommunityIcons} from '@expo/vector-icons'
-import ConfirmationModal from '@/components/ui/ConfirmationModal'
+import ConfirmationModal from '@/components/common/ConfirmationModal'
 
 interface Subscription {
   nombre: string

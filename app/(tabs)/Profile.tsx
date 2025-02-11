@@ -1,20 +1,17 @@
 import React, {useState} from 'react'
-import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  ScrollView,
-  SafeAreaView,
-} from 'react-native'
+import {View, Text, StyleSheet, ScrollView, SafeAreaView} from 'react-native'
 import {Portrait} from '@/components/ui/Bottomnav/Icons'
 import Activity from '../../components/ProfileTabs/Activity'
 import Progress from '../../components/ProfileTabs/Progress'
-import Tabs from '@/components/Tabs'
-
+import Tabs from '@/components/common/Tabs'
+import Avatar from '@/components/common/Avatar'
+import {useSession} from '@/hooks/SessionContext'
 export default function Profile() {
+  const {user} = useSession()
   const [activeTab, setActiveTab] = useState('progress')
-
+  const [avatarUri, setAvatarUri] = useState<string | null>(
+    user?.meta?.backend_imagen || null,
+  )
   // Define las pestañas
   const tabs = [
     {id: 'progress', label: 'Mi progreso'},
@@ -23,7 +20,9 @@ export default function Profile() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
           {/* Contenedor para la imagen de perfil y nombre */}
           <View style={styles.profileWrapper}>
@@ -31,14 +30,18 @@ export default function Profile() {
               <Portrait size={330} />
             </View>
             <View style={styles.profileContainer}>
-              <Image
-                source={require('@/assets/mbappe.png')}
-                style={styles.profileImage}
+              <Avatar
+                imageUrl={avatarUri || undefined}
+                initials={user?.first_name?.[0]}
               />
-              <Text style={styles.profileName}>javier camacaro</Text>
+              <Text style={styles.profileName}>{user?.meta.nickname}</Text>
             </View>
           </View>
-
+          <View style={styles.profileContainer}>
+            <Text style={styles.fullName}>
+              {user?.meta.backend_nombre + ' ' + user?.meta.backend_apellido}
+            </Text>
+          </View>
           {/* Usa el componente Tabs */}
           <Tabs
             tabs={tabs}
@@ -59,6 +62,7 @@ export default function Profile() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+    paddingInline: 15,
     backgroundColor: '#1A1A1A',
   },
   scrollContainer: {
@@ -88,11 +92,6 @@ const styles = StyleSheet.create({
     zIndex: 0,
   },
   profileContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1,
@@ -107,8 +106,15 @@ const styles = StyleSheet.create({
     color: 'white',
     fontFamily: 'Copperplate',
     fontSize: 20,
-    marginTop: 16,
+    marginTop: -10,
     textTransform: 'uppercase',
+  },
+  fullName: {
+    color: 'white',
+    fontFamily: 'MyriadPro',
+    fontSize: 20,
+    marginTop: -15,
+    marginBottom: 20,
   },
   contentContainer: {
     flex: 1,

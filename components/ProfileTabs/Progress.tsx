@@ -1,6 +1,17 @@
 import React from 'react'
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native'
+import {useSession} from '@/hooks/SessionContext'
 const Progress = () => {
+  const {user} = useSession()
+  // Parsear el peso
+  let peso = {valor: 0, unidad: 'kg'} // Valor por defecto
+  if (user?.meta.backend_peso) {
+    try {
+      peso = JSON.parse(user.meta.backend_peso)
+    } catch (error) {
+      console.error('Error parsing weight:', error)
+    }
+  }
   return (
     <>
       <Text style={styles.messageText}>
@@ -21,8 +32,8 @@ const Progress = () => {
           ]}>
           <View style={styles.metricContent}>
             <Text style={styles.metricLabel}>Peso</Text>
-            <Text style={styles.metricValue}>71,1</Text>
-            <Text style={styles.metricUnit}>KG</Text>
+            <Text style={styles.metricValue}>{peso.valor}</Text>
+            <Text style={styles.metricUnit}>{peso.unidad}</Text>
           </View>
         </View>
 
@@ -72,18 +83,6 @@ const Progress = () => {
         ]}>
         <Text style={styles.buttonText}>Registrar nuevo pesaje</Text>
       </TouchableOpacity>
-
-      <TouchableOpacity
-        style={[
-          styles.button,
-          {
-            backgroundColor: '#518893',
-            borderWidth: 3,
-            borderColor: '#6CB0B4',
-          },
-        ]}>
-        <Text style={styles.buttonText}>Registrar mi peso</Text>
-      </TouchableOpacity>
     </>
   )
 }
@@ -100,7 +99,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     marginBottom: 35,
-    width: '100%',
+    width: '108%',
     gap: 7,
   },
   metricCard: {
