@@ -1,10 +1,8 @@
 import {useState, useEffect} from 'react'
-import Card01 from './Card01'
-import Card02 from '@/app/(tabs)/Carousel/Card02'
-import Card03 from '@/app/(tabs)/Carousel/Card03'
+import GenericCard from './CarouselCardInfo'
 import Card04 from '@/app/(tabs)/Carousel/Card04'
-import React from 'react'
 
+// Tipos
 interface CardData {
   id: string
   title: string
@@ -18,8 +16,6 @@ interface ApiResponse {
   imagen: string
 }
 
-const CardComponents = [Card01, Card02, Card03]
-
 export default function useCarouselData() {
   const [carouselData, setCarouselData] = useState<CardData[]>([])
   const [isLoading, setIsLoading] = useState(true) // Estado para controlar la carga
@@ -27,6 +23,7 @@ export default function useCarouselData() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Obtener datos de la API
         const response = await fetch('https://gympromanager.com/app-ads.php', {
           method: 'POST',
           headers: {
@@ -41,16 +38,20 @@ export default function useCarouselData() {
 
         const data: ApiResponse[] = await response.json()
 
-        // Mapea los datos de la API a CardData
         const mappedData: CardData[] = data.slice(0, 3).map((item, index) => ({
           id: (index + 1).toString(),
           title: item.titulo,
           image: item.imagen, // Mantenemos item.imagen tal cual
-          content: React.createElement(CardComponents[index], {
-            titulo: item.titulo,
-            texto: item.texto,
-            imagen: item.imagen, // Pasamos item.imagen directamente
-          }),
+          content: (
+            <GenericCard
+              key={index}
+              titulo={item.titulo}
+              texto={item.texto}
+              imagen={item.imagen}
+              titleSize={index === 1 ? 4 : 3} // Personalizamos el tamaño del título
+              polygonTopPosition={index === 2 ? 14 : 0} // Personalizamos la posición de la imagen
+            />
+          ),
         }))
 
         // Añadir la Card04 original
