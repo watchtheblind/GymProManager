@@ -1,7 +1,9 @@
-import {useState, useEffect} from 'react'
-import GenericCard from './CarouselCardInfo'
-import Card04 from '@/app/(tabs)/Carousel/Card04'
+import {useState, useEffect, lazy, Suspense, memo, useMemo} from 'react'
 import {fetchAds, fetchSubscriptions} from '@/hooks/Data/Endpoints'
+
+// Carga diferida de componentes
+const GenericCard = lazy(() => import('./CarouselCardInfo'))
+const Card04 = lazy(() => import('@/app/(tabs)/Carousel/Card04'))
 
 // Tipos
 interface CardData {
@@ -11,6 +13,43 @@ interface CardData {
   content: React.ReactNode
 }
 
+// Definir las props para MemoizedGenericCard
+interface GenericCardProps {
+  titulo: string
+  texto: string
+  imagen: string | any
+  titleSize: number
+  polygonTopPosition: number
+}
+
+// Definir las props para MemoizedCard04
+interface Card04Props {
+  subscriptions: any // Cambia `any` por el tipo correcto de tus suscripciones
+}
+
+// Componentes memoizados con tipado
+const MemoizedGenericCard = memo(
+  ({
+    titulo,
+    texto,
+    imagen,
+    titleSize,
+    polygonTopPosition,
+  }: GenericCardProps) => (
+    <GenericCard
+      titulo={titulo}
+      texto={texto}
+      imagen={imagen}
+      titleSize={titleSize}
+      polygonTopPosition={polygonTopPosition}
+    />
+  ),
+)
+
+const MemoizedCard04 = memo(({subscriptions}: Card04Props) => (
+  <Card04 subscriptions={subscriptions} />
+))
+
 export default function useCarouselData() {
   const [carouselData, setCarouselData] = useState<CardData[]>([])
   const [isLoading, setIsLoading] = useState(true) // Estado para controlar la carga
@@ -18,8 +57,12 @@ export default function useCarouselData() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Obtener datos de los anuncios
-        const adsResponse = await fetchAds('Contraseña...')
+        // Carga en paralelo de anuncios y suscripciones
+        const [adsResponse, subscriptionsResponse] = await Promise.all([
+          fetchAds('Contraseña...'),
+          fetchSubscriptions('Contraseña...'),
+        ])
+
         console.log('Ads Response:', JSON.stringify(adsResponse)) // Depuración
 
         // Validar que adsResponse sea un array
@@ -30,9 +73,6 @@ export default function useCarouselData() {
 
         // Asignar los datos directamente (sin acceder a una clave `data`)
         const adsData = adsResponse
-
-        // Obtener datos de las suscripciones
-        const subscriptionsResponse = await fetchSubscriptions('Contraseña...')
         const subscriptionsData = subscriptionsResponse.data
 
         // Mapear los datos de los anuncios a CardData
@@ -43,7 +83,7 @@ export default function useCarouselData() {
             title: item.titulo,
             image: item.imagen, // Mantenemos item.imagen tal cual
             content: (
-              <GenericCard
+              <MemoizedGenericCard
                 key={index}
                 titulo={item.titulo}
                 texto={item.texto}
@@ -59,7 +99,7 @@ export default function useCarouselData() {
           id: '4',
           title: 'Title 4',
           image: require('@/assets/images/onboarding-04.jpg'), // Ruta local con require
-          content: <Card04 subscriptions={subscriptionsData} />, // Pasamos las suscripciones como prop
+          content: <MemoizedCard04 subscriptions={subscriptionsData} />, // Pasamos las suscripciones como prop
         })
 
         setCarouselData(mappedData)
@@ -73,5 +113,8 @@ export default function useCarouselData() {
     fetchData()
   }, [])
 
-  return {carouselData, isLoading} // Devolver tanto los datos como el estado de carga
+  // Memoizar el valor de carouselData para evitar re-renderizados innecesarios
+  const memoizedCarouselData = useMemo(() => carouselData, [carouselData])
+
+  return {carouselData: memoizedCarouselData, isLoading} // Devolver tanto los datos como el estado de carga
 }
