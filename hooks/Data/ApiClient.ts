@@ -1,3 +1,5 @@
+import AsyncStorage from '@react-native-async-storage/async-storage'
+
 const BASE_URL = 'https://gympromanager.com'
 
 // Tipos para el cuerpo de la solicitud
@@ -19,9 +21,6 @@ type ApiOptions = {
   contentType?: 'json' | 'form-urlencoded' // Tipo de Content-Type
 }
 
-// Caché en memoria
-const memoryCache: Record<string, any> = {}
-
 // Función principal del cliente API
 export const apiClient = async <T>(
   endpoint: string,
@@ -39,10 +38,13 @@ export const apiClient = async <T>(
   const cacheKey = `${method}:${url}:${JSON.stringify(body)}`
 
   try {
-    // Verificar si la respuesta está en la caché
-    if (useCache && memoryCache[cacheKey]) {
-      console.log('Respuesta obtenida desde la caché')
-      return memoryCache[cacheKey]
+    // Verificar si la respuesta está en la caché persistente
+    if (useCache) {
+      const cachedData = await AsyncStorage.getItem(cacheKey)
+      if (cachedData) {
+        console.log('Respuesta obtenida desde la caché persistente')
+        return JSON.parse(cachedData)
+      }
     }
 
     // Construir los headers finales
@@ -66,7 +68,6 @@ export const apiClient = async <T>(
     const fetchOptions: RequestInit = {
       method,
       headers: finalHeaders,
-      cache: 'force-cache', // Usa la caché nativa de fetch
     }
 
     // Agregar el body según el Content-Type
@@ -96,9 +97,10 @@ export const apiClient = async <T>(
     // Parsear la respuesta
     const data = await response.json()
 
-    // Guardar la respuesta en la caché si se solicitó
+    // Guardar la respuesta en la caché persistente si se solicitó
     if (useCache) {
-      memoryCache[cacheKey] = data
+      await AsyncStorage.setItem(cacheKey, JSON.stringify(data))
+      console.log('Respuesta guardada en la caché persistente')
     }
 
     return data
