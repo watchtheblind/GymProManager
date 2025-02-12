@@ -181,3 +181,18 @@ export const deletePayment = async (
     contentType: 'json',
   })
 }
+
+// Nuevo endpoint: /app-ads.php
+type Ad = {
+  titulo: string
+  texto: string
+  imagen: string
+}
+
+export const fetchAds = async (token: string): Promise<ApiResponse<Ad[]>> => {
+  return apiClient<ApiResponse<Ad[]>>('/app-ads.php', {
+    method: 'POST',
+    body: {token},
+    contentType: 'form-urlencoded',
+  })
+}
