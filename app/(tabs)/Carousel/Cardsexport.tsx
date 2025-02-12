@@ -3,7 +3,9 @@ import {fetchAds, fetchSubscriptions} from '@/hooks/Data/Endpoints'
 
 // Carga diferida de componentes
 const GenericCard = lazy(() => import('./CarouselCardInfo'))
-const Card04 = lazy(() => import('@/app/(tabs)/Carousel/Card04'))
+const SuscriptionsCard = lazy(
+  () => import('@/app/(tabs)/Carousel/SuscriptionsCard'),
+)
 
 // Tipos
 interface CardData {
@@ -22,8 +24,8 @@ interface GenericCardProps {
   polygonTopPosition: number
 }
 
-// Definir las props para MemoizedCard04
-interface Card04Props {
+// Definir las props para MemoizedSuscriptionsCard
+interface SuscriptionsCardProps {
   subscriptions: any // Cambia `any` por el tipo correcto de tus suscripciones
 }
 
@@ -46,9 +48,11 @@ const MemoizedGenericCard = memo(
   ),
 )
 
-const MemoizedCard04 = memo(({subscriptions}: Card04Props) => (
-  <Card04 subscriptions={subscriptions} />
-))
+const MemoizedSuscriptionsCard = memo(
+  ({subscriptions}: SuscriptionsCardProps) => (
+    <SuscriptionsCard subscriptions={subscriptions} />
+  ),
+)
 
 export default function useCarouselData() {
   const [carouselData, setCarouselData] = useState<CardData[]>([])
@@ -94,12 +98,14 @@ export default function useCarouselData() {
             ),
           }))
 
-        // Añadir la Card04 con los datos de las suscripciones
+        // Añadir la SuscriptionsCard con los datos de las suscripciones
         mappedData.push({
           id: '4',
           title: 'Title 4',
           image: require('@/assets/images/onboarding-04.jpg'), // Ruta local con require
-          content: <MemoizedCard04 subscriptions={subscriptionsData} />, // Pasamos las suscripciones como prop
+          content: (
+            <MemoizedSuscriptionsCard subscriptions={subscriptionsData} />
+          ), // Pasamos las suscripciones como prop
         })
 
         setCarouselData(mappedData)

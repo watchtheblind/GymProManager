@@ -11,11 +11,13 @@ import {MaterialCommunityIcons} from '@expo/vector-icons'
 import ConfirmationModal from '@/components/common/ConfirmationModal'
 import {SubscriptionProduct} from '@/hooks/Data/Endpoints' // Importamos el tipo de suscripción
 
-interface Card04Props {
+interface SuscriptionsCardProps {
   subscriptions: SubscriptionProduct[] // Datos de las suscripciones
 }
 
-export default function Card04({subscriptions}: Card04Props) {
+export default function SuscriptionsCard({
+  subscriptions,
+}: SuscriptionsCardProps) {
   const {width} = useWindowDimensions()
   const [selectedSubscription, setSelectedSubscription] =
     useState<SubscriptionProduct | null>(null)
