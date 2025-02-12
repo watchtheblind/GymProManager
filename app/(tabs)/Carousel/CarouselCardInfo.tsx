@@ -1,5 +1,13 @@
 import {Image, StyleSheet, Text, View, useWindowDimensions} from 'react-native'
 
+/**
+ * @param {string} titulo - El título principal de la tarjeta.
+ * @param {string} texto - El texto descriptivo de la tarjeta.
+ * @param {string} imagen - La URL o ruta de la imagen asociada a la tarjeta (opcional).
+ * @param {number} titleSize - El tamaño del título en términos de "xl" (por defecto: 3).
+ * @param {number} polygonTopPosition - La posición vertical de la primera imagen de fondo (por defecto: 0).
+ */
+
 interface CarouselCardInfoProps {
   titulo?: string
   texto?: string
