@@ -208,3 +208,37 @@ export const fetchAds = async (token: string): Promise<ApiResponse<Ad[]>> => {
     useCache: true, // Habilitar caché para los anuncios
   })
 }
+
+// Tipo para los productos (filtrado por suscripción)
+type SubscriptionProduct = {
+  nombre: string
+  precio: string
+  url: string
+  imagen: string
+  tipo: 'subscription'
+  subscripcion: {
+    intervalo: string
+    duracion: number
+    periodo: 'month' | 'year'
+    trial_periodo: 'day' | 'week' | 'month'
+    trial_duracion: number
+  }
+}
+
+// Endpoint para obtener solo las suscripciones
+export const fetchSubscriptions = async (
+  token: string,
+): Promise<ApiResponse<SubscriptionProduct[]>> => {
+  return apiClient<ApiResponse<any>>('/app-products.php', {
+    method: 'POST',
+    body: {token},
+    contentType: 'form-urlencoded',
+    useCache: true, // Habilitar caché para las suscripciones
+  }).then((response) => {
+    // Filtrar solo los productos de tipo "subscription"
+    const subscriptions = response.data.filter(
+      (item: any) => item.tipo === 'subscription',
+    )
+    return {...response, data: subscriptions} // Devolver la respuesta con los datos filtrados
+  })
+}
