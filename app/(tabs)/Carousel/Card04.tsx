@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState} from 'react'
 import {
   View,
   useWindowDimensions,
@@ -9,51 +9,19 @@ import {
 } from 'react-native'
 import {MaterialCommunityIcons} from '@expo/vector-icons'
 import ConfirmationModal from '@/components/common/ConfirmationModal'
+import {SubscriptionProduct} from '@/hooks/Data/Endpoints' // Importamos el tipo de suscripción
 
-interface Subscription {
-  nombre: string
-  precio: string
-  url: string
-  tipo: string
-  subscripcion: {
-    periodo: string
-  }
+interface Card04Props {
+  subscriptions: SubscriptionProduct[] // Datos de las suscripciones
 }
 
-export default function Card04() {
+export default function Card04({subscriptions}: Card04Props) {
   const {width} = useWindowDimensions()
-  const [subscriptions, setSubscriptions] = useState<Subscription[]>([])
   const [selectedSubscription, setSelectedSubscription] =
-    useState<Subscription | null>(null)
+    useState<SubscriptionProduct | null>(null)
   const [showAlert, setShowAlert] = useState(false)
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch(
-          'https://gympromanager.com/app-products.php',
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: 'token=Contraseña...',
-          },
-        )
-        const data = await response.json()
-        const filteredSubscriptions = data.filter(
-          (item: any) => item.tipo === 'subscription',
-        )
-        setSubscriptions(filteredSubscriptions)
-      } catch (error) {
-        console.error('Error fetching products:', error)
-      }
-    }
-
-    fetchProducts()
-  }, [])
-
-  const handleSubscriptionPress = (subscription: Subscription) => {
+  const handleSubscriptionPress = (subscription: SubscriptionProduct) => {
     setSelectedSubscription(subscription)
     setShowAlert(true)
   }

@@ -210,7 +210,7 @@ export const fetchAds = async (token: string): Promise<ApiResponse<Ad[]>> => {
 }
 
 // Tipo para los productos (filtrado por suscripción)
-type SubscriptionProduct = {
+export type SubscriptionProduct = {
   nombre: string
   precio: string
   url: string
@@ -229,16 +229,27 @@ type SubscriptionProduct = {
 export const fetchSubscriptions = async (
   token: string,
 ): Promise<ApiResponse<SubscriptionProduct[]>> => {
-  return apiClient<ApiResponse<any>>('/app-products.php', {
-    method: 'POST',
-    body: {token},
-    contentType: 'form-urlencoded',
-    useCache: true, // Habilitar caché para las suscripciones
-  }).then((response) => {
-    // Filtrar solo los productos de tipo "subscription"
-    const subscriptions = response.data.filter(
-      (item: any) => item.tipo === 'subscription',
+  try {
+    const response = await apiClient<any>('/app-products.php', {
+      method: 'POST',
+      body: {token},
+      contentType: 'form-urlencoded',
+      useCache: true,
+    })
+    if (!Array.isArray(response)) {
+      console.error('Invalid API response:', response)
+      return {success: false, data: [], message: 'Invalid API response'}
+    }
+    const subscriptions = response.filter(
+      (item) => item.tipo === 'subscription',
     )
-    return {...response, data: subscriptions} // Devolver la respuesta con los datos filtrados
-  })
+    return {
+      success: true,
+      data: subscriptions,
+      message: 'Subscriptions fetched successfully',
+    }
+  } catch (error) {
+    console.error('Error fetching subscriptions:', error)
+    return {success: false, data: [], message: 'Failed to fetch subscriptions'}
+  }
 }
