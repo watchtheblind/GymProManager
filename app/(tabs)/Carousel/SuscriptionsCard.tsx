@@ -106,7 +106,6 @@ export default function subscriptionsCard({
         headerContainer: {
           flexDirection: 'row',
           justifyContent: 'center',
-          marginTop: 24,
         },
         headerText: {
           fontFamily: 'Copperplate',
@@ -136,11 +135,7 @@ export default function subscriptionsCard({
         scrollViewContainer: {
           alignItems: 'center',
           justifyContent: 'center',
-          paddingBottom: 20,
-        },
-        scrollView: {
-          marginTop: 16,
-          width: '100%',
+          paddingBottom: 0,
         },
       }),
     [width],
@@ -148,7 +143,9 @@ export default function subscriptionsCard({
 
   return (
     <View style={styles.container}>
-      <View style={styles.headerContainer}>
+      <View
+        style={styles.headerContainer}
+        className='mt-5'>
         <Text style={styles.headerText}>LA </Text>
         <Text style={styles.headerTextAccent}>APLICACIÓN</Text>
       </View>
