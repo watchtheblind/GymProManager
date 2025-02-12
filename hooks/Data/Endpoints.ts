@@ -1,4 +1,3 @@
-// endpoints.ts
 import {apiClient} from './ApiClient'
 
 // Tipos generales
@@ -24,6 +23,7 @@ export const getUserById = async (
     method: 'GET',
     body: {token},
     contentType: 'json',
+    useCache: true, // Habilitar caché para datos de usuario
   })
 }
 
@@ -38,6 +38,7 @@ export const createUser = async (
     method: 'POST',
     body: {param1: name, param2: email, param3: password, param4: role, token},
     contentType: 'json',
+    useCache: false, // No usar caché para operaciones POST
   })
 }
 
@@ -52,6 +53,7 @@ export const updateUser = async (
     method: 'PUT',
     body: {param1: name, param2: email, param3: role, token},
     contentType: 'json',
+    useCache: false, // No usar caché para operaciones PUT
   })
 }
 
@@ -63,6 +65,7 @@ export const deleteUser = async (
     method: 'DELETE',
     body: {token},
     contentType: 'json',
+    useCache: false, // No usar caché para operaciones DELETE
   })
 }
 
@@ -82,6 +85,7 @@ export const getMembershipById = async (
     method: 'GET',
     body: {token},
     contentType: 'json',
+    useCache: true, // Habilitar caché para datos de membresía
   })
 }
 
@@ -95,6 +99,7 @@ export const createMembership = async (
     method: 'POST',
     body: {param1: name, param2: duration, param3: price, token},
     contentType: 'json',
+    useCache: false, // No usar caché para operaciones POST
   })
 }
 
@@ -109,6 +114,7 @@ export const updateMembership = async (
     method: 'PUT',
     body: {param1: name, param2: duration, param3: price, token},
     contentType: 'json',
+    useCache: false, // No usar caché para operaciones PUT
   })
 }
 
@@ -120,6 +126,7 @@ export const deleteMembership = async (
     method: 'DELETE',
     body: {token},
     contentType: 'json',
+    useCache: false, // No usar caché para operaciones DELETE
   })
 }
 
@@ -140,6 +147,7 @@ export const getPaymentById = async (
     method: 'GET',
     body: {token},
     contentType: 'json',
+    useCache: true, // Habilitar caché para datos de pagos
   })
 }
 
@@ -154,6 +162,7 @@ export const createPayment = async (
     method: 'POST',
     body: {param1: userId, param2: amount, param3: date, param4: status, token},
     contentType: 'json',
+    useCache: false, // No usar caché para operaciones POST
   })
 }
 
@@ -168,6 +177,7 @@ export const updatePayment = async (
     method: 'PUT',
     body: {param1: amount, param2: date, param3: status, token},
     contentType: 'json',
+    useCache: false, // No usar caché para operaciones PUT
   })
 }
 
@@ -179,6 +189,7 @@ export const deletePayment = async (
     method: 'DELETE',
     body: {token},
     contentType: 'json',
+    useCache: false, // No usar caché para operaciones DELETE
   })
 }
 
@@ -194,5 +205,6 @@ export const fetchAds = async (token: string): Promise<ApiResponse<Ad[]>> => {
     method: 'POST',
     body: {token},
     contentType: 'form-urlencoded',
+    useCache: true, // Habilitar caché para los anuncios
   })
 }
