@@ -15,10 +15,12 @@ import {useSession} from '@/hooks/SessionContext'
 import useBackHandler from '@/hooks/Common/useBackHandler'
 import {useFilter} from '@/hooks/Common/useFilter'
 import SearchBar from '@/components/ui/SearchBar'
+import Loader from '@/components/common/Loader'
 import DateCarousel from '@/components/ui/Activities/DateCarousel'
 import ActivityList from '@/components/ui/Activities/ActivityList'
 import useDates from '@/hooks/Activities/useDates'
 import Header from '@/components/common/Header'
+
 const Activities: React.FC = () => {
   const {user} = useSession()
   const [searchQuery, setSearchQuery] = useState<string>('')
@@ -41,6 +43,26 @@ const Activities: React.FC = () => {
     searchKeys: ['nombre'],
   })
 
+  const renderError = () => <Text style={styles.error}>{error}</Text>
+
+  const renderLoader = () => <Loader></Loader>
+
+  const renderActivityList = () => (
+    <ActivityList
+      activities={filteredActivities}
+      favorites={favorites}
+      toggleFavorite={toggleFavorite}
+      userId={user?.ID.toString() || ''}
+      token={'Contraseña...'}
+    />
+  )
+
+  const renderContent = () => {
+    if (error) return renderError()
+    if (loading) return renderLoader()
+    return renderActivityList()
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}></View>
@@ -48,7 +70,8 @@ const Activities: React.FC = () => {
         title='ACTIVIDADES'
         onBackPress={() => {
           navigation.navigate('Bottomnav' as never)
-        }}></Header>
+        }}
+      />
       <SearchBar
         onSearch={setSearchQuery}
         onClear={() => setSearchQuery('')}
@@ -70,23 +93,7 @@ const Activities: React.FC = () => {
         selectedDate={selectedDate}
         onSelectDate={setSelectedDate}
       />
-      {error ? (
-        <Text style={styles.error}>{error}</Text>
-      ) : loading ? (
-        <ActivityIndicator
-          size='large'
-          color='#14b8a6'
-          style={styles.loader}
-        />
-      ) : (
-        <ActivityList
-          activities={filteredActivities}
-          favorites={favorites}
-          toggleFavorite={toggleFavorite}
-          userId={user?.ID.toString() || ''}
-          token={'Contraseña...'}
-        />
-      )}
+      {renderContent()}
       <Text style={styles.footer}>GYM PRO MANAGER</Text>
     </SafeAreaView>
   )
@@ -103,11 +110,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-  },
-  title: {
-    fontSize: 24,
-    color: 'white',
-    fontFamily: 'Copperplate',
   },
   favoritesToggle: {
     flexDirection: 'row',
@@ -135,7 +137,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   footer: {
-    color: 'rgba(255, 255, 255, 0.2)',
+    color: 'rgba(255, 255, 255,  0.2)',
     textAlign: 'center',
     marginTop: 16,
     fontFamily: 'MyriadPro',
