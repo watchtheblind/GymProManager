@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useMemo} from 'react'
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native'
 import {MaterialIcons} from '@expo/vector-icons'
 import moment from 'moment'
@@ -6,8 +6,7 @@ import ConfirmationModal from '../../common/ConfirmationModal'
 import CustomAlert from '../../common/Alert'
 import {Activity} from '@/hooks/Activities/useActivities'
 import {getActivityTypeColor} from '@/hooks/Activities/ActivityCard/useGetActivityTypeColor'
-import {handleSignUp} from '@/hooks/Activities/ActivityCard/useHandleSignUp'
-
+import {enrollActivity} from '@/hooks/Data/Endpoints'
 interface ActivityCardProps {
   activity: Activity
   isFavorite: boolean
@@ -28,8 +27,14 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
   isSignedUp: initialIsSignedUp,
   onSignUpChange,
 }) => {
-  const activityDateTime = moment(activity.fechahora, 'YYYY-MM-DD HH:mm:ss')
-  const activityTime = activityDateTime.format('h:mm A')
+  const activityDateTime = useMemo(
+    () => moment(activity.fechahora, 'YYYY-MM-DD HH:mm:ss'),
+    [activity.fechahora],
+  )
+  const activityTime = useMemo(
+    () => activityDateTime.format('h:mm A'),
+    [activityDateTime],
+  )
 
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [isAlertVisible, setIsAlertVisible] = useState(false)
@@ -42,31 +47,42 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
   const closeAlert = () => setIsAlertVisible(false)
 
   const confirmSignUp = async () => {
-    const actionToUse = isSignedUp ? 'delete' : 'add' // Usa un nombre diferente para evitar conflictos
-    const result = await handleSignUp(
-      token,
-      userId,
-      activity.ID,
-      activity.fechahora,
-      actionToUse, // Usa la variable local `actionToUse`
-    )
-    if (result.success) {
-      setIsSignedUp(!isSignedUp) // Cambiar el estado local
-      onSignUpChange(!isSignedUp) // Notificar al componente padre
-      setAlertTitle('Éxito')
-      setAlertMessage(
-        isSignedUp
-          ? 'Te has salido correctamente de la actividad.'
-          : 'Te has inscrito correctamente en la actividad.',
-      )
-    } else {
-      setAlertTitle('Error')
-      setAlertMessage(result.error || 'Ocurrió un error inesperado.')
-    }
-    setIsAlertVisible(true)
-    closeModal()
-  }
+    const actionToUse = isSignedUp ? 'delete' : 'add' // Determina la acción
 
+    // Construye el objeto params con las 5 propiedades
+    const params = {
+      token,
+      activityid: activity.ID,
+      userid: userId,
+      fechahora: activity.fechahora,
+      action: actionToUse,
+    }
+
+    try {
+      // Llama a enrollActivity con el objeto params
+      const response = await enrollActivity(params)
+
+      if (response.success) {
+        setIsSignedUp(!isSignedUp) // Cambiar el estado local
+        onSignUpChange(!isSignedUp) // Notificar al componente padre
+        setAlertTitle('Éxito')
+        setAlertMessage(
+          isSignedUp
+            ? 'Te has salido correctamente de la actividad.'
+            : 'Te has inscrito correctamente en la actividad.',
+        )
+      } else {
+        setAlertTitle('Error')
+        setAlertMessage('Ya estás inscrito en esta actividad.')
+      }
+    } catch (error) {
+      setAlertTitle('Error')
+      setAlertMessage('No se pudo completar la acción. Inténtalo de nuevo.')
+    } finally {
+      setIsAlertVisible(true)
+      closeModal()
+    }
+  }
   return (
     <View
       style={[

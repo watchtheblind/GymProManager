@@ -1,4 +1,3 @@
-import {handleSignUp} from '../Activities/ActivityCard/useHandleSignUp'
 import {apiClient} from './ApiClient'
 // Tipos generales
 type ApiResponse<T> = {
@@ -152,10 +151,10 @@ export const fetchActivities = async (token: string): Promise<any[] | null> => {
 
 type EnrollActivityParams = {
   token: string
-  activityid: number
-  userid: number
+  activityid: string
+  userid: string
   fechahora: string
-  action: 'add' | 'delete'
+  action: string
 }
 
 export const enrollActivity = async (
@@ -173,6 +172,7 @@ export const enrollActivity = async (
       fechahora,
       action,
     },
+    useCache: false,
     contentType: 'form-urlencoded', // Especificamos que el contenido es form-urlencoded
   })
 }
