@@ -69,7 +69,7 @@ const NotificationsScreen = () => {
 
   return (
     <SafeAreaView
-      className='flex-1 bg-[#1E1E1E] px-4'
+      className='flex-1 bg-[#1E1E1E] px-6'
       style={{paddingTop: insets.top}}>
       <View style={{flex: 1, backgroundColor: '#1E1E1E'}}>
         {/* Añade el componente Header aquí */}
