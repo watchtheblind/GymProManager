@@ -217,6 +217,7 @@ export const getNotifications = async (
         method: 'POST',
         body,
         contentType: 'form-urlencoded', // Content-Type específico
+        useCache: true,
       },
     )
 
