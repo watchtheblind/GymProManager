@@ -1,3 +1,5 @@
+import AsyncStorage from '@react-native-async-storage/async-storage'
+
 import {apiClient} from './ApiClient'
 // Tipos generales
 type ApiResponse<T> = {
@@ -175,4 +177,62 @@ export const enrollActivity = async (
     useCache: false,
     contentType: 'form-urlencoded', // Especificamos que el contenido es form-urlencoded
   })
+}
+
+export const getNotifications = async (
+  token: string,
+  userId: number,
+  useCache: boolean = true, // Habilitamos caché por defecto
+): Promise<any[]> => {
+  try {
+    const cacheKey = `notifications:${token}:${userId}` // Clave única para la caché
+
+    if (useCache) {
+      // Intentar obtener los datos de la caché
+      const cachedData = await AsyncStorage.getItem(cacheKey)
+      if (cachedData) {
+        const {data, timestamp} = JSON.parse(cachedData)
+
+        // Verificar si han pasado menos de 60 minutos
+        const currentTime = Date.now()
+        const oneHourInMs = 60 * 60 * 1000 // 60 minutos en milisegundos
+        if (currentTime - timestamp < oneHourInMs) {
+          console.log('Notificaciones obtenidas desde la caché')
+          return data
+        }
+
+        console.log('Caché expirada, realizando nueva solicitud...')
+      }
+    }
+
+    // Realizar la solicitud al servidor usando el cliente API
+    const body = {
+      token,
+      userid: userId,
+    }
+
+    const notifications = await apiClient<any[]>(
+      '/app-notif.php', // Endpoint
+      {
+        method: 'POST',
+        body,
+        contentType: 'form-urlencoded', // Content-Type específico
+      },
+    )
+
+    // Guardar los datos en la caché con un timestamp
+    if (useCache) {
+      const cacheData = {
+        data: notifications,
+        timestamp: Date.now(), // Guardar el momento actual
+      }
+      await AsyncStorage.setItem(cacheKey, JSON.stringify(cacheData))
+      console.log('Notificaciones guardadas en la caché')
+    }
+
+    return notifications
+  } catch (error) {
+    console.error('Error al obtener notificaciones:', error)
+    throw error
+  }
 }

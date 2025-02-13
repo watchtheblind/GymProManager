@@ -1,7 +1,26 @@
 import {useState, useCallback} from 'react'
+import {getNotifications} from '../Data/Endpoints'
 
-const useNotifications = (user: any) => {
-  const [notifications, setNotifications] = useState<any[]>([])
+// Definición de tipos para las notificaciones
+interface Notification {
+  titulo: string
+  texto: string
+  fechahora: string
+  tipo: 'actividad' | 'rutina' | 'aviso'
+}
+
+// Constantes globales
+const NOTIFICATION_TOKEN = 'Contraseña...' // Token configurable
+const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000 // 24 horas en milisegundos
+
+// Función auxiliar para calcular la fecha sin la hora
+const getDateOnly = (date: Date): Date => {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate())
+}
+
+// Hook principal
+const useNotifications = (user: {ID?: number | undefined} | null) => {
+  const [notifications, setNotifications] = useState<Notification[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -13,30 +32,15 @@ const useNotifications = (user: any) => {
     setError(null)
 
     try {
-      const response = await fetch('https://gympromanager.com/app-notif.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `token=Contraseña...&userid=${user.ID}`,
-      })
+      // Llama a la función getNotifications con el token y el ID del usuario
+      const fetchedNotifications = await getNotifications(
+        NOTIFICATION_TOKEN,
+        user.ID,
+        false,
+      )
 
-      if (!response.ok) {
-        throw new Error('Network response was not ok')
-      }
-
-      const data = await response.json()
-
-      // Validar que las notificaciones tengan el formato correcto
-      const validNotifications = data.filter((notification: any) => {
-        return (
-          notification.titulo !== undefined &&
-          notification.texto !== undefined &&
-          notification.fechahora !== undefined &&
-          notification.tipo !== undefined
-        )
-      })
-
+      // Filtra y valida las notificaciones
+      const validNotifications = validateNotifications(fetchedNotifications)
       setNotifications(validNotifications)
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'An unknown error occurred')
@@ -45,45 +49,39 @@ const useNotifications = (user: any) => {
     }
   }, [user])
 
-  // Filtrar notificaciones relevantes basadas en la fecha y tipo
+  // Función para validar las notificaciones
+  const validateNotifications = (data: any[]): Notification[] => {
+    return data.filter(
+      (notification): notification is Notification =>
+        notification.titulo !== undefined &&
+        notification.texto !== undefined &&
+        notification.fechahora !== undefined &&
+        ['actividad', 'rutina', 'aviso'].includes(notification.tipo),
+    )
+  }
+
+  // Función para filtrar notificaciones relevantes basadas en la fecha y tipo
   const getRelevantNotifications = useCallback(() => {
     const now = new Date()
-    const currentDate = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-    )
+    const currentDate = getDateOnly(now)
+    const next24Hours = new Date(currentDate.getTime() + ONE_DAY_IN_MS)
 
     return notifications.filter((notification) => {
-      const notificationDate = new Date(notification.fechahora)
-      const notificationDateOnly = new Date(
-        notificationDate.getFullYear(),
-        notificationDate.getMonth(),
-        notificationDate.getDate(),
-      )
+      const notificationDateOnly = getDateOnly(new Date(notification.fechahora))
 
-      // Mostrar solo actividades actuales o futuras dentro de las próximas 24 horas
-      if (notification.tipo === 'actividad') {
-        const next24Hours = new Date(
-          currentDate.getTime() + 24 * 60 * 60 * 1000,
-        )
-        return (
-          notificationDateOnly >= currentDate &&
-          notificationDateOnly <= next24Hours
-        )
+      switch (notification.tipo) {
+        case 'actividad':
+          return (
+            notificationDateOnly >= currentDate &&
+            notificationDateOnly <= next24Hours
+          )
+        case 'rutina':
+          return notificationDateOnly.getTime() === currentDate.getTime()
+        case 'aviso':
+          return true
+        default:
+          return false
       }
-
-      // Mostrar rutinas del día actual
-      if (notification.tipo === 'rutina') {
-        return notificationDateOnly.getTime() === currentDate.getTime()
-      }
-
-      // Mostrar avisos generales (sin restricción de tiempo)
-      if (notification.tipo === 'aviso') {
-        return true
-      }
-
-      return false
     })
   }, [notifications])
 

@@ -6,6 +6,7 @@ import {useSession} from '@/hooks/SessionContext'
 import Header from '@/components/common/Header'
 import useBackHandler from '@/hooks/Common/useBackHandler'
 import {useNavigation} from 'expo-router'
+import Loader from '@/components/common/Loader'
 import {
   SafeAreaProvider,
   SafeAreaView,
@@ -52,10 +53,7 @@ const NotificationsScreen = () => {
           alignItems: 'center',
           backgroundColor: '#1E1E1E',
         }}>
-        <ActivityIndicator
-          size='large'
-          color='#14b8a6'
-        />
+        <Loader></Loader>
       </View>
     )
   }
