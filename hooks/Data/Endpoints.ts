@@ -27,21 +27,6 @@ export const getUserById = async (
   })
 }
 
-export const createUser = async (
-  name: string,
-  email: string,
-  password: string,
-  role: string,
-  token: string,
-): Promise<ApiResponse<User>> => {
-  return apiClient<ApiResponse<User>>('/users', {
-    method: 'POST',
-    body: {param1: name, param2: email, param3: password, param4: role, token},
-    contentType: 'json',
-    useCache: false, // No usar caché para operaciones POST
-  })
-}
-
 export const updateUser = async (
   userId: number,
   name: string,
@@ -54,142 +39,6 @@ export const updateUser = async (
     body: {param1: name, param2: email, param3: role, token},
     contentType: 'json',
     useCache: false, // No usar caché para operaciones PUT
-  })
-}
-
-export const deleteUser = async (
-  userId: number,
-  token: string,
-): Promise<ApiResponse<void>> => {
-  return apiClient<ApiResponse<void>>(`/users/${userId}`, {
-    method: 'DELETE',
-    body: {token},
-    contentType: 'json',
-    useCache: false, // No usar caché para operaciones DELETE
-  })
-}
-
-// Membresías
-type Membership = {
-  id: number
-  name: string
-  duration: number // En días
-  price: number
-}
-
-export const getMembershipById = async (
-  membershipId: number,
-  token: string,
-): Promise<ApiResponse<Membership>> => {
-  return apiClient<ApiResponse<Membership>>(`/memberships/${membershipId}`, {
-    method: 'GET',
-    body: {token},
-    contentType: 'json',
-    useCache: true, // Habilitar caché para datos de membresía
-  })
-}
-
-export const createMembership = async (
-  name: string,
-  duration: number,
-  price: number,
-  token: string,
-): Promise<ApiResponse<Membership>> => {
-  return apiClient<ApiResponse<Membership>>('/memberships', {
-    method: 'POST',
-    body: {param1: name, param2: duration, param3: price, token},
-    contentType: 'json',
-    useCache: false, // No usar caché para operaciones POST
-  })
-}
-
-export const updateMembership = async (
-  membershipId: number,
-  name: string,
-  duration: number,
-  price: number,
-  token: string,
-): Promise<ApiResponse<Membership>> => {
-  return apiClient<ApiResponse<Membership>>(`/memberships/${membershipId}`, {
-    method: 'PUT',
-    body: {param1: name, param2: duration, param3: price, token},
-    contentType: 'json',
-    useCache: false, // No usar caché para operaciones PUT
-  })
-}
-
-export const deleteMembership = async (
-  membershipId: number,
-  token: string,
-): Promise<ApiResponse<void>> => {
-  return apiClient<ApiResponse<void>>(`/memberships/${membershipId}`, {
-    method: 'DELETE',
-    body: {token},
-    contentType: 'json',
-    useCache: false, // No usar caché para operaciones DELETE
-  })
-}
-
-// Pagos
-type Payment = {
-  id: number
-  userId: number
-  amount: number
-  date: string // Fecha en formato ISO
-  status: 'pending' | 'completed' | 'failed'
-}
-
-export const getPaymentById = async (
-  paymentId: number,
-  token: string,
-): Promise<ApiResponse<Payment>> => {
-  return apiClient<ApiResponse<Payment>>(`/payments/${paymentId}`, {
-    method: 'GET',
-    body: {token},
-    contentType: 'json',
-    useCache: true, // Habilitar caché para datos de pagos
-  })
-}
-
-export const createPayment = async (
-  userId: number,
-  amount: number,
-  date: string,
-  status: string,
-  token: string,
-): Promise<ApiResponse<Payment>> => {
-  return apiClient<ApiResponse<Payment>>('/payments', {
-    method: 'POST',
-    body: {param1: userId, param2: amount, param3: date, param4: status, token},
-    contentType: 'json',
-    useCache: false, // No usar caché para operaciones POST
-  })
-}
-
-export const updatePayment = async (
-  paymentId: number,
-  amount: number,
-  date: string,
-  status: string,
-  token: string,
-): Promise<ApiResponse<Payment>> => {
-  return apiClient<ApiResponse<Payment>>(`/payments/${paymentId}`, {
-    method: 'PUT',
-    body: {param1: amount, param2: date, param3: status, token},
-    contentType: 'json',
-    useCache: false, // No usar caché para operaciones PUT
-  })
-}
-
-export const deletePayment = async (
-  paymentId: number,
-  token: string,
-): Promise<ApiResponse<void>> => {
-  return apiClient<ApiResponse<void>>(`/payments/${paymentId}`, {
-    method: 'DELETE',
-    body: {token},
-    contentType: 'json',
-    useCache: false, // No usar caché para operaciones DELETE
   })
 }
 
@@ -277,5 +126,26 @@ export const login = async (email: string, password: string): Promise<any> => {
   } catch (error) {
     console.error('Error al realizar el login:', error)
     throw error // Propaga el error para manejarlo fuera
+  }
+}
+export const fetchActivities = async (token: string): Promise<any[] | null> => {
+  try {
+    const response = await apiClient<any>('/app-activities.php', {
+      method: 'POST',
+      body: {token},
+      contentType: 'form-urlencoded',
+      useCache: true, // Habilitar caché si es apropiado
+    })
+
+    // Verificar si la respuesta es válida
+    if (response && Array.isArray(response)) {
+      return response // Retornamos la respuesta si es un array
+    } else {
+      console.error('Invalid API response:', response)
+      return null // Retornamos null en caso de respuesta inválida
+    }
+  } catch (error) {
+    console.error('Error fetching activities:', error)
+    return null // Retornamos null en caso de error
   }
 }

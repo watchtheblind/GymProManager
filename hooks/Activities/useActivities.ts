@@ -1,8 +1,6 @@
 import {useState, useEffect} from 'react'
 import moment from 'moment'
-
-const API_URL = 'https://gympromanager.com/app-activities.php'
-const TOKEN = 'Contraseña...'
+import {fetchActivities} from '../Data/Endpoints'
 
 export interface Activity {
   ID: string // Cambiado a string para coincidir con la respuesta JSON
@@ -26,26 +24,21 @@ export const useActivities = (selectedDate: Date) => {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const fetchActivities = async () => {
+    const LoadActivities = async () => {
       try {
         setLoading(true)
         setError(null)
 
-        const response = await fetch(API_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: `token=${TOKEN}`,
-        })
+        const response = await fetchActivities('Contraseña...')
 
-        if (!response.ok) throw new Error('Failed to fetch activities')
-
-        const data = await response.json()
+        // Verificamos si la respuesta es null (error)
+        if (response === null) {
+          throw new Error('No se pudieron cargar las actividades')
+        }
 
         // Filtra las actividades por la fecha seleccionada
         const formattedDate = moment(selectedDate).format('YYYY-MM-DD')
-        const filteredData = data.filter(
+        const filteredData = response.filter(
           (activity: Activity) =>
             moment(activity.fechahora).format('YYYY-MM-DD') === formattedDate,
         )
@@ -65,7 +58,7 @@ export const useActivities = (selectedDate: Date) => {
       }
     }
 
-    fetchActivities()
+    LoadActivities()
   }, [selectedDate])
 
   return {activities, loading, error}
