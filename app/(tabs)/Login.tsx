@@ -1,4 +1,4 @@
-import React, {useState, useCallback, useEffect} from 'react'
+import React, {useState, useCallback, useEffect, useMemo} from 'react'
 import {
   View,
   Text,
@@ -15,6 +15,9 @@ import CustomAlert from '@/components/common/Alert'
 import {validateLogin, LoginFormData} from '@/hooks/LoginValidation'
 import {useSession} from '@/hooks/SessionContext' // Importar el hook useSession
 import {login} from '@/hooks/Data/Endpoints'
+import {Asset} from 'expo-asset'
+import * as SplashScreen from 'expo-splash-screen'
+
 export default function Login() {
   const {setSessionData} = useSession() // Usar el contexto
   const [formData, setFormData] = useState<LoginFormData>({
@@ -28,35 +31,70 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false)
   const [isFormValid, setIsFormValid] = useState(false)
 
-  const redirectToRegister = useCallback(() => {
-    null
-  }, [])
+  // AbortController para cancelar solicitudes anteriores
+  const controller = useMemo(() => new AbortController(), [])
+  const debounce = <T extends (...args: any[]) => any>(
+    func: T,
+    delay: number,
+  ): ((...args: Parameters<T>) => void) => {
+    let timer: NodeJS.Timeout | null = null
 
-  const validateField = (field: keyof LoginFormData, value: string) => {
-    const validationResult = validateLogin({...formData, [field]: value})
-    if (validationResult.errors?.[field]) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        [field]: validationResult.errors[field],
-      }))
-    } else {
-      setErrors((prevErrors) => {
-        const newErrors = {...prevErrors}
-        delete newErrors[field]
-        return newErrors
-      })
+    return function (this: any, ...args: Parameters<T>): void {
+      if (timer) {
+        clearTimeout(timer)
+      }
+      timer = setTimeout(() => func.apply(this, args), delay)
     }
   }
+  // Pre-cargar imágenes
+  useEffect(() => {
+    const loadAssets = async () => {
+      const images = [
+        require('@/assets/images/logo.png'),
+        require('@/assets/images/marcotriangulos.png'),
+      ]
+      await Promise.all(images.map((image) => Asset.loadAsync(image)))
+      await SplashScreen.hideAsync()
+    }
+    loadAssets()
+  }, [])
 
+  // Validación con debounce
+  const debouncedValidateField = useCallback(
+    debounce((field: keyof LoginFormData, value: string) => {
+      const validationResult = validateLogin({...formData, [field]: value})
+      if (validationResult.errors?.[field]) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [field]: validationResult.errors[field],
+        }))
+      } else {
+        setErrors((prevErrors) => {
+          const newErrors = {...prevErrors}
+          delete newErrors[field]
+          return newErrors
+        })
+      }
+    }, 300),
+    [formData],
+  )
+
+  // Validación en tiempo real
   useEffect(() => {
     const validationResult = validateLogin(formData)
     setIsFormValid(validationResult.isValid)
   }, [formData])
 
+  // Manejo del envío del formulario
   const handleSubmit = useCallback(async () => {
     setIsLoading(true) // Inicia el estado de carga
+    setAlertMessage('')
+    setAlertVisible(false)
 
     try {
+      // Cancela solicitudes anteriores
+      controller.abort()
+
       // Intenta iniciar sesión con los datos del formulario
       const res = await login(
         formData.email.toString(),
@@ -65,13 +103,13 @@ export default function Login() {
 
       // Verifica si la respuesta contiene el campo 'user_email'
       if (res && res.user_email) {
-        // Guarda los datos de la sesión
+        // Guarda los datos de la sesión usando setSessionData
         setSessionData(res)
         router.navigate('/Bottomnav')
+
         // Verifica si el usuario tiene una suscripción activa
         if (res.has_active_subscription) {
           console.log('El usuario tiene una suscripción activa.')
-          // router.navigate('/Bottomnav'); // Redirige a donde corresponda
         } else {
           console.log('El usuario no tiene una suscripción activa.')
         }
@@ -82,16 +120,21 @@ export default function Login() {
         )
         setAlertVisible(true)
       }
-    } catch (error) {
-      // Maneja errores de red o de la API
-      console.error('Error durante el inicio de sesión:', error)
-      setAlertMessage('Error de red inesperado. Por favor, inténtelo de nuevo.')
-      setAlertVisible(true)
+    } catch (error: any) {
+      if (error.name === 'AbortError') {
+        console.log('Solicitud cancelada')
+      } else {
+        console.error('Error durante el inicio de sesión:', error)
+        setAlertMessage(
+          'Error de red inesperado. Por favor, inténtelo de nuevo.',
+        )
+        setAlertVisible(true)
+      }
     } finally {
-      // Asegúrate de detener el estado de carga
-      setIsLoading(false)
+      setIsLoading(false) // Detiene el estado de carga
     }
-  }, [formData, setSessionData])
+  }, [formData, setSessionData, controller])
+
   return (
     <View className='bg-[#1D1D1B] h-full text-white relative'>
       <Image
@@ -118,7 +161,7 @@ export default function Login() {
               placeholder='Correo electrónico'
               onChangeText={(text) => {
                 setFormData({...formData, email: text})
-                validateField('email', text) // Validar el campo en tiempo real
+                debouncedValidateField('email', text) // Validar el campo con debounce
               }}
               value={formData.email}
               placeholderTextColor='#fff'
@@ -132,7 +175,6 @@ export default function Login() {
               <Text style={styles.errorText}>{errors.email}</Text>
             )}
           </View>
-
           {/* Campo de contraseña */}
           <View style={styles.inputContainer}>
             <View style={styles.passwordContainer}>
@@ -143,7 +185,7 @@ export default function Login() {
                 placeholder='Contraseña'
                 onChangeText={(text) => {
                   setFormData({...formData, password: text})
-                  validateField('password', text) // Validar el campo en tiempo real
+                  debouncedValidateField('password', text) // Validar el campo con debounce
                 }}
                 secureTextEntry={!showPassword}
                 value={formData.password}
@@ -168,7 +210,6 @@ export default function Login() {
               <Text style={styles.errorText}>{errors.password}</Text>
             )}
           </View>
-
           {/* Botón Acceder con loader */}
           <View className='flex flex-row justify-center mt-1'>
             <Button
@@ -194,7 +235,6 @@ export default function Login() {
               }
             />
           </View>
-
           {/* Enlace para recuperar contraseña */}
           <View className='flex flex-row justify-center'>
             <TouchableOpacity
@@ -222,7 +262,7 @@ export default function Login() {
           }}>
           ¿No tienes una cuenta?
         </Text>
-        <TouchableOpacity onPress={redirectToRegister}>
+        <TouchableOpacity onPress={() => router.navigate('/Bottomnav')}>
           <Text className='text-[#B0A462] text-lg font-bold underline'>
             Regístrate aquí
           </Text>
