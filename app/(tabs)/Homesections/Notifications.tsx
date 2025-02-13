@@ -37,11 +37,12 @@ const NotificationsScreen = () => {
 
   // Función para manejar el botón de retroceso
   useBackHandler(() => {
-    navigation.navigate('Bottomnav' as never)
+    navigation.navigate('MiCentro' as never) // Navega a la pantalla Home
     return true
   })
+
   const handlePress = () => {
-    navigation.navigate('Bottomnav' as never)
+    navigation.navigate('MiCentro' as never) // Navega a la pantalla Home
   }
 
   if (loading) {
