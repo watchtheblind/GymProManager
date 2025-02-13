@@ -3,7 +3,7 @@ import moment from 'moment'
 import {fetchActivities} from '../Data/Endpoints'
 
 export interface Activity {
-  ID: string // Cambiado a string para coincidir con la respuesta JSON
+  ID: string
   nombre: string
   descripcion: string
   tipo: string
@@ -13,7 +13,7 @@ export interface Activity {
   recurrencia: string
   entrenador: string
   capacidad: number
-  inscritos: string // Cambiado a string para coincidir con la respuesta JSON
+  inscritos: string
   disponibles: number
   action?: string
 }
@@ -24,41 +24,26 @@ export const useActivities = (selectedDate: Date) => {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const LoadActivities = async () => {
+    const loadActivities = async () => {
+      setLoading(true)
       try {
-        setLoading(true)
-        setError(null)
-
         const response = await fetchActivities('Contraseña...')
+        const pickedDate = moment(selectedDate).format('YYYY-MM-DD')
 
-        // Verificamos si la respuesta es null (error)
-        if (response === null) {
-          throw new Error('No se pudieron cargar las actividades')
-        }
-
-        // Filtra las actividades por la fecha seleccionada
-        const formattedDate = moment(selectedDate).format('YYYY-MM-DD')
-        const filteredData = response.filter(
-          (activity: Activity) =>
-            moment(activity.fechahora).format('YYYY-MM-DD') === formattedDate,
+        setActivities(
+          response.filter((activity: Activity) =>
+            moment(activity.fechahora).isSame(pickedDate, 'day'),
+          ),
         )
-
-        setActivities(filteredData)
       } catch (error: any) {
         console.error('Error al cargar actividades:', error.message)
-        setError(
-          'Ocurrió un error al cargar las actividades.' +
-            '\n' +
-            '(' +
-            error.message +
-            ')',
-        )
+        setError(`Error al cargar actividades: ${error.message}`)
       } finally {
         setLoading(false)
       }
     }
 
-    LoadActivities()
+    loadActivities()
   }, [selectedDate])
 
   return {activities, loading, error}
