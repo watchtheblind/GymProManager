@@ -1,13 +1,6 @@
 // screens/Activities.tsx
 import React, {useState} from 'react'
-import {
-  View,
-  Text,
-  SafeAreaView,
-  ActivityIndicator,
-  Switch,
-  StyleSheet,
-} from 'react-native'
+import {View, Text, SafeAreaView, Switch, StyleSheet} from 'react-native'
 import {useNavigation} from '@react-navigation/native'
 import {useFavorites} from '@/hooks/Activities/useFavorites'
 import {useActivities} from '@/hooks/Activities/useActivities'
