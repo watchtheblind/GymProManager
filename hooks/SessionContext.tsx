@@ -10,7 +10,7 @@ import moment from 'moment'
 import {useNavigation} from '@react-navigation/native'
 
 // Definir la interfaz para los datos del usuario
-interface UserData {
+export type UserData = {
   ID: number
   user_login: string
   user_email: string
@@ -43,7 +43,7 @@ interface UserData {
 interface SessionContextType {
   user: UserData | null
   isLoading: boolean
-  login: (userData: UserData) => Promise<void>
+  setSessionData: (userData: UserData) => Promise<void>
   logout: () => Promise<void>
   updateUserField: (field: string, value: any) => Promise<void>
   refreshSession: () => Promise<void> // Nueva función
@@ -52,7 +52,7 @@ interface SessionContextType {
 const SessionContext = createContext<SessionContextType>({
   user: null,
   isLoading: true,
-  login: async () => {},
+  setSessionData: async () => {},
   logout: async () => {},
   updateUserField: async () => {},
   refreshSession: async () => {}, // Nueva función
@@ -87,7 +87,7 @@ export const SessionProvider = ({children}: {children: ReactNode}) => {
   }, [])
 
   // Función para iniciar sesión
-  const login = async (userData: UserData) => {
+  const setSessionData = async (userData: UserData) => {
     try {
       const expiresAt = moment().add(1, 'hour').toISOString()
       const session = {user: userData, expiresAt}
@@ -95,7 +95,7 @@ export const SessionProvider = ({children}: {children: ReactNode}) => {
       setUser(userData)
       console.log('Datos del usuario guardados:', userData)
     } catch (error) {
-      console.error('Error during login:', error)
+      console.error('Error during setSessionData:', error)
     }
   }
 
@@ -175,18 +175,21 @@ export const SessionProvider = ({children}: {children: ReactNode}) => {
 
     try {
       // Hacer una solicitud al servidor para obtener los datos actualizados del usuario
-      const response = await fetch('https://gympromanager.com/app-login.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+      const response = await fetch(
+        'https://gympromanager.com/app-setSessionData.php',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: `email=${encodeURIComponent(user.user_email)}&password=${encodeURIComponent('admin')}`, // Aquí deberías manejar la contraseña de manera segura
         },
-        body: `email=${encodeURIComponent(user.user_email)}&password=${encodeURIComponent('admin')}`, // Aquí deberías manejar la contraseña de manera segura
-      })
+      )
 
       const data = await response.json()
 
       if (data.user_email) {
-        await login(data) // Guardar los datos actualizados en el contexto
+        await setSessionData(data) // Guardar los datos actualizados en el contexto
       } else {
         throw new Error('No se pudo actualizar la sesión')
       }
@@ -198,7 +201,14 @@ export const SessionProvider = ({children}: {children: ReactNode}) => {
 
   return (
     <SessionContext.Provider
-      value={{user, isLoading, login, logout, updateUserField, refreshSession}}>
+      value={{
+        user,
+        isLoading,
+        setSessionData,
+        logout,
+        updateUserField,
+        refreshSession,
+      }}>
       {children}
     </SessionContext.Provider>
   )

@@ -66,9 +66,6 @@ export default function useCarouselData() {
           fetchAds('Contraseña...'),
           fetchSubscriptions('Contraseña...'),
         ])
-
-        console.log('Ads Response:', JSON.stringify(adsResponse)) // Depuración
-
         // Validar que adsResponse sea un array
         if (!Array.isArray(adsResponse)) {
           console.error('Invalid adsResponse:', adsResponse)

@@ -2,23 +2,32 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const BASE_URL = 'https://gympromanager.com'
 
-// Tipos para el cuerpo de la solicitud
-type ApiBody = {
-  param1?: string | number
-  param2?: string | number
-  param3?: string | number
-  param4?: string | number
-  param5?: string | number
-  token?: string // Token de autenticación
-}
-
 // Tipos para las opciones de la solicitud
 type ApiOptions = {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
   headers?: Record<string, string>
-  body?: ApiBody
+  body?: Record<string, any> // Body genérico
   useCache?: boolean // Indica si se debe usar la caché
   contentType?: 'json' | 'form-urlencoded' // Tipo de Content-Type
+}
+
+// Función para verificar si el body está vacío
+const isBodyEmpty = (body: Record<string, any> | undefined): boolean => {
+  if (!body) {
+    console.log('El body está vacío o es undefined')
+    return true
+  }
+
+  // Verifica si el body tiene al menos una propiedad con valor definido
+  const hasValues = Object.values(body).some((value) => value !== undefined)
+
+  if (!hasValues) {
+    console.log('El body está vacío: todas las propiedades son undefined')
+    return true
+  }
+
+  console.log('El body NO está vacío:', body)
+  return false
 }
 
 // Función principal del cliente API
@@ -38,6 +47,11 @@ export const apiClient = async <T>(
   const cacheKey = `${method}:${url}:${JSON.stringify(body)}`
 
   try {
+    // Verificar si el body está vacío (solo para métodos que requieren body)
+    if (method !== 'GET' && isBodyEmpty(body)) {
+      throw new Error('El body de la solicitud está vacío')
+    }
+
     // Verificar si la respuesta está en la caché persistente
     if (useCache) {
       const cachedData = await AsyncStorage.getItem(cacheKey)

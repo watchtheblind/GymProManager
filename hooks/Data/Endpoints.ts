@@ -1,5 +1,5 @@
 import {apiClient} from './ApiClient'
-
+import {UserData} from '../SessionContext'
 // Tipos generales
 type ApiResponse<T> = {
   success: boolean
@@ -254,50 +254,62 @@ export const fetchSubscriptions = async (
   }
 }
 
-// Tipo para la respuesta del login
+// Tipo para los campos de altura y peso
+type Measurement = {
+  valor: number
+  unidad: string
+}
+
+// Tipo para los metadatos del usuario
+type UserMeta = {
+  nickname: string
+  first_name: string
+  last_name: string
+  description: string
+  backend_nombre: string
+  backend_apellido: string
+  backend_nif: string
+  backend_direccion: string
+  backend_codigo_pais: string
+  backend_telefono: string
+  backend_genero: string
+  backend_fecha_de_nacimiento: string // Formato "DD-MM-YYYY"
+  backend_altura: string // JSON serializado como cadena
+  backend_peso: string // JSON serializado como cadena
+  backend_imagen: string
+}
+
+// Tipo para la respuesta completa del login
 type LoginResponse = {
   ID: number
   user_login: string
   user_email: string
   first_name: string
   last_name: string
-  user_registered: string // Fecha en formato "YYYY-MM-DD HH:mm:ss"
+  user_registered: string // Formato "YYYY-MM-DD HH:mm:ss"
   roles: string[]
-  meta: {
-    nickname: string
-    first_name: string
-    last_name: string
-    description: string
-    backend_nombre: string
-    backend_apellido: string
-    backend_nif: string
-    backend_direccion: string
-    backend_codigo_pais: string
-    backend_telefono: string
-    backend_genero: string
-    backend_fecha_de_nacimiento: string // Formato "DD-MM-YYYY"
-    backend_altura: {
-      valor: number
-      unidad: string
-    }
-    backend_peso: {
-      valor: number
-      unidad: string
-    }
-    backend_imagen: string
-  }
+  meta: UserMeta
   has_active_subscription: boolean
   active_subscription_details: null | any // Puedes ajustar este tipo si tienes más detalles sobre la suscripción
 }
 // Endpoint para iniciar sesión
+
 export const login = async (
   email: string,
   password: string,
 ): Promise<ApiResponse<LoginResponse>> => {
+  // Crear el cuerpo de la solicitud como un objeto
+  const body = {
+    email,
+    password,
+  }
+
+  console.log('Serialized body:', new URLSearchParams(body).toString()) // Imprime el body serializado
+
   return apiClient<ApiResponse<LoginResponse>>('/app-login.php', {
     method: 'POST',
-    body: {param1: email, param2: password},
-    contentType: 'form-urlencoded',
+    body, // Pasar el objeto directamente
+    contentType: 'form-urlencoded', // Indicar que el Content-Type es form-urlencoded
     useCache: false, // No usar caché para operaciones de login
   })
 }

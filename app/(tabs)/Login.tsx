@@ -14,9 +14,9 @@ import {router} from 'expo-router'
 import CustomAlert from '@/components/common/Alert'
 import {validateLogin, LoginFormData} from '@/hooks/LoginValidation'
 import {useSession} from '@/hooks/SessionContext' // Importar el hook useSession
-
+import {login} from '@/hooks/Data/Endpoints'
 export default function Login() {
-  const {login} = useSession() // Usar el contexto
+  const {setSessionData} = useSession() // Usar el contexto
   const [formData, setFormData] = useState<LoginFormData>({
     email: 'admin@gmail.com',
     password: 'admin',
@@ -57,27 +57,18 @@ export default function Login() {
     setIsLoading(true)
 
     try {
-      const response = await fetch('https://gympromanager.com/app-login.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `email=${encodeURIComponent(formData.email)}&password=${encodeURIComponent(formData.password)}`,
-      })
-
-      const data = await response.json()
-
-      if (data.user_email) {
-        login(data) // Guardar los datos del usuario en el contexto
-        router.navigate('./Bottomnav') // Redirigir a Bottomnav
-      } else if (data.error) {
-        setAlertMessage(data.error)
-        setAlertVisible(true)
+      const res = await login('admin@gmail.com', 'admin')
+      console.log(res)
+      if (res.success && res.data) {
+        const data = res.data
+        setSessionData(data)
+        if (!data.has_active_subscription) {
+          console.log('El usuario no tiene una suscripción activa.')
+        }
       } else {
-        setAlertMessage(
-          'Error de red inesperado. Por favor, inténtelo de nuevo.',
-        )
-        setAlertVisible(true)
+        console.log(res)
+        console.log(formData.email)
+        console.log(formData.password)
       }
     } catch (error) {
       console.error(error)
@@ -86,7 +77,7 @@ export default function Login() {
     } finally {
       setIsLoading(false)
     }
-  }, [formData, login])
+  }, [formData, setSessionData])
 
   return (
     <View className='bg-[#1D1D1B] h-full text-white relative'>
