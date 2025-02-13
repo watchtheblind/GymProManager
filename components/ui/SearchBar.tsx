@@ -33,13 +33,20 @@ const SearchBar: React.FC<SearchBarProps> = ({onSearch, onClear}) => {
             fontFamily: 'MyriadPro',
             paddingLeft: 40,
             paddingRight: 40,
+            paddingVertical: 10,
+            fontSize: 20,
+            color: 'white',
+            borderRadius: 30,
+            backgroundColor: '#B0A462',
+            borderWidth: 2,
+            borderColor: '#FEF4C9',
+            width: '100%',
           }}
           keyboardType='default'
           placeholder='Buscar'
           placeholderTextColor='#fff'
           value={searchText}
           onChangeText={handleSearch}
-          className='pl-12 pr-10 py-2 px-2 w-full text-xl text-white rounded-bl-3xl rounded-tr-3xl bg-[#B0A462] border-2 border-solid border-[#FEF4C9]'
         />
         <View style={{position: 'absolute', left: 10}}>
           <MaterialIcons
