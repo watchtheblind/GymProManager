@@ -1,5 +1,5 @@
+import {handleSignUp} from '../Activities/ActivityCard/useHandleSignUp'
 import {apiClient} from './ApiClient'
-import {UserData} from '../SessionContext'
 // Tipos generales
 type ApiResponse<T> = {
   success: boolean
@@ -148,4 +148,31 @@ export const fetchActivities = async (token: string): Promise<any[] | null> => {
     console.error('Error fetching activities:', error)
     return null // Retornamos null en caso de error
   }
+}
+
+type EnrollActivityParams = {
+  token: string
+  activityid: number
+  userid: number
+  fechahora: string
+  action: 'add' | 'delete'
+}
+
+export const enrollActivity = async (
+  params: EnrollActivityParams,
+): Promise<{success: string}> => {
+  const {token, activityid, userid, fechahora, action} = params
+
+  // Llamada al endpoint usando el apiClient
+  return apiClient<{success: string}>('/app-activities-enroll.php', {
+    method: 'POST',
+    body: {
+      token,
+      activityid,
+      userid,
+      fechahora,
+      action,
+    },
+    contentType: 'form-urlencoded', // Especificamos que el contenido es form-urlencoded
+  })
 }

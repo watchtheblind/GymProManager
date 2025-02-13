@@ -1,6 +1,5 @@
-// components/DateCarousel.tsx
 import React from 'react'
-import {FlatList, StyleSheet, View} from 'react-native'
+import {FlatList, StyleSheet} from 'react-native'
 import {DateButton} from './Datebutton'
 
 interface DateInfo {

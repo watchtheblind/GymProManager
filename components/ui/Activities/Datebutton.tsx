@@ -10,7 +10,6 @@ interface DateButtonProps {
 }
 
 export const DateButton: React.FC<DateButtonProps> = ({
-  date,
   day,
   month,
   isSelected,
