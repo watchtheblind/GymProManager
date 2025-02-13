@@ -54,31 +54,44 @@ export default function Login() {
   }, [formData])
 
   const handleSubmit = useCallback(async () => {
-    setIsLoading(true)
+    setIsLoading(true) // Inicia el estado de carga
 
     try {
-      const res = await login('admin@gmail.com', 'admin')
-      console.log(res)
-      if (res.success && res.data) {
-        const data = res.data
-        setSessionData(data)
-        if (!data.has_active_subscription) {
+      // Intenta iniciar sesión con los datos del formulario
+      const res = await login(
+        formData.email.toString(),
+        formData.password.toString(),
+      )
+
+      // Verifica si la respuesta contiene el campo 'user_email'
+      if (res && res.user_email) {
+        // Guarda los datos de la sesión
+        setSessionData(res)
+        router.navigate('/Bottomnav')
+        // Verifica si el usuario tiene una suscripción activa
+        if (res.has_active_subscription) {
+          console.log('El usuario tiene una suscripción activa.')
+          // router.navigate('/Bottomnav'); // Redirige a donde corresponda
+        } else {
           console.log('El usuario no tiene una suscripción activa.')
         }
       } else {
-        console.log(res)
-        console.log(formData.email)
-        console.log(formData.password)
+        // Si no hay 'user_email', las credenciales son incorrectas
+        setAlertMessage(
+          'Credenciales incorrectas. Por favor, inténtelo de nuevo.',
+        )
+        setAlertVisible(true)
       }
     } catch (error) {
-      console.error(error)
+      // Maneja errores de red o de la API
+      console.error('Error durante el inicio de sesión:', error)
       setAlertMessage('Error de red inesperado. Por favor, inténtelo de nuevo.')
       setAlertVisible(true)
     } finally {
+      // Asegúrate de detener el estado de carga
       setIsLoading(false)
     }
   }, [formData, setSessionData])
-
   return (
     <View className='bg-[#1D1D1B] h-full text-white relative'>
       <Image

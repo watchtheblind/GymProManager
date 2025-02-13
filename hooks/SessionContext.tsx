@@ -93,7 +93,6 @@ export const SessionProvider = ({children}: {children: ReactNode}) => {
       const session = {user: userData, expiresAt}
       await AsyncStorage.setItem('userSession', JSON.stringify(session))
       setUser(userData)
-      console.log('Datos del usuario guardados:', userData)
     } catch (error) {
       console.error('Error during setSessionData:', error)
     }

@@ -17,15 +17,12 @@ const isBodyEmpty = (body: Record<string, any> | undefined): boolean => {
     console.log('El body está vacío o es undefined')
     return true
   }
-
   // Verifica si el body tiene al menos una propiedad con valor definido
   const hasValues = Object.values(body).some((value) => value !== undefined)
-
   if (!hasValues) {
     console.log('El body está vacío: todas las propiedades son undefined')
     return true
   }
-
   console.log('El body NO está vacío:', body)
   return false
 }
@@ -42,10 +39,8 @@ export const apiClient = async <T>(
     useCache = false,
     contentType = 'json',
   } = options
-
   const url = `${BASE_URL}${endpoint}`
   const cacheKey = `${method}:${url}:${JSON.stringify(body)}`
-
   try {
     // Verificar si el body está vacío (solo para métodos que requieren body)
     if (method !== 'GET' && isBodyEmpty(body)) {

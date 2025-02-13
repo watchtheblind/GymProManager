@@ -254,62 +254,28 @@ export const fetchSubscriptions = async (
   }
 }
 
-// Tipo para los campos de altura y peso
-type Measurement = {
-  valor: number
-  unidad: string
-}
-
-// Tipo para los metadatos del usuario
-type UserMeta = {
-  nickname: string
-  first_name: string
-  last_name: string
-  description: string
-  backend_nombre: string
-  backend_apellido: string
-  backend_nif: string
-  backend_direccion: string
-  backend_codigo_pais: string
-  backend_telefono: string
-  backend_genero: string
-  backend_fecha_de_nacimiento: string // Formato "DD-MM-YYYY"
-  backend_altura: string // JSON serializado como cadena
-  backend_peso: string // JSON serializado como cadena
-  backend_imagen: string
-}
-
-// Tipo para la respuesta completa del login
-type LoginResponse = {
-  ID: number
-  user_login: string
-  user_email: string
-  first_name: string
-  last_name: string
-  user_registered: string // Formato "YYYY-MM-DD HH:mm:ss"
-  roles: string[]
-  meta: UserMeta
-  has_active_subscription: boolean
-  active_subscription_details: null | any // Puedes ajustar este tipo si tienes más detalles sobre la suscripción
-}
-// Endpoint para iniciar sesión
-
-export const login = async (
-  email: string,
-  password: string,
-): Promise<ApiResponse<LoginResponse>> => {
-  // Crear el cuerpo de la solicitud como un objeto
+export const login = async (email: string, password: string): Promise<any> => {
   const body = {
     email,
     password,
   }
 
-  console.log('Serialized body:', new URLSearchParams(body).toString()) // Imprime el body serializado
+  try {
+    const response = await apiClient('/app-login.php', {
+      method: 'POST',
+      body,
+      contentType: 'form-urlencoded',
+      useCache: false, // No usar caché para operaciones de login
+    })
 
-  return apiClient<ApiResponse<LoginResponse>>('/app-login.php', {
-    method: 'POST',
-    body, // Pasar el objeto directamente
-    contentType: 'form-urlencoded', // Indicar que el Content-Type es form-urlencoded
-    useCache: false, // No usar caché para operaciones de login
-  })
+    // Asegúrate de que la respuesta sea un objeto JSON
+    if (typeof response === 'object' && response !== null) {
+      return response
+    } else {
+      throw new Error('La respuesta de la API no es un objeto válido')
+    }
+  } catch (error) {
+    console.error('Error al realizar el login:', error)
+    throw error // Propaga el error para manejarlo fuera
+  }
 }
