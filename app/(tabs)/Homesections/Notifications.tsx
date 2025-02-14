@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react'
-import {View, ActivityIndicator, Text} from 'react-native'
+import {View, Text} from 'react-native'
 import useNotifications from '@/hooks/Notifications/useNotifications'
 import NotificationList from '@/components/notifications/NotificationList'
 import {useSession} from '@/hooks/SessionContext'
