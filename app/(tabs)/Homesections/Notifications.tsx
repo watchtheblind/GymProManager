@@ -37,11 +37,11 @@ const NotificationsScreen = () => {
 
   // Función para manejar el botón de retroceso
   useBackHandler(() => {
-    navigation.navigate('Bottomnav' as never)
+    navigation.goBack()
     return true
   })
   const handlePress = () => {
-    navigation.navigate('Bottomnav' as never)
+    navigation.goBack()
   }
 
   if (loading) {
