@@ -1,21 +1,21 @@
-import React, {useState, useMemo} from 'react'
+import React, {useState, useMemo, useEffect} from 'react'
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native'
 import {MaterialIcons} from '@expo/vector-icons'
 import moment from 'moment'
 import ConfirmationModal from '../../common/ConfirmationModal'
 import CustomAlert from '../../common/Alert'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import {Activity} from '@/hooks/Activities/useActivities'
 import {getActivityTypeColor} from '@/hooks/Activities/ActivityCard/useGetActivityTypeColor'
 import {enrollActivity} from '@/hooks/Data/Endpoints'
+
 interface ActivityCardProps {
   activity: Activity
   isFavorite: boolean
   onToggleFavorite: () => void
   userId: string
   token: string
-  isSignedUp: boolean // Nuevo prop para indicar si el usuario está anotado
-  onSignUpChange: (isSignedUp: boolean) => void // Nuevo prop para notificar cambios
-  action?: string // Agregar action como propiedad opcional
+  onSignUpChange: (isSignedUp: boolean) => void
 }
 
 export const ActivityCard: React.FC<ActivityCardProps> = ({
@@ -24,9 +24,41 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
   onToggleFavorite,
   userId,
   token,
-  isSignedUp: initialIsSignedUp,
   onSignUpChange,
 }) => {
+  // Estado para almacenar todas las notificaciones completas
+  const [allNotifications, setAllNotifications] = useState<any[]>([])
+
+  // Función para cargar todas las notificaciones completas desde la caché
+  const loadAllNotifications = async () => {
+    try {
+      const cachedData = await AsyncStorage.getItem(
+        `allNotifications:${userId}`,
+      )
+      if (cachedData) {
+        const {data, timestamp} = JSON.parse(cachedData)
+        const currentTime = Date.now()
+        const oneHourInMs = 60 * 60 * 1000 // 1 hora en milisegundos
+        if (currentTime - timestamp < oneHourInMs) {
+          console.log('Notificaciones completas obtenidas desde la caché')
+          setAllNotifications(data) // Guardar las notificaciones completas en el estado
+          return
+        }
+      }
+      console.log('Caché expirada o no disponible')
+    } catch (error) {
+      console.error(
+        'Error al obtener notificaciones completas desde la caché:',
+        error,
+      )
+    }
+  }
+
+  // Cargar las notificaciones completas cuando el componente se monta
+  useEffect(() => {
+    loadAllNotifications()
+  }, [userId])
+
   const activityDateTime = useMemo(
     () => moment(activity.fechahora, 'YYYY-MM-DD HH:mm:ss'),
     [activity.fechahora],
@@ -36,20 +68,37 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
     [activityDateTime],
   )
 
+  // Determinar si el usuario ya está inscrito en la actividad
+  const isSignedUp = useMemo(() => {
+    return allNotifications.some(
+      (notification) =>
+        notification.tipo === 'actividad' &&
+        notification.titulo === activity.nombre &&
+        notification.fechahora === activity.fechahora,
+    )
+  }, [allNotifications, activity])
+
+  // Estado local para controlar si el usuario está inscrito
+  const [localIsSignedUp, setLocalIsSignedUp] = useState(isSignedUp)
+
+  // Actualizar el estado local cuando isSignedUp cambie
+  useEffect(() => {
+    setLocalIsSignedUp(isSignedUp)
+  }, [isSignedUp])
+
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [isAlertVisible, setIsAlertVisible] = useState(false)
   const [alertTitle, setAlertTitle] = useState('')
   const [alertMessage, setAlertMessage] = useState('')
-  const [isSignedUp, setIsSignedUp] = useState(initialIsSignedUp)
 
   const openModal = () => setIsModalVisible(true)
   const closeModal = () => setIsModalVisible(false)
   const closeAlert = () => setIsAlertVisible(false)
 
   const confirmSignUp = async () => {
-    const actionToUse = isSignedUp ? 'delete' : 'add' // Determina la acción
+    const actionToUse = localIsSignedUp ? 'delete' : 'add'
+    console.log('Acción enviada al backend:', actionToUse)
 
-    // Construye el objeto params con las 5 propiedades
     const params = {
       token,
       activityid: activity.ID,
@@ -59,23 +108,38 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
     }
 
     try {
-      // Llama a enrollActivity con el objeto params
+      console.log(
+        'Enviando solicitud al backend con los siguientes parámetros:',
+        params,
+      )
       const response = await enrollActivity(params)
+      console.log('Respuesta completa del backend:', response)
 
       if (response.success) {
-        setIsSignedUp(!isSignedUp) // Cambiar el estado local
-        onSignUpChange(!isSignedUp) // Notificar al componente padre
+        // Actualizar el estado local basado en la acción realizada
+        setLocalIsSignedUp(!localIsSignedUp)
+        onSignUpChange(!localIsSignedUp)
+
+        // Mostrar mensaje de éxito
         setAlertTitle('Éxito')
         setAlertMessage(
-          isSignedUp
+          localIsSignedUp
             ? 'Te has salido correctamente de la actividad.'
             : 'Te has inscrito correctamente en la actividad.',
         )
+
+        // Refrescar las notificaciones para sincronizar el frontend con el backend
+        await loadAllNotifications()
       } else {
+        // Mostrar mensaje de error del backend
+        console.error('Error en la respuesta del backend:', response)
         setAlertTitle('Error')
-        setAlertMessage('Ya estás inscrito en esta actividad.')
+        setAlertMessage(
+          response.success || 'Ya estás inscrito en esta actividad.',
+        )
       }
     } catch (error) {
+      console.error('Error en la solicitud al backend:', error)
       setAlertTitle('Error')
       setAlertMessage('No se pudo completar la acción. Inténtalo de nuevo.')
     } finally {
@@ -83,6 +147,7 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
       closeModal()
     }
   }
+
   return (
     <View
       style={[
@@ -114,7 +179,6 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
           </Text>
         )}
       </View>
-
       <TouchableOpacity
         onPress={onToggleFavorite}
         style={styles.favoriteButton}>
@@ -124,31 +188,31 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
           color={isFavorite ? '#fbbf24' : '#fff'}
         />
       </TouchableOpacity>
-
       <TouchableOpacity
         onPress={openModal}
         style={[
           styles.badgeContainer,
-          isSignedUp && styles.badgeContainerSignedUp, // Aplicar estilo condicional
+          localIsSignedUp && styles.badgeContainerSignedUp,
         ]}>
         <Text
-          style={[styles.badgeText, isSignedUp && styles.badgeTextSignedUp]}>
-          {isSignedUp ? 'Salirme' : 'Anotarme'}
+          style={[
+            styles.badgeText,
+            localIsSignedUp && styles.badgeTextSignedUp,
+          ]}>
+          {localIsSignedUp ? 'Salirme' : 'Anotarme'}
         </Text>
       </TouchableOpacity>
-
       <ConfirmationModal
         visible={isModalVisible}
         title='Confirmar'
         message={
-          isSignedUp
+          localIsSignedUp
             ? '¿Estás seguro de querer salirte de la actividad?'
             : '¿Estás seguro de querer anotarte en la actividad?'
         }
         onAccept={confirmSignUp}
         onClose={closeModal}
       />
-
       <CustomAlert
         visible={isAlertVisible}
         title={alertTitle}
@@ -210,13 +274,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 14,
     right: 15,
-    backgroundColor: '#14b8a6', // Color por defecto (verde)
+    backgroundColor: '#14b8a6',
     paddingVertical: 4,
     paddingHorizontal: 8,
     borderRadius: 12,
   },
   badgeContainerSignedUp: {
-    backgroundColor: '#ef4444', // Color rojizo cuando el usuario está anotado
+    backgroundColor: '#ef4444',
   },
   badgeText: {
     color: 'white',
@@ -225,7 +289,7 @@ const styles = StyleSheet.create({
     fontFamily: 'MyriadPro',
   },
   badgeTextSignedUp: {
-    color: 'white', // Color del texto cuando el usuario está anotado
+    color: 'white',
   },
 })
 

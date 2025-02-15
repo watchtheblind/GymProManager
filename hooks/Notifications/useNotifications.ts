@@ -1,5 +1,6 @@
 import {useState, useCallback} from 'react'
 import {getNotifications} from '../Data/Endpoints'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 // Definición de tipos para las notificaciones
 interface Notification {
@@ -27,19 +28,27 @@ const useNotifications = (user: {ID?: number | undefined} | null) => {
   // Función para cargar notificaciones desde el backend
   const fetchNotifications = useCallback(async () => {
     if (!user?.ID) return
-
     setLoading(true)
     setError(null)
-
     try {
-      // Llama a la función getNotifications con el token y el ID del usuario
       const fetchedNotifications = await getNotifications(
         NOTIFICATION_TOKEN,
         user.ID,
-        false,
+        true, // Usar caché normal
       )
 
-      // Filtra y valida las notificaciones
+      console.log(
+        'Notificaciones obtenidas:',
+        JSON.stringify(fetchedNotifications, null, 2),
+      )
+
+      // Guardar las notificaciones COMPLETAS en caché con una clave separada
+      await AsyncStorage.setItem(
+        `allNotifications:${user.ID}`, // Clave única para las notificaciones completas
+        JSON.stringify({data: fetchedNotifications, timestamp: Date.now()}),
+      )
+
+      // Validar las notificaciones
       const validNotifications = validateNotifications(fetchedNotifications)
       setNotifications(validNotifications)
     } catch (err: unknown) {
@@ -65,10 +74,8 @@ const useNotifications = (user: {ID?: number | undefined} | null) => {
     const now = new Date()
     const currentDate = getDateOnly(now)
     const next24Hours = new Date(currentDate.getTime() + ONE_DAY_IN_MS)
-
     return notifications.filter((notification) => {
       const notificationDateOnly = getDateOnly(new Date(notification.fechahora))
-
       switch (notification.tipo) {
         case 'actividad':
           return (
