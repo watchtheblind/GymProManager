@@ -10,7 +10,7 @@ import {
 import {Stack} from 'expo-router'
 import {fetchEjercicios} from '@/hooks/Data/Endpoints'
 import {useNavigation} from '@react-navigation/native'
-import SearchBar from '@/components/ui/SearchBar'
+import SearchBar from '@/components/common/SearchBar'
 import UniversalCard from '@/components/ui/Card'
 import Header from '@/components/common/Header'
 import useBackHandler from '@/hooks/Common/useBackHandler'

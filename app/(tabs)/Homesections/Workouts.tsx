@@ -13,7 +13,7 @@ import {
 import {useFocusEffect, useNavigation} from '@react-navigation/native'
 import {MaterialIcons} from '@expo/vector-icons'
 import Tabs from '@/components/common/Tabs'
-import SearchBar from '@/components/ui/SearchBar'
+import SearchBar from '@/components/common/SearchBar'
 import {Settingsicon} from '@/components/ui/Bottomnav/Icons'
 import UniversalCard from '@/components/ui/Card'
 import {useFavorites} from '@/hooks/Activities/useFavorites'
