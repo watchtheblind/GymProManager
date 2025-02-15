@@ -270,6 +270,7 @@ export const fetchEjercicios = async (
       method: 'POST',
       headers: {}, // Puedes agregar headers adicionales aquí si es necesario
       body,
+      useCache: true,
       contentType: 'form-urlencoded', // El endpoint requiere form-urlencoded
     })
 

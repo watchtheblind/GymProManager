@@ -34,7 +34,7 @@ const SearchBar: React.FC<SearchBarProps> = ({onSearch, onClear}) => {
             paddingLeft: 40,
             paddingRight: 40,
             paddingVertical: 10,
-            fontSize: 20,
+            fontSize: 15,
             color: 'white',
             borderRadius: 30,
             backgroundColor: '#B0A462',

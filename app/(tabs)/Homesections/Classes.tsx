@@ -37,12 +37,8 @@ export default function Classes() {
   const nivels = ['Principiante', 'Intermedio', 'Experto']
 
   const colorNivel = (nivel: number) => colors[nivel - 1]
-  const TextNivel = (nivel: number) => nivels[nivel - 1]
-
-  const fakeDelay = (ms: number) => new Promise((res) => setTimeout(res, ms))
 
   const searchClass = async (text: string) => {
-    await fakeDelay(1000)
     if (text.trim() === '') {
       setSearchedEjercicios(ejercicios)
     } else {
