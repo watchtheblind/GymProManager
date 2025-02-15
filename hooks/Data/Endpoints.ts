@@ -237,3 +237,47 @@ export const getNotifications = async (
     throw error
   }
 }
+
+// Definición del tipo para un ejercicio
+type Ejercicio = {
+  ID: string
+  modified: string
+  nombre: string
+  descripcion: string
+  url: string
+  g_ejercicio_valor: string | null
+  g_muscular_valor: string | null
+}
+
+// Función para interactuar con el endpoint de ejercicios (videos)
+export const fetchEjercicios = async (
+  token: string,
+  ejercicioid?: number, // Opcional: ID del ejercicio a obtener
+  useCache: boolean = false, // Activar/desactivar caché
+): Promise<Ejercicio[]> => {
+  try {
+    // Construir el body de la solicitud
+    const body: Record<string, any> = {
+      token, // Token de autorización
+    }
+
+    // Si se proporciona un ID de ejercicio, agregarlo al body
+    if (ejercicioid !== undefined) {
+      body.ejercicioid = ejercicioid
+    }
+
+    // Llamar al cliente API con las opciones adecuadas
+    const response = await apiClient<Ejercicio[]>('/app-ejercicios.php', {
+      method: 'POST',
+      headers: {}, // Puedes agregar headers adicionales aquí si es necesario
+      body,
+      contentType: 'form-urlencoded', // El endpoint requiere form-urlencoded
+      useCache, // Habilitar/desactivar caché según el parámetro
+    })
+
+    return response
+  } catch (error) {
+    console.error('Error al obtener los ejercicios:', error)
+    throw error
+  }
+}
