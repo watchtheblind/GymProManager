@@ -253,7 +253,6 @@ type Ejercicio = {
 export const fetchEjercicios = async (
   token: string,
   ejercicioid?: number, // Opcional: ID del ejercicio a obtener
-  useCache: boolean = false, // Activar/desactivar caché
 ): Promise<Ejercicio[]> => {
   try {
     // Construir el body de la solicitud
@@ -272,7 +271,6 @@ export const fetchEjercicios = async (
       headers: {}, // Puedes agregar headers adicionales aquí si es necesario
       body,
       contentType: 'form-urlencoded', // El endpoint requiere form-urlencoded
-      useCache, // Habilitar/desactivar caché según el parámetro
     })
 
     return response

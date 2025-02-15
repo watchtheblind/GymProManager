@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     transform: [{rotate: '-45deg'}],
-    marginLeft: -20,
+    marginLeft: -22,
     marginTop: -5,
   },
   typeText: {
