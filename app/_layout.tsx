@@ -17,6 +17,7 @@ export default function RootLayout() {
   const [fontsLoaded] = useFonts({
     Copperplate: require('../assets/fonts/Copperplate.otf'),
     MyriadPro: require('../assets/fonts/MyriadPro.otf'),
+    MyriadProBold: require('../assets/fonts/MyriadProSemibold.ttf'),
   })
 
   useEffect(() => {

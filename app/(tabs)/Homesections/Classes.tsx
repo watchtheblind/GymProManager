@@ -192,12 +192,11 @@ export default function Classes() {
                 key={index}
                 image={thumbnailUrl} // Usamos la URL de la thumbnail
                 title={item.nombre}
-                type={item.g_ejercicio_valor || 'Sin categoría'} // Mostrar categoría o un valor por defecto
+                type={item.g_ejercicio_valor || 'Otro'} // Mostrar categoría o un valor por defecto
                 accentColor={colorNivel(1)} // Puedes ajustar esto según el nivel
-                level={TextNivel(1)} // Puedes ajustar esto según el nivel
-                duration={'30 min'} // Duración fija o dinámica si está disponible
+                level={item.g_muscular_valor || undefined} // Puedes ajustar esto según el nivel
+                duration='GymPro' // Duración fija o dinámica si está disponible
                 isFavorite={false} // Puedes manejar favoritos si es necesario
-                onFavoritePress={() => console.log('Favorito presionado')}
                 showFavoriteIcon={false} // Oculta el ícono de favoritos si no lo necesitas
               />
             )

@@ -2,7 +2,7 @@ import React from 'react'
 import {View, Text, Image, TouchableOpacity, StyleSheet} from 'react-native'
 import {MaterialIcons} from '@expo/vector-icons'
 
-type UniversalCardProps = {
+type CardProps = {
   image: string
   title: string
   subtitle?: string
@@ -15,7 +15,7 @@ type UniversalCardProps = {
   showFavoriteIcon?: boolean // Nueva prop para controlar la visibilidad del ícono
 }
 
-const UniversalCard: React.FC<UniversalCardProps> = ({
+const Card: React.FC<CardProps> = ({
   image,
   title,
   subtitle,
@@ -74,7 +74,6 @@ const styles = StyleSheet.create({
   card: {
     width: '48%',
     aspectRatio: 16 / 16,
-    marginBottom: 16,
     borderRadius: 12,
     overflow: 'hidden',
     backgroundColor: '#1A1A1A',
@@ -97,38 +96,39 @@ const styles = StyleSheet.create({
     left: 0,
     width: 80,
     height: 30,
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    transform: [{rotate: '-45deg'}],
-    marginLeft: -22,
-    marginTop: -5,
+    transform: [{rotate: '-43deg'}],
+    marginLeft: -20,
+    marginTop: 2,
   },
   typeText: {
     color: '#fff',
     fontSize: 12,
     fontWeight: '500',
     fontFamily: 'MyriadPro',
-    marginLeft: -6,
+    marginLeft: -0,
   },
   cardOverlay: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    padding: 12,
-    backgroundColor: 'rgba(0,0,0,0.3)',
+    padding: 6,
+    backgroundColor: 'rgba(0,0,0,0.55)',
   },
   cardInfo: {
-    gap: 4,
+    gap: 1.5,
   },
   cardTitle: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 14,
+    fontFamily: 'MyriadProBold',
   },
   cardSubtitle: {
     color: '#fff',
-    fontSize: 14,
+    fontSize: 12,
     opacity: 0.8,
   },
   cardMetaInfo: {
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   cardLevel: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '500',
   },
   cardDot: {
@@ -146,9 +146,9 @@ const styles = StyleSheet.create({
   },
   cardDuration: {
     color: '#fff',
-    fontSize: 14,
+    fontSize: 12,
     opacity: 0.7,
   },
 })
 
-export default UniversalCard
+export default Card
