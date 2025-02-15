@@ -12,7 +12,8 @@ type CardProps = {
   level?: string
   isFavorite?: boolean
   onFavoritePress?: () => void
-  showFavoriteIcon?: boolean // Nueva prop para controlar la visibilidad del ícono
+  onPress?: () => void // Nueva prop para manejar la acción del botón
+  showFavoriteIcon?: boolean // Controla la visibilidad del ícono de favorito
 }
 
 const Card: React.FC<CardProps> = ({
@@ -25,10 +26,15 @@ const Card: React.FC<CardProps> = ({
   level,
   isFavorite = false,
   onFavoritePress,
+  onPress, // Acción al presionar la tarjeta
   showFavoriteIcon = true, // Valor por defecto: true
 }) => {
   return (
-    <View style={styles.card}>
+    <TouchableOpacity
+      style={styles.card}
+      activeOpacity={0.8} // Efecto visual al presionar
+      onPress={onPress}>
+      {/* Acción al hacer clic en la tarjeta */}
       <Image
         source={{uri: image}}
         style={styles.cardImage}
@@ -66,7 +72,7 @@ const Card: React.FC<CardProps> = ({
           )}
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   )
 }
 
@@ -108,7 +114,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '500',
     fontFamily: 'MyriadPro',
-    marginLeft: -0,
   },
   cardOverlay: {
     position: 'absolute',

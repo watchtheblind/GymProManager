@@ -11,7 +11,7 @@ import {Stack} from 'expo-router'
 import {fetchEjercicios} from '@/hooks/Data/Endpoints'
 import {useNavigation} from '@react-navigation/native'
 import SearchBar from '@/components/common/SearchBar'
-import UniversalCard from '@/components/ui/Card'
+import Card from '@/components/ui/Card'
 import Header from '@/components/common/Header'
 import useBackHandler from '@/hooks/Common/useBackHandler'
 
@@ -171,7 +171,7 @@ export default function Classes() {
             thumbnails[item.ID] ||
             'https://via.placeholder.com/640x360?text=Thumbnail+no+disponible'
           return (
-            <UniversalCard
+            <Card
               image={thumbnailUrl}
               title={item.nombre}
               type={item.g_ejercicio_valor || 'Otro'}
@@ -180,6 +180,7 @@ export default function Classes() {
               duration='GymPro'
               isFavorite={false}
               showFavoriteIcon={false}
+              onPress={() => {}}
             />
           )
         }}
