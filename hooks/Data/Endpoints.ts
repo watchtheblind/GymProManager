@@ -394,3 +394,71 @@ export const enviarRespuestasCuestionario = async (
     throw error
   }
 }
+
+// Tipo para una rutina
+export type Rutina = {
+  ID: string
+  modified: string
+  nombre: string
+  descripcion: string
+  ejercicios: string // JSON serializado
+}
+
+// Función para obtener las rutinas
+export const fetchRutinas = async (
+  token: string,
+  rutinaId?: number, // Opcional: ID de la rutina específica
+  useCache: boolean = true, // Habilitamos caché por defecto
+): Promise<Rutina[] | Rutina> => {
+  try {
+    // Construir la clave única para la caché
+    const cacheKey = `rutinas:${token}:${rutinaId || 'all'}`
+    if (useCache) {
+      // Intentar obtener los datos de la caché
+      const cachedData = await AsyncStorage.getItem(cacheKey)
+      if (cachedData) {
+        const {data, timestamp} = JSON.parse(cachedData)
+        // Verificar si han pasado menos de 10 minutos
+        const currentTime = Date.now()
+        const tenMinutesInMs = 10 * 60 * 1000 // 10 minutos en milisegundos
+        if (currentTime - timestamp < tenMinutesInMs) {
+          console.log('Rutinas obtenidas desde la caché')
+          return data
+        }
+        console.log('Caché expirada, realizando nueva solicitud...')
+      }
+    }
+
+    // Construir el body de la solicitud
+    const body: Record<string, any> = {
+      token,
+    }
+    // Si se proporciona un ID de rutina, agregarlo al body
+    if (rutinaId !== undefined) {
+      body.rutinaid = rutinaId
+    }
+
+    // Realizar la solicitud usando el cliente API
+    const rutinas = await apiClient<Rutina[] | Rutina>('/app-rutinas.php', {
+      method: 'POST',
+      headers: {},
+      body,
+      contentType: 'form-urlencoded', // El endpoint espera form-urlencoded
+    })
+
+    // Guardar los datos en la caché con un timestamp
+    if (useCache) {
+      const cacheData = {
+        data: rutinas,
+        timestamp: Date.now(), // Guardar el momento actual
+      }
+      await AsyncStorage.setItem(cacheKey, JSON.stringify(cacheData))
+      console.log('Rutinas guardadas en la caché')
+    }
+
+    return rutinas
+  } catch (error) {
+    console.error('Error al obtener las rutinas:', error)
+    throw error
+  }
+}
