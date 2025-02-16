@@ -19,7 +19,7 @@ import {useFilter} from '@/hooks/Common/useFilter'
 import Header from '@/components/common/Header'
 import useBackHandler from '@/hooks/Common/useBackHandler'
 import {fetchRutinas} from '@/hooks/Data/Endpoints'
-
+import SearchBar from '@/components/common/SearchBar'
 // Interfaz para una rutina
 interface Rutina {
   ID: string
@@ -30,7 +30,7 @@ interface Rutina {
 }
 
 export default function WorkoutList() {
-  const [activeTab, setActiveTab] = useState('listado')
+  const [activeTab, setActiveTab] = useState('rutinas')
   const [showFavorites, setShowFavorites] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [rutinas, setRutinas] = useState<Rutina[]>([])
@@ -74,7 +74,7 @@ export default function WorkoutList() {
   })
 
   const tabs = [
-    {id: 'listado', label: 'Rutinas'},
+    {id: 'rutinas', label: 'Rutinas'},
     {id: 'mis-entrenamientos', label: 'Mis entrenamientos'},
   ]
 
@@ -93,6 +93,9 @@ export default function WorkoutList() {
 
   const RoutinesContent = () => (
     <View style={{flex: 1}}>
+      <SearchBar
+        onSearch={() => {}}
+        onClear={() => {}}></SearchBar>
       <View style={styles.favoritesContainer}>
         <Text style={styles.favoritesText}>Ver solo mis favoritos</Text>
         <Switch
@@ -147,7 +150,7 @@ export default function WorkoutList() {
           tabTextStyle={styles.inactiveTabText}
           activeTabTextStyle={styles.activeTabText}
         />
-        {activeTab === 'listado' ? (
+        {activeTab === 'rutinas' ? (
           <RoutinesContent />
         ) : (
           <View style={styles.misEntrenamientosContent}>
@@ -228,7 +231,7 @@ const styles = StyleSheet.create({
   },
   header: {
     marginTop: 50,
-    marginBottom: 16,
+    marginBottom: 19,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -247,7 +250,7 @@ const styles = StyleSheet.create({
   favoritesContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   favoritesText: {
     color: '#14b8a6',
@@ -276,6 +279,7 @@ const styles = StyleSheet.create({
   },
   workoutRow: {
     justifyContent: 'space-between',
+    paddingBottom: 15,
   },
   workoutList: {
     paddingBottom: 5,
