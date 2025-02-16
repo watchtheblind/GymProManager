@@ -1,24 +1,19 @@
-import React, {useState, useCallback} from 'react'
+import React, {useState} from 'react'
 import {
   View,
   Text,
-  Image,
-  TouchableOpacity,
   SafeAreaView,
   StyleSheet,
   FlatList,
-  BackHandler,
   Switch,
 } from 'react-native'
-import {useFocusEffect, useNavigation} from '@react-navigation/native'
-import {MaterialIcons} from '@expo/vector-icons'
+import {useNavigation} from '@react-navigation/native'
 import Tabs from '@/components/common/Tabs'
-import SearchBar from '@/components/common/SearchBar'
-import {Settingsicon} from '@/components/ui/Bottomnav/Icons'
 import UniversalCard from '@/components/ui/Card'
 import {useFavorites} from '@/hooks/Activities/useFavorites'
 import {useFilter} from '@/hooks/Common/useFilter' // Importamos el hook useFilter
-
+import Header from '@/components/common/Header'
+import useBackHandler from '@/hooks/Common/useBackHandler'
 // Tu JSON de workouts
 const workouts = [
   {
@@ -63,36 +58,20 @@ const workouts = [
   },
 ]
 
-type Workout = {
-  id: string
-  type: string
-  title: string
-  level: string
-  duration: string
-  accentColor: string
-  image: string
-}
-
 export default function WorkoutList() {
   const [activeTab, setActiveTab] = useState('listado')
   const [showFavorites, setShowFavorites] = useState(false)
   const {favorites, toggleFavorite} = useFavorites()
   const [searchQuery, setSearchQuery] = useState('')
   const navigation = useNavigation()
+  const handlePress = () => {
+    navigation.goBack()
+  }
 
-  useFocusEffect(
-    useCallback(() => {
-      const onBackPress = () => {
-        navigation.navigate('Bottomnav' as never)
-        return true
-      }
-      BackHandler.addEventListener('hardwareBackPress', onBackPress)
-
-      return () =>
-        BackHandler.removeEventListener('hardwareBackPress', onBackPress)
-    }, [navigation]),
-  )
-
+  useBackHandler(() => {
+    navigation.goBack()
+    return true
+  })
   // Usamos el hook useFilter para filtrar los workouts
   const filteredWorkouts = useFilter({
     searchQuery,
@@ -102,35 +81,15 @@ export default function WorkoutList() {
     searchKeys: ['title', 'type'], // Campos por los que se puede buscar
   })
 
-  const onSearch = (text: string) => {
-    setSearchQuery(text)
-  }
-
-  const onClear = () => {
-    setSearchQuery('')
-  }
-
   const tabs = [
-    {id: 'listado', label: 'Listado'},
+    {id: 'listado', label: 'Rutinas'},
     {id: 'mis-entrenamientos', label: 'Mis entrenamientos'},
   ]
 
   const ListadoContent = () => (
     <View style={{flex: 1}}>
       <View className='flex flex-row justify-center items-center'>
-        <View className='flex-3'>
-          <View className='w-11/12'>
-            <SearchBar
-              onSearch={onSearch}
-              onClear={onClear}
-            />
-          </View>
-        </View>
-        <View className='flex-1 flex items-center justify-center w-1/4'>
-          <TouchableOpacity className='h-12 w-12 p-2 rounded-xl mr-2'>
-            <Settingsicon size={24} />
-          </TouchableOpacity>
-        </View>
+        <View className='flex-3'></View>
       </View>
 
       <View style={styles.favoritesContainer}>
@@ -178,29 +137,10 @@ export default function WorkoutList() {
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <View style={styles.header}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('Bottomnav' as never)}
-            style={styles.backButton}>
-            <MaterialIcons
-              name='arrow-back'
-              color='white'
-              size={24}
-            />
-          </TouchableOpacity>
-          <View style={styles.headerTextContainer}>
-            <Text
-              style={styles.headerText}
-              className='uppercase'>
-              Listado de
-            </Text>
-            <Text
-              style={styles.headerText}
-              className='uppercase'>
-              Entrenamientos
-            </Text>
-          </View>
+          <Header
+            title='RUTINAS'
+            onBackPress={handlePress}></Header>
         </View>
-
         <Tabs
           tabs={tabs}
           activeTab={activeTab}
@@ -280,8 +220,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   favoritesText: {
-    color: '#fff',
+    color: '#14b8a6',
     marginRight: 8,
+    fontFamily: 'MyriadPro',
+    fontSize: 16,
   },
   noWorkoutsContainer: {
     flex: 1,
