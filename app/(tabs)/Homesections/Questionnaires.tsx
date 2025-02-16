@@ -14,7 +14,11 @@ import {useNavigation} from '@react-navigation/native'
 import {GestureHandlerRootView} from 'react-native-gesture-handler'
 import Header from '@/components/common/Header'
 import useBackHandler from '@/hooks/Common/useBackHandler'
-import {getCuestionarios} from '@/hooks/Data/Endpoints'
+import {useSession} from '@/hooks/SessionContext'
+import {
+  getCuestionarios,
+  enviarRespuestasCuestionario,
+} from '@/hooks/Data/Endpoints' // Importar el endpoint
 import CustomAlert from '@/components/common/Alert' // Importar CustomAlert
 
 // Interfaz para los cuestionarios
@@ -55,7 +59,7 @@ const Questionnaires = () => {
     navigation.goBack()
     return true
   })
-
+  const {user} = useSession()
   useEffect(() => {
     const loadQuizzes = async () => {
       try {
@@ -86,35 +90,8 @@ const Questionnaires = () => {
     }))
   }
 
-  // Renderizar una pregunta con sus respuestas
-  const renderQuestion = ({item, index}: {item: Pregunta; index: number}) => {
-    const {pregunta, respuesta1, respuesta2, respuesta3} = item
-
-    // Filtrar respuestas no vacías
-    const opciones = [respuesta1, respuesta2, respuesta3].filter(Boolean)
-
-    // Generar una clave única para la pregunta usando el índice
-    const questionKey = `question-${index}`
-
-    return (
-      <View style={styles.questionContainer}>
-        <Text style={styles.questionTitle}>{pregunta}</Text>
-        <SegmentedControl
-          values={opciones}
-          selectedIndex={opciones.indexOf(answers[questionKey] || '')}
-          onChange={(event) => {
-            const selectedOption =
-              opciones[event.nativeEvent.selectedSegmentIndex]
-            handleAnswerChange(questionKey, selectedOption)
-          }}
-          style={styles.segmentedControl}
-        />
-      </View>
-    )
-  }
-
-  // Enviar respuestas
-  const handleSubmit = () => {
+  // Enviar respuestas al servidor
+  const handleSubmit = async () => {
     if (Object.keys(answers).length === 0) {
       setAlertTitle('Error')
       setAlertMessage('No has seleccionado ninguna respuesta.')
@@ -125,27 +102,42 @@ const Questionnaires = () => {
     // Construir el JSON con las respuestas
     const quizID = selectedQuiz?.ID || 'N/A'
     const parsedQuestions = JSON.parse(selectedQuiz?.preguntas || '[]')
-    const respuestas = parsedQuestions.map((item: Pregunta, index: number) => {
-      const questionKey = `question-${index}`
-      return {
-        pregunta: item.pregunta,
-        respuesta: answers[questionKey] || 'Sin respuesta',
-      }
-    })
+    const respuestas = parsedQuestions.reduce(
+      (acc: Record<string, string>, item: Pregunta, index: number) => {
+        const questionKey = `question-${index}`
+        acc[item.pregunta] = answers[questionKey] || 'Sin respuesta'
+        return acc
+      },
+      {},
+    )
 
-    const jsonRespuestas = {
-      cuestionarioID: quizID,
-      respuestas,
+    try {
+      // Simulación de datos necesarios para el endpoint
+      const token = 'Contraseña...' // Reemplaza con el token real
+      const userid = String(user?.ID)
+      // Llamar al endpoint para enviar las respuestas
+      const response = await enviarRespuestasCuestionario(
+        token,
+        userid,
+        quizID,
+        respuestas,
+      )
+
+      // Mostrar mensaje de éxito
+      console.log('Respuesta del servidor:', response)
+      setAlertTitle('Éxito')
+      setAlertMessage(response.mensaje || 'Respuestas enviadas correctamente.')
+      setAlertVisible(true)
+      setModalVisible(false)
+    } catch (error) {
+      // Mostrar mensaje de error
+      console.error('Error al enviar las respuestas:', error)
+      setAlertTitle('Error')
+      setAlertMessage(
+        'Ocurrió un error al enviar las respuestas. Inténtalo de nuevo.',
+      )
+      setAlertVisible(true)
     }
-
-    // Mostrar el JSON en la consola
-    console.log('Respuestas enviadas:', jsonRespuestas)
-
-    // Mostrar mensaje de éxito
-    setAlertTitle('Éxito')
-    setAlertMessage('Respuestas enviadas correctamente.')
-    setAlertVisible(true)
-    setModalVisible(false)
   }
 
   const renderItem = ({item}: {item: GymQuiz}) => {
@@ -250,7 +242,37 @@ const Questionnaires = () => {
                 <FlatList
                   data={JSON.parse(selectedQuiz.preguntas)}
                   keyExtractor={(item, index) => index.toString()}
-                  renderItem={renderQuestion}
+                  renderItem={({item, index}) => {
+                    const {pregunta, respuesta1, respuesta2, respuesta3} = item
+
+                    // Filtrar respuestas no vacías
+                    const opciones = [
+                      respuesta1,
+                      respuesta2,
+                      respuesta3,
+                    ].filter(Boolean)
+
+                    // Generar una clave única para la pregunta usando el índice
+                    const questionKey = `question-${index}`
+
+                    return (
+                      <View style={styles.questionContainer}>
+                        <Text style={styles.questionTitle}>{pregunta}</Text>
+                        <SegmentedControl
+                          values={opciones}
+                          selectedIndex={opciones.indexOf(
+                            answers[questionKey] || '',
+                          )}
+                          onChange={(event) => {
+                            const selectedOption =
+                              opciones[event.nativeEvent.selectedSegmentIndex]
+                            handleAnswerChange(questionKey, selectedOption)
+                          }}
+                          style={styles.segmentedControl}
+                        />
+                      </View>
+                    )
+                  }}
                   contentContainerStyle={styles.modalFlatListContent}
                   showsVerticalScrollIndicator={true} // Mostrar scrollbar vertical
                 />
