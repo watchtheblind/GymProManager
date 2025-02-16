@@ -6,10 +6,11 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
   Modal,
-  ScrollView,
+  TextInput,
 } from 'react-native'
-import SegmentedControl from '@react-native-segmented-control/segmented-control'
+import SegmentedControl from '@react-native-segmented-control/segmented-control' // Importar SegmentedControl
 import {useNavigation} from '@react-navigation/native'
 import {GestureHandlerRootView} from 'react-native-gesture-handler'
 import Header from '@/components/common/Header'
@@ -81,16 +82,14 @@ const Questionnaires = () => {
   }
 
   // Renderizar una pregunta con sus respuestas
-  const renderQuestion = (question: Pregunta, index: number) => {
-    const {pregunta, respuesta1, respuesta2, respuesta3} = question
+  const renderQuestion = ({item}: {item: Pregunta}) => {
+    const {pregunta, respuesta1, respuesta2, respuesta3} = item
 
     // Filtrar respuestas no vacías
     const opciones = [respuesta1, respuesta2, respuesta3].filter(Boolean)
 
     return (
-      <View
-        key={index}
-        style={styles.questionContainer}>
+      <View style={styles.questionContainer}>
         <Text style={styles.questionTitle}>{pregunta}</Text>
         <SegmentedControl
           values={opciones}
@@ -194,12 +193,13 @@ const Questionnaires = () => {
             {selectedQuiz ? (
               <>
                 <Text style={styles.modalTitle}>{selectedQuiz.nombre}</Text>
-                <ScrollView>
-                  {JSON.parse(selectedQuiz.preguntas).map(
-                    (question: Pregunta, index: number) =>
-                      renderQuestion(question, index),
-                  )}
-                </ScrollView>
+                <FlatList
+                  data={JSON.parse(selectedQuiz.preguntas)}
+                  keyExtractor={(item, index) => index.toString()}
+                  renderItem={renderQuestion}
+                  contentContainerStyle={styles.modalFlatListContent}
+                  showsVerticalScrollIndicator={true} // Mostrar scrollbar vertical
+                />
                 <TouchableOpacity
                   style={styles.modalButton}
                   onPress={() => setModalVisible(false)}>
@@ -289,6 +289,7 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     width: '90%',
+    maxHeight: '80%', // Limitar la altura máxima del modal
     backgroundColor: '#1E1E1E',
     borderRadius: 12,
     padding: 20,
@@ -329,6 +330,9 @@ const styles = StyleSheet.create({
   },
   segmentedControl: {
     marginVertical: 8,
+  },
+  modalFlatListContent: {
+    paddingBottom: 20, // Espacio al final de la lista
   },
 })
 
