@@ -6,10 +6,10 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
-  Alert,
   Modal,
-  TextInput,
+  ScrollView,
 } from 'react-native'
+import SegmentedControl from '@react-native-segmented-control/segmented-control'
 import {useNavigation} from '@react-navigation/native'
 import {GestureHandlerRootView} from 'react-native-gesture-handler'
 import Header from '@/components/common/Header'
@@ -26,13 +26,20 @@ interface GymQuiz {
   socios: string | null
 }
 
+interface Pregunta {
+  pregunta: string
+  respuesta1: string
+  respuesta2: string
+  respuesta3: string
+}
+
 const Questionnaires = () => {
   const navigation = useNavigation()
   const [quizzes, setQuizzes] = useState<GymQuiz[]>([])
   const [loading, setLoading] = useState(true)
   const [modalVisible, setModalVisible] = useState(false)
-  const [newQuizTitle, setNewQuizTitle] = useState('')
-  const [newQuizType, setNewQuizType] = useState('')
+  const [selectedQuiz, setSelectedQuiz] = useState<GymQuiz | null>(null) // Almacena el cuestionario seleccionado
+  const [answers, setAnswers] = useState<Record<string, string>>({}) // Almacena las respuestas seleccionadas
 
   const handlePress = () => {
     navigation.goBack()
@@ -58,13 +65,71 @@ const Questionnaires = () => {
     loadQuizzes()
   }, [])
 
-  // Marcar un cuestionario como completado
-  const markAsCompleted = (id: string) => {
-    const updatedQuizzes = quizzes.map((quiz) =>
-      quiz.ID === id ? {...quiz, completed: true} : quiz,
+  // Abrir el modal con los detalles del cuestionario
+  const openQuizDetails = (quiz: GymQuiz) => {
+    setSelectedQuiz(quiz)
+    setModalVisible(true)
+    setAnswers({}) // Reiniciar las respuestas al abrir un nuevo cuestionario
+  }
+
+  // Manejar la selección de una respuesta
+  const handleAnswerChange = (pregunta: string, respuesta: string) => {
+    setAnswers((prevAnswers) => ({
+      ...prevAnswers,
+      [pregunta]: respuesta,
+    }))
+  }
+
+  // Renderizar una pregunta con sus respuestas
+  const renderQuestion = (question: Pregunta, index: number) => {
+    const {pregunta, respuesta1, respuesta2, respuesta3} = question
+
+    // Filtrar respuestas no vacías
+    const opciones = [respuesta1, respuesta2, respuesta3].filter(Boolean)
+
+    return (
+      <View
+        key={index}
+        style={styles.questionContainer}>
+        <Text style={styles.questionTitle}>{pregunta}</Text>
+        <SegmentedControl
+          values={opciones}
+          selectedIndex={opciones.indexOf(answers[pregunta] || '')}
+          onChange={(event) => {
+            const selectedOption =
+              opciones[event.nativeEvent.selectedSegmentIndex]
+            handleAnswerChange(pregunta, selectedOption)
+          }}
+          style={styles.segmentedControl}
+        />
+      </View>
     )
-    setQuizzes(updatedQuizzes)
-    Alert.alert('Éxito', 'El cuestionario ha sido marcado como completado.')
+  }
+
+  const renderItem = ({item}: {item: GymQuiz}) => {
+    const colors = getQuizColor(item.nombre)
+
+    return (
+      <TouchableOpacity
+        style={[
+          styles.quizItem,
+          {
+            backgroundColor: colors.backgroundColor,
+            borderColor: '#6CB0B4',
+          },
+        ]}
+        onPress={() => openQuizDetails(item)}>
+        <View style={styles.textContainer}>
+          <Text style={styles.title}>{item.nombre}</Text>
+          <Text style={styles.type}>
+            {item.descripcion || 'Sin descripción'}
+          </Text>
+          <Text style={styles.status}>
+            {item.socios || 'Sin socios asignados'}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    )
   }
 
   // Obtener el color según el tipo de cuestionario
@@ -83,53 +148,7 @@ const Questionnaires = () => {
     }
   }
 
-  // Crear un nuevo cuestionario
-  const createNewQuiz = () => {
-    if (newQuizTitle && newQuizType) {
-      const newQuiz: GymQuiz = {
-        ID: String(quizzes.length + 1),
-        modified: new Date().toISOString(),
-        nombre: newQuizTitle,
-        descripcion: '',
-        preguntas: '[]',
-        socios: null,
-      }
-      setQuizzes([...quizzes, newQuiz])
-      setModalVisible(false)
-      setNewQuizTitle('')
-      setNewQuizType('')
-    } else {
-      Alert.alert('Error', 'Por favor, completa todos los campos.')
-    }
-  }
-
-  const renderItem = ({item}: {item: GymQuiz}) => {
-    const colors = getQuizColor(item.nombre)
-
-    return (
-      <TouchableOpacity
-        style={[
-          styles.quizItem,
-          {
-            backgroundColor: colors.backgroundColor,
-            borderColor: '#6CB0B4',
-          },
-        ]}
-        onPress={() => markAsCompleted(item.ID)}>
-        <View style={styles.textContainer}>
-          <Text style={styles.title}>{item.nombre}</Text>
-          <Text style={styles.type}>
-            {item.descripcion || 'Sin descripción'}
-          </Text>
-          <Text style={styles.status}>
-            {item.socios || 'Sin socios asignados'}
-          </Text>
-        </View>
-      </TouchableOpacity>
-    )
-  }
-
-  // Nuevo loader personalizado
+  // Loader personalizado
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -165,38 +184,31 @@ const Questionnaires = () => {
         </View>
       )}
 
-      {/* Modal para crear un nuevo cuestionario */}
+      {/* Modal para ver las preguntas del cuestionario */}
       <Modal
         visible={modalVisible}
         transparent
         animationType='fade'>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Nuevo Cuestionario</Text>
-            <TextInput
-              style={styles.input}
-              placeholder='Título'
-              placeholderTextColor='#888'
-              value={newQuizTitle}
-              onChangeText={setNewQuizTitle}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder='Tipo'
-              placeholderTextColor='#888'
-              value={newQuizType}
-              onChangeText={setNewQuizType}
-            />
-            <TouchableOpacity
-              style={styles.modalButton}
-              onPress={createNewQuiz}>
-              <Text style={styles.modalButtonText}>Crear</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.modalButton}
-              onPress={() => setModalVisible(false)}>
-              <Text style={styles.modalButtonText}>Cancelar</Text>
-            </TouchableOpacity>
+            {selectedQuiz ? (
+              <>
+                <Text style={styles.modalTitle}>{selectedQuiz.nombre}</Text>
+                <ScrollView>
+                  {JSON.parse(selectedQuiz.preguntas).map(
+                    (question: Pregunta, index: number) =>
+                      renderQuestion(question, index),
+                  )}
+                </ScrollView>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={() => setModalVisible(false)}>
+                  <Text style={styles.modalButtonText}>Cerrar</Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <Text style={styles.modalTitle}>Cargando preguntas...</Text>
+            )}
           </View>
         </View>
       </Modal>
@@ -235,7 +247,8 @@ const styles = StyleSheet.create({
     fontFamily: 'MyriadPro',
   },
   flatListContent: {
-    paddingBlock: 30, // Espacio al final de la lista
+    paddingTop: 23,
+    paddingBottom: 30, // Espacio al final de la lista
   },
   quizItem: {
     flexDirection: 'row',
@@ -268,7 +281,6 @@ const styles = StyleSheet.create({
     fontFamily: 'MyriadPro',
     color: 'rgba(255, 255, 255, 0.8)',
   },
-
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -276,7 +288,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
-    width: '80%',
+    width: '90%',
     backgroundColor: '#1E1E1E',
     borderRadius: 12,
     padding: 20,
@@ -305,6 +317,18 @@ const styles = StyleSheet.create({
     color: 'white',
     fontFamily: 'MyriadPro',
     fontSize: 16,
+  },
+  questionContainer: {
+    marginBottom: 16,
+  },
+  questionTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'white',
+    marginBottom: 8,
+  },
+  segmentedControl: {
+    marginVertical: 8,
   },
 })
 
