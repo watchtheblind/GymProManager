@@ -225,16 +225,16 @@ const Questionnaires = () => {
         animationType='fade'>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
+            <TouchableOpacity
+              onPress={() => setModalVisible(false)}
+              style={styles.closeButton}>
+              <MaterialIcons
+                name='close'
+                size={17}
+                color='white'
+              />
+            </TouchableOpacity>
             <View style={styles.modalHeader}>
-              <TouchableOpacity
-                onPress={() => setModalVisible(false)}
-                style={styles.closeButton}>
-                <MaterialIcons
-                  name='close'
-                  size={24}
-                  color='white'
-                />
-              </TouchableOpacity>
               <Text style={styles.modalTitle}>{selectedQuiz?.nombre}</Text>
             </View>
             {selectedQuiz ? (
@@ -382,10 +382,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginTop: 15,
     marginBottom: 20,
   },
   closeButton: {
     padding: 8,
+    position: 'absolute',
+    top: 3,
+    right: 3,
   },
   modalTitle: {
     fontSize: 20,
@@ -419,7 +423,7 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   modalFlatListContent: {
-    paddingBottom: 20, // Espacio al final de la lista
+    paddingBottom: 0, // Espacio al final de la lista
   },
 })
 
