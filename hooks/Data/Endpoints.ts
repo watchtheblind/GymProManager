@@ -281,7 +281,7 @@ export const fetchEjercicios = async (
   }
 }
 
-// Tipo para representar un cuestionario
+// Función para obtener cuestionarios
 type Cuestionario = {
   ID: string
   modified: string
@@ -291,13 +291,33 @@ type Cuestionario = {
   socios: string | null
 }
 
-// Función para obtener cuestionarios
-export const fetchCuestionarios = async (
+// Función para obtener cuestionarios con caché
+export const getCuestionarios = async (
   token: string,
   cuestionarioid?: number, // Opcional: ID del cuestionario específico
-  useCache: boolean = false, // Indica si se debe usar la caché
+  useCache: boolean = true, // Habilitamos caché por defecto
 ): Promise<Cuestionario[] | Cuestionario> => {
   try {
+    // Construir la clave única para la caché
+    const cacheKey = `cuestionarios:${token}:${cuestionarioid || 'all'}`
+
+    if (useCache) {
+      // Intentar obtener los datos de la caché
+      const cachedData = await AsyncStorage.getItem(cacheKey)
+      if (cachedData) {
+        const {data, timestamp} = JSON.parse(cachedData)
+
+        // Verificar si han pasado menos de 10 minutos
+        const currentTime = Date.now()
+        const tenMinutesInMs = 10 * 60 * 1000 // 10 minutos en milisegundos
+        if (currentTime - timestamp < tenMinutesInMs) {
+          console.log('Cuestionarios obtenidos desde la caché')
+          return data
+        }
+        console.log('Caché expirada, realizando nueva solicitud...')
+      }
+    }
+
     // Construir el body de la solicitud
     const body: Record<string, any> = {
       token,
@@ -309,24 +329,32 @@ export const fetchCuestionarios = async (
     }
 
     // Realizar la solicitud usando el cliente API
-    const response = await apiClient<Cuestionario[] | Cuestionario>(
+    const cuestionarios = await apiClient<Cuestionario[] | Cuestionario>(
       '/app-cuestionarios.php',
       {
         method: 'POST',
         headers: {},
         body,
-        useCache,
         contentType: 'form-urlencoded', // El endpoint espera form-urlencoded
       },
     )
 
-    return response
+    // Guardar los datos en la caché con un timestamp
+    if (useCache) {
+      const cacheData = {
+        data: cuestionarios,
+        timestamp: Date.now(), // Guardar el momento actual
+      }
+      await AsyncStorage.setItem(cacheKey, JSON.stringify(cacheData))
+      console.log('Cuestionarios guardados en la caché')
+    }
+
+    return cuestionarios
   } catch (error) {
     console.error('Error al obtener los cuestionarios:', error)
     throw error
   }
 }
-
 // Tipo para representar la respuesta del servidor
 type CuestionarioResponse = {
   mensaje: string // Mensaje de confirmación
