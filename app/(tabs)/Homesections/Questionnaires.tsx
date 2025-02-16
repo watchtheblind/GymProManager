@@ -6,7 +6,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
-  Alert,
   Modal,
 } from 'react-native'
 import SegmentedControl from '@react-native-segmented-control/segmented-control' // Importar SegmentedControl
@@ -16,6 +15,7 @@ import {GestureHandlerRootView} from 'react-native-gesture-handler'
 import Header from '@/components/common/Header'
 import useBackHandler from '@/hooks/Common/useBackHandler'
 import {getCuestionarios} from '@/hooks/Data/Endpoints'
+import CustomAlert from '@/components/common/Alert' // Importar CustomAlert
 
 // Interfaz para los cuestionarios
 interface GymQuiz {
@@ -41,6 +41,11 @@ const Questionnaires = () => {
   const [modalVisible, setModalVisible] = useState(false)
   const [selectedQuiz, setSelectedQuiz] = useState<GymQuiz | null>(null) // Almacena el cuestionario seleccionado
   const [answers, setAnswers] = useState<Record<string, string>>({}) // Almacena las respuestas seleccionadas
+
+  // Estados para CustomAlert
+  const [alertVisible, setAlertVisible] = useState(false)
+  const [alertTitle, setAlertTitle] = useState('')
+  const [alertMessage, setAlertMessage] = useState('')
 
   const handlePress = () => {
     navigation.goBack()
@@ -111,7 +116,9 @@ const Questionnaires = () => {
   // Enviar respuestas
   const handleSubmit = () => {
     if (Object.keys(answers).length === 0) {
-      Alert.alert('Error', 'No has seleccionado ninguna respuesta.')
+      setAlertTitle('Error')
+      setAlertMessage('No has seleccionado ninguna respuesta.')
+      setAlertVisible(true)
       return
     }
 
@@ -135,7 +142,9 @@ const Questionnaires = () => {
     console.log('Respuestas enviadas:', jsonRespuestas)
 
     // Mostrar mensaje de éxito
-    Alert.alert('Éxito', 'Respuestas enviadas correctamente.')
+    setAlertTitle('Éxito')
+    setAlertMessage('Respuestas enviadas correctamente.')
+    setAlertVisible(true)
     setModalVisible(false)
   }
 
@@ -230,7 +239,7 @@ const Questionnaires = () => {
                 style={styles.closeButton}>
                 <MaterialIcons
                   name='close'
-                  size={16}
+                  size={24}
                   color='white'
                 />
               </TouchableOpacity>
@@ -257,6 +266,14 @@ const Questionnaires = () => {
           </View>
         </View>
       </Modal>
+
+      {/* CustomAlert */}
+      <CustomAlert
+        visible={alertVisible}
+        title={alertTitle}
+        message={alertMessage}
+        onClose={() => setAlertVisible(false)}
+      />
     </GestureHandlerRootView>
   )
 }
@@ -347,12 +364,8 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     padding: 8,
-    position: 'absolute',
-    right: -12,
-    top: -12,
   },
   modalTitle: {
-    marginTop: 20,
     fontSize: 20,
     color: 'white',
     fontFamily: 'MyriadPro',
@@ -361,10 +374,10 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     backgroundColor: '#14b8a6',
-    borderRadius: 30,
+    borderRadius: 8,
     padding: 12,
     alignItems: 'center',
-    marginTop: -8,
+    marginTop: 20,
   },
   submitButtonText: {
     color: 'white',
