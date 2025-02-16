@@ -280,3 +280,89 @@ export const fetchEjercicios = async (
     throw error
   }
 }
+
+// Tipo para representar un cuestionario
+type Cuestionario = {
+  ID: string
+  modified: string
+  nombre: string
+  descripcion: string
+  preguntas: string // JSON serializado como string
+  socios: string | null
+}
+
+// Función para obtener cuestionarios
+export const fetchCuestionarios = async (
+  token: string,
+  cuestionarioid?: number, // Opcional: ID del cuestionario específico
+  useCache: boolean = false, // Indica si se debe usar la caché
+): Promise<Cuestionario[] | Cuestionario> => {
+  try {
+    // Construir el body de la solicitud
+    const body: Record<string, any> = {
+      token,
+    }
+
+    // Si se proporciona un ID de cuestionario, agregarlo al body
+    if (cuestionarioid !== undefined) {
+      body.cuestionarioid = cuestionarioid
+    }
+
+    // Realizar la solicitud usando el cliente API
+    const response = await apiClient<Cuestionario[] | Cuestionario>(
+      '/app-cuestionarios.php',
+      {
+        method: 'POST',
+        headers: {},
+        body,
+        useCache,
+        contentType: 'form-urlencoded', // El endpoint espera form-urlencoded
+      },
+    )
+
+    return response
+  } catch (error) {
+    console.error('Error al obtener los cuestionarios:', error)
+    throw error
+  }
+}
+
+// Tipo para representar la respuesta del servidor
+type CuestionarioResponse = {
+  mensaje: string // Mensaje de confirmación
+  insert_id: number // ID del registro insertado
+}
+
+// Función para enviar las respuestas de un cuestionario
+export const enviarRespuestasCuestionario = async (
+  token: string,
+  userid: string,
+  cuestionarioid: string,
+  respuestas: Record<string, string>, // Objeto JSON con las respuestas
+): Promise<CuestionarioResponse> => {
+  try {
+    // Construir el body de la solicitud
+    const body: Record<string, any> = {
+      token,
+      userid,
+      cuestionarioid,
+      respuestas: JSON.stringify(respuestas), // Serializamos el JSON de respuestas
+    }
+
+    // Realizar la solicitud usando el cliente API
+    const response = await apiClient<CuestionarioResponse>(
+      '/app-cuestionarios-response.php',
+      {
+        method: 'POST',
+        headers: {},
+        body,
+        contentType: 'form-urlencoded', // El endpoint espera form-urlencoded
+      },
+    )
+
+    return response
+  } catch (error) {
+    console.error('Error al enviar las respuestas del cuestionario:', error)
+    throw error
+  }
+}
