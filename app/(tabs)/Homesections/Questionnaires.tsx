@@ -8,7 +8,6 @@ import {
   ActivityIndicator,
   Alert,
   Modal,
-  TextInput,
 } from 'react-native'
 import SegmentedControl from '@react-native-segmented-control/segmented-control' // Importar SegmentedControl
 import {useNavigation} from '@react-navigation/native'
@@ -74,30 +73,33 @@ const Questionnaires = () => {
   }
 
   // Manejar la selección de una respuesta
-  const handleAnswerChange = (pregunta: string, respuesta: string) => {
+  const handleAnswerChange = (questionKey: string, respuesta: string) => {
     setAnswers((prevAnswers) => ({
       ...prevAnswers,
-      [pregunta]: respuesta,
+      [questionKey]: respuesta,
     }))
   }
 
   // Renderizar una pregunta con sus respuestas
-  const renderQuestion = ({item}: {item: Pregunta}) => {
+  const renderQuestion = ({item, index}: {item: Pregunta; index: number}) => {
     const {pregunta, respuesta1, respuesta2, respuesta3} = item
 
     // Filtrar respuestas no vacías
     const opciones = [respuesta1, respuesta2, respuesta3].filter(Boolean)
+
+    // Generar una clave única para la pregunta usando el índice
+    const questionKey = `question-${index}`
 
     return (
       <View style={styles.questionContainer}>
         <Text style={styles.questionTitle}>{pregunta}</Text>
         <SegmentedControl
           values={opciones}
-          selectedIndex={opciones.indexOf(answers[pregunta] || '')}
+          selectedIndex={opciones.indexOf(answers[questionKey] || '')}
           onChange={(event) => {
             const selectedOption =
               opciones[event.nativeEvent.selectedSegmentIndex]
-            handleAnswerChange(pregunta, selectedOption)
+            handleAnswerChange(questionKey, selectedOption)
           }}
           style={styles.segmentedControl}
         />
