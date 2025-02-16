@@ -10,6 +10,7 @@ import {
   Modal,
 } from 'react-native'
 import SegmentedControl from '@react-native-segmented-control/segmented-control' // Importar SegmentedControl
+import {MaterialIcons} from '@expo/vector-icons' // Importar MaterialIcons
 import {useNavigation} from '@react-navigation/native'
 import {GestureHandlerRootView} from 'react-native-gesture-handler'
 import Header from '@/components/common/Header'
@@ -149,6 +150,17 @@ const Questionnaires = () => {
     }
   }
 
+  // Enviar respuestas
+  const handleSubmit = () => {
+    if (Object.keys(answers).length === 0) {
+      Alert.alert('Error', 'No has seleccionado ninguna respuesta.')
+      return
+    }
+
+    Alert.alert('Éxito', 'Respuestas enviadas correctamente.')
+    setModalVisible(false)
+  }
+
   // Loader personalizado
   if (loading) {
     return (
@@ -192,9 +204,20 @@ const Questionnaires = () => {
         animationType='fade'>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>{selectedQuiz?.nombre}</Text>
+              <TouchableOpacity
+                onPress={() => setModalVisible(false)}
+                style={styles.closeButton}>
+                <MaterialIcons
+                  name='close'
+                  size={24}
+                  color='white'
+                />
+              </TouchableOpacity>
+            </View>
             {selectedQuiz ? (
               <>
-                <Text style={styles.modalTitle}>{selectedQuiz.nombre}</Text>
                 <FlatList
                   data={JSON.parse(selectedQuiz.preguntas)}
                   keyExtractor={(item, index) => index.toString()}
@@ -203,9 +226,9 @@ const Questionnaires = () => {
                   showsVerticalScrollIndicator={true} // Mostrar scrollbar vertical
                 />
                 <TouchableOpacity
-                  style={styles.modalButton}
-                  onPress={() => setModalVisible(false)}>
-                  <Text style={styles.modalButtonText}>Cerrar</Text>
+                  style={styles.submitButton}
+                  onPress={handleSubmit}>
+                  <Text style={styles.submitButtonText}>Enviar</Text>
                 </TouchableOpacity>
               </>
             ) : (
@@ -296,27 +319,30 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 20,
   },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  closeButton: {
+    padding: 8,
+  },
   modalTitle: {
     fontSize: 20,
     color: 'white',
     fontFamily: 'MyriadPro',
-    marginBottom: 20,
+    textAlign: 'center',
+    flex: 1,
   },
-  input: {
-    backgroundColor: '#333',
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 10,
-    color: 'white',
-  },
-  modalButton: {
+  submitButton: {
     backgroundColor: '#14b8a6',
     borderRadius: 8,
-    padding: 10,
+    padding: 12,
     alignItems: 'center',
-    marginBottom: 10,
+    marginTop: 20,
   },
-  modalButtonText: {
+  submitButtonText: {
     color: 'white',
     fontFamily: 'MyriadPro',
     fontSize: 16,
