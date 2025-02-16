@@ -10,7 +10,7 @@ import {
   Modal,
 } from 'react-native'
 import SegmentedControl from '@react-native-segmented-control/segmented-control' // Importar SegmentedControl
-import {MaterialIcons} from '@expo/vector-icons' // Importar MaterialIcons
+import {MaterialIcons} from '@expo/vector-icons' // Importar Material Icons
 import {useNavigation} from '@react-navigation/native'
 import {GestureHandlerRootView} from 'react-native-gesture-handler'
 import Header from '@/components/common/Header'
@@ -108,6 +108,37 @@ const Questionnaires = () => {
     )
   }
 
+  // Enviar respuestas
+  const handleSubmit = () => {
+    if (Object.keys(answers).length === 0) {
+      Alert.alert('Error', 'No has seleccionado ninguna respuesta.')
+      return
+    }
+
+    // Construir el JSON con las respuestas
+    const quizID = selectedQuiz?.ID || 'N/A'
+    const parsedQuestions = JSON.parse(selectedQuiz?.preguntas || '[]')
+    const respuestas = parsedQuestions.map((item: Pregunta, index: number) => {
+      const questionKey = `question-${index}`
+      return {
+        pregunta: item.pregunta,
+        respuesta: answers[questionKey] || 'Sin respuesta',
+      }
+    })
+
+    const jsonRespuestas = {
+      cuestionarioID: quizID,
+      respuestas,
+    }
+
+    // Mostrar el JSON en la consola
+    console.log('Respuestas enviadas:', jsonRespuestas)
+
+    // Mostrar mensaje de éxito
+    Alert.alert('Éxito', 'Respuestas enviadas correctamente.')
+    setModalVisible(false)
+  }
+
   const renderItem = ({item}: {item: GymQuiz}) => {
     const colors = getQuizColor(item.nombre)
 
@@ -148,17 +179,6 @@ const Questionnaires = () => {
       default:
         return {backgroundColor: '#518893'}
     }
-  }
-
-  // Enviar respuestas
-  const handleSubmit = () => {
-    if (Object.keys(answers).length === 0) {
-      Alert.alert('Error', 'No has seleccionado ninguna respuesta.')
-      return
-    }
-
-    Alert.alert('Éxito', 'Respuestas enviadas correctamente.')
-    setModalVisible(false)
   }
 
   // Loader personalizado
@@ -205,7 +225,6 @@ const Questionnaires = () => {
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>{selectedQuiz?.nombre}</Text>
               <TouchableOpacity
                 onPress={() => setModalVisible(false)}
                 style={styles.closeButton}>
@@ -215,6 +234,7 @@ const Questionnaires = () => {
                   color='white'
                 />
               </TouchableOpacity>
+              <Text style={styles.modalTitle}>{selectedQuiz?.nombre}</Text>
             </View>
             {selectedQuiz ? (
               <>
