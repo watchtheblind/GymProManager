@@ -7,15 +7,18 @@ import {
   FlatList,
   Switch,
   ActivityIndicator,
+  Modal,
+  TouchableOpacity,
 } from 'react-native'
 import {useNavigation} from '@react-navigation/native'
+import {MaterialIcons} from '@expo/vector-icons' // Importar Material Icons
 import Tabs from '@/components/common/Tabs'
 import Card from '@/components/ui/Card'
 import {useFavorites} from '@/hooks/Activities/useFavorites'
-import {useFilter} from '@/hooks/Common/useFilter' // Importamos el hook useFilter
+import {useFilter} from '@/hooks/Common/useFilter'
 import Header from '@/components/common/Header'
 import useBackHandler from '@/hooks/Common/useBackHandler'
-import {fetchRutinas} from '@/hooks/Data/Endpoints' // Importamos el endpoint
+import {fetchRutinas} from '@/hooks/Data/Endpoints'
 
 // Interfaz para una rutina
 interface Rutina {
@@ -32,6 +35,7 @@ export default function WorkoutList() {
   const [searchQuery, setSearchQuery] = useState('')
   const [rutinas, setRutinas] = useState<Rutina[]>([])
   const [loading, setLoading] = useState(true)
+  const [selectedRutina, setSelectedRutina] = useState<Rutina | null>(null) // Estado para el modal
   const navigation = useNavigation()
   const {favorites, toggleFavorite} = useFavorites()
 
@@ -113,6 +117,7 @@ export default function WorkoutList() {
               isFavorite={favorites.includes(item.ID)}
               onFavoritePress={() => toggleFavorite(item.ID)}
               showFavoriteIcon={true}
+              onPress={() => setSelectedRutina(item)} // Abrir el modal con la rutina seleccionada
             />
           )}
           keyExtractor={(item) => item.ID}
@@ -150,6 +155,61 @@ export default function WorkoutList() {
               Contenido de Mis Entrenamientos
             </Text>
           </View>
+        )}
+
+        {/* Modal */}
+        {selectedRutina && (
+          <Modal
+            visible={!!selectedRutina}
+            transparent
+            animationType='fade'
+            onRequestClose={() => setSelectedRutina(null)}>
+            <View style={styles.modalContainer}>
+              <View style={styles.modalContent}>
+                <TouchableOpacity
+                  onPress={() => setSelectedRutina(null)}
+                  style={styles.closeButton}>
+                  <MaterialIcons
+                    name='close'
+                    size={17}
+                    color='white'
+                  />
+                </TouchableOpacity>
+                <View>
+                  <Text
+                    style={styles.modalTitle}
+                    ellipsizeMode='tail'>
+                    {selectedRutina.nombre}
+                  </Text>
+                  <Text
+                    style={styles.modalDescription}
+                    ellipsizeMode='tail'>
+                    {selectedRutina.descripcion}
+                  </Text>
+                </View>
+
+                {/* Mostrar los ejercicios */}
+                {JSON.parse(selectedRutina.ejercicios).map(
+                  (ejercicio: any, index: number) => (
+                    <View
+                      key={index}
+                      style={styles.exerciseItem}>
+                      <Text style={styles.exerciseType}>
+                        {ejercicio.tipo === 'texto'
+                          ? 'Información:'
+                          : 'Ejercicio:'}
+                      </Text>
+                      <Text
+                        style={styles.exerciseValue}
+                        ellipsizeMode='tail'>
+                        {ejercicio.valor}
+                      </Text>
+                    </View>
+                  ),
+                )}
+              </View>
+            </View>
+          </Modal>
         )}
       </View>
     </SafeAreaView>
@@ -238,5 +298,59 @@ const styles = StyleSheet.create({
   },
   activeTabText: {
     color: '#fff',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: '90%',
+    backgroundColor: '#1E1E1E',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontFamily: 'MyriadProBold',
+    marginTop: 10,
+    marginBottom: 10,
+    color: 'white',
+  },
+  modalDescription: {
+    fontSize: 16,
+    marginBottom: 20,
+    textAlign: 'center',
+    color: '#555',
+  },
+  exerciseItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  exerciseType: {
+    fontFamily: 'MyriadProBold',
+    fontSize: 16,
+    marginRight: 5,
+    color: '#14b8a6',
+  },
+  exerciseValue: {
+    flex: 1,
+    color: 'white',
+    fontSize: 16,
+    fontFamily: 'MyriadPro',
+  },
+  closeButton: {
+    padding: 8,
+    position: 'absolute',
+    top: 3,
+    right: 3,
+  },
+  closeButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 })
