@@ -3,11 +3,11 @@ import {View, Text, Image, TouchableOpacity, StyleSheet} from 'react-native'
 import {MaterialIcons} from '@expo/vector-icons'
 
 type CardProps = {
-  image: string
+  image?: string
   title: string
   subtitle?: string
   accentColor: string
-  type: string
+  type?: string
   duration?: string
   level?: string
   isFavorite?: boolean

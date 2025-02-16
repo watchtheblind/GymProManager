@@ -10,7 +10,7 @@ import {
 } from 'react-native'
 import {useNavigation} from '@react-navigation/native'
 import Tabs from '@/components/common/Tabs'
-import UniversalCard from '@/components/ui/Card'
+import Card from '@/components/ui/Card'
 import {useFavorites} from '@/hooks/Activities/useFavorites'
 import {useFilter} from '@/hooks/Common/useFilter' // Importamos el hook useFilter
 import Header from '@/components/common/Header'
@@ -87,7 +87,7 @@ export default function WorkoutList() {
     )
   }
 
-  const ListadoContent = () => (
+  const RoutinesContent = () => (
     <View style={{flex: 1}}>
       <View style={styles.favoritesContainer}>
         <Text style={styles.favoritesText}>Ver solo mis favoritos</Text>
@@ -106,7 +106,7 @@ export default function WorkoutList() {
         <FlatList
           data={filteredRutinas}
           renderItem={({item}) => (
-            <UniversalCard
+            <Card
               title={item.nombre}
               subtitle={item.descripcion}
               accentColor='#14b8a6'
@@ -114,7 +114,6 @@ export default function WorkoutList() {
               isFavorite={favorites.includes(item.ID)}
               onFavoritePress={() => toggleFavorite(item.ID)}
               showFavoriteIcon={true}
-              exerciseCount={JSON.parse(item.ejercicios).length} // Contamos los ejercicios
             />
           )}
           keyExtractor={(item) => item.ID}
@@ -145,7 +144,7 @@ export default function WorkoutList() {
           activeTabTextStyle={styles.activeTabText}
         />
         {activeTab === 'listado' ? (
-          <ListadoContent />
+          <RoutinesContent />
         ) : (
           <View style={styles.misEntrenamientosContent}>
             <Text style={styles.misEntrenamientosText}>
