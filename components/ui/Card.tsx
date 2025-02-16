@@ -7,7 +7,7 @@ type CardProps = {
   title: string
   subtitle?: string
   accentColor: string
-  type?: string
+  type?: string // Ahora es opcional
   duration?: string
   level?: string
   isFavorite?: boolean
@@ -34,12 +34,14 @@ const Card: React.FC<CardProps> = ({
       style={styles.card}
       activeOpacity={0.8} // Efecto visual al presionar
       onPress={onPress}>
-      {/* Acción al hacer clic en la tarjeta */}
+      {/* Imagen de fondo */}
       <Image
         source={{uri: image}}
         style={styles.cardImage}
         resizeMode='cover'
       />
+
+      {/* Ícono de favorito */}
       {showFavoriteIcon &&
         onFavoritePress && ( // Solo muestra el ícono si showFavoriteIcon es true
           <TouchableOpacity
@@ -52,9 +54,15 @@ const Card: React.FC<CardProps> = ({
             />
           </TouchableOpacity>
         )}
-      <View style={[styles.typeTriangle, {backgroundColor: accentColor}]}>
-        <Text style={styles.typeText}>{type}</Text>
-      </View>
+
+      {/* Triángulo de tipo (opcional) */}
+      {type && (
+        <View style={[styles.typeTriangle, {backgroundColor: accentColor}]}>
+          <Text style={styles.typeText}>{type}</Text>
+        </View>
+      )}
+
+      {/* Overlay con información */}
       <View style={styles.cardOverlay}>
         <View style={styles.cardInfo}>
           <Text style={styles.cardTitle}>{title}</Text>

@@ -110,7 +110,6 @@ export default function WorkoutList() {
               title={item.nombre}
               subtitle={item.descripcion}
               accentColor='#14b8a6'
-              duration={item.modified} // Mostramos la fecha de modificación
               isFavorite={favorites.includes(item.ID)}
               onFavoritePress={() => toggleFavorite(item.ID)}
               showFavoriteIcon={true}
