@@ -82,6 +82,7 @@ const styles = StyleSheet.create({
   tabText: {
     color: '#888',
     fontSize: 14,
+    fontFamily: 'MyriadPro',
   },
   activeTabText: {
     color: 'white',
