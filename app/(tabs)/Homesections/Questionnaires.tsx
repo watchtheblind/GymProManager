@@ -211,7 +211,7 @@ const Questionnaires = () => {
                 style={styles.closeButton}>
                 <MaterialIcons
                   name='close'
-                  size={24}
+                  size={16}
                   color='white'
                 />
               </TouchableOpacity>
@@ -327,8 +327,12 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     padding: 8,
+    position: 'absolute',
+    right: -12,
+    top: -12,
   },
   modalTitle: {
+    marginTop: 20,
     fontSize: 20,
     color: 'white',
     fontFamily: 'MyriadPro',
@@ -337,10 +341,10 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     backgroundColor: '#14b8a6',
-    borderRadius: 8,
+    borderRadius: 30,
     padding: 12,
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: -8,
   },
   submitButtonText: {
     color: 'white',
