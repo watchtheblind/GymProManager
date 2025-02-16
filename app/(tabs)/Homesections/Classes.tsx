@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react'
+import {MaterialIcons} from '@expo/vector-icons' // Importar MaterialIcons
 import {
   View,
   StyleSheet,
@@ -10,6 +11,7 @@ import {
   TouchableOpacity,
 } from 'react-native'
 import {WebView} from 'react-native-webview'
+import * as ScreenOrientation from 'expo-screen-orientation' // Importar el módulo de orientación
 import {Stack} from 'expo-router'
 import {fetchEjercicios} from '@/hooks/Data/Endpoints'
 import {useNavigation} from '@react-navigation/native'
@@ -131,6 +133,20 @@ export default function Classes() {
     navigation.goBack()
   }
 
+  // Cambiar a orientación horizontal
+  const lockToLandscape = async () => {
+    await ScreenOrientation.lockAsync(
+      ScreenOrientation.OrientationLock.LANDSCAPE,
+    )
+  }
+
+  // Restaurar la orientación vertical
+  const unlockOrientation = async () => {
+    await ScreenOrientation.lockAsync(
+      ScreenOrientation.OrientationLock.PORTRAIT,
+    )
+  }
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -182,7 +198,10 @@ export default function Classes() {
               duration='GymPro'
               isFavorite={false}
               showFavoriteIcon={false}
-              onPress={() => setSelectedVideo(item.url)} // Abrir el video seleccionado
+              onPress={() => {
+                setSelectedVideo(item.url)
+                lockToLandscape() // Forzar orientación horizontal al abrir el video
+              }}
             />
           )
         }}
@@ -192,18 +211,30 @@ export default function Classes() {
       <Modal
         visible={!!selectedVideo}
         animationType='slide'
-        onRequestClose={() => setSelectedVideo(null)}>
+        onRequestClose={() => {
+          setSelectedVideo(null)
+          unlockOrientation() // Restaurar orientación vertical al cerrar el modal
+        }}>
         <View style={styles.modalContainer}>
           <WebView
             source={{uri: selectedVideo || ''}}
             style={styles.webview}
             allowsFullscreenVideo={true} // Habilita pantalla completa
             mediaPlaybackRequiresUserAction={false} // Habilita autoplay
+            scalesPageToFit={true} // Ajusta el contenido al tamaño del dispositivo
           />
+          {/* Botón flotante de cierre con ícono */}
           <TouchableOpacity
-            onPress={() => setSelectedVideo(null)}
+            onPress={() => {
+              setSelectedVideo(null)
+              unlockOrientation() // Restaurar orientación vertical al cerrar
+            }}
             style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>Cerrar</Text>
+            <MaterialIcons
+              name='close'
+              size={24}
+              color='#000'
+            />
           </TouchableOpacity>
         </View>
       </Modal>
@@ -244,23 +275,21 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: '#1D1D1B',
+    backgroundColor: '#1D1D1B', // Fondo negro para que el video destaque
   },
   webview: {
-    flex: 1,
+    flex: 1, // Ocupa todo el espacio disponible
     backgroundColor: '#1D1D1B',
   },
   closeButton: {
     position: 'absolute',
     top: 20,
     right: 20,
-    padding: 10,
-    backgroundColor: '#5D5D5B',
-    borderRadius: 5,
-  },
-  closeButtonText: {
-    color: '#000',
-    fontFamily: 'MyriadPro',
-    fontWeight: '500',
+    width: 40,
+    height: 40,
+    borderRadius: 20, // Hace el botón circular
+    backgroundColor: '#fff', // Fondo blanco para resaltar
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 })
