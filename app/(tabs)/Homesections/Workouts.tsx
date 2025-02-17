@@ -14,12 +14,12 @@ import {useNavigation} from '@react-navigation/native'
 import {MaterialIcons} from '@expo/vector-icons' // Importar Material Icons
 import Tabs from '@/components/common/Tabs'
 import Card from '@/components/ui/Card'
-import {useFavorites} from '@/hooks/Activities/useFavorites'
 import {useFilter} from '@/hooks/Common/useFilter'
 import Header from '@/components/common/Header'
 import useBackHandler from '@/hooks/Common/useBackHandler'
-import {fetchRutinas} from '@/hooks/Data/Endpoints'
+import {fetchRutinas, getProgramas} from '@/hooks/Data/Endpoints'
 import SearchBar from '@/components/common/SearchBar'
+
 // Interfaz para una rutina
 interface Rutina {
   ID: string
@@ -31,13 +31,17 @@ interface Rutina {
 
 export default function WorkoutList() {
   const [activeTab, setActiveTab] = useState('rutinas')
-  const [showFavorites, setShowFavorites] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [rutinas, setRutinas] = useState<Rutina[]>([])
+  const [programas, setProgramas] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedRutina, setSelectedRutina] = useState<Rutina | null>(null) // Estado para el modal
+  const [selectedRutina, setSelectedRutina] = useState<Rutina | null>(null)
+  const [selectedPrograma, setSelectedPrograma] = useState<any | null>(null)
+  const [rutinaFavorites, setRutinaFavorites] = useState<string[]>([])
+  const [programaFavorites, setProgramaFavorites] = useState<string[]>([])
+  const [showRutinaFavorites, setShowRutinaFavorites] = useState(false)
+  const [showProgramaFavorites, setShowProgramaFavorites] = useState(false)
   const navigation = useNavigation()
-  const {favorites, toggleFavorite} = useFavorites()
 
   const handlePress = () => {
     navigation.goBack()
@@ -53,24 +57,64 @@ export default function WorkoutList() {
     const loadRutinas = async () => {
       try {
         const token = 'Contraseña...' // Reemplaza con tu token real
-        const data = await fetchRutinas(token) // Obtener todas las rutinas
-        setRutinas(Array.isArray(data) ? data : [data]) // Asegurar que siempre sea un array
+        const data = await fetchRutinas(token)
+        setRutinas(Array.isArray(data) ? data : [data])
       } catch (error) {
         console.error('Error loading rutinas:', error)
-      } finally {
-        setLoading(false)
       }
     }
     loadRutinas()
   }, [])
 
-  // Filtrar rutinas usando el hook useFilter
+  // Cargar programas desde el endpoint
+  useEffect(() => {
+    const loadProgramas = async () => {
+      try {
+        const token = 'Contraseña...' // Reemplaza con tu token real
+        const data = await getProgramas(token)
+        setProgramas(Array.isArray(data) ? data : [data])
+      } catch (error) {
+        console.error('Error loading programas:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadProgramas()
+  }, [])
+
+  // Funciones para alternar favoritos
+  const toggleRutinaFavorite = (id: string) => {
+    if (rutinaFavorites.includes(id)) {
+      setRutinaFavorites(rutinaFavorites.filter((favId) => favId !== id))
+    } else {
+      setRutinaFavorites([...rutinaFavorites, id])
+    }
+  }
+
+  const toggleProgramaFavorite = (id: string) => {
+    if (programaFavorites.includes(id)) {
+      setProgramaFavorites(programaFavorites.filter((favId) => favId !== id))
+    } else {
+      setProgramaFavorites([...programaFavorites, id])
+    }
+  }
+
+  // Filtrar rutinas
   const filteredRutinas = useFilter({
     searchQuery,
-    showFavorites,
-    favorites,
+    showFavorites: showRutinaFavorites,
+    favorites: rutinaFavorites,
     data: rutinas,
-    searchKeys: ['nombre', 'descripcion'], // Campos por los que se puede buscar
+    searchKeys: ['nombre', 'descripcion'],
+  })
+
+  // Filtrar programas
+  const filteredProgramas = useFilter({
+    searchQuery,
+    showFavorites: showProgramaFavorites,
+    favorites: programaFavorites,
+    data: programas,
+    searchKeys: ['nombre', 'descripcion'],
   })
 
   const tabs = [
@@ -78,7 +122,6 @@ export default function WorkoutList() {
     {id: 'mis-entrenamientos', label: 'Mis entrenamientos'},
   ]
 
-  // Loader personalizado
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -94,15 +137,16 @@ export default function WorkoutList() {
   const RoutinesContent = () => (
     <View style={{flex: 1}}>
       <SearchBar
-        onSearch={() => {}}
-        onClear={() => {}}></SearchBar>
+        onSearch={(query) => setSearchQuery(query)}
+        onClear={() => setSearchQuery('')}
+      />
       <View style={styles.favoritesContainer}>
         <Text style={styles.favoritesText}>Ver solo mis favoritos</Text>
         <Switch
-          value={showFavorites}
-          onValueChange={setShowFavorites}
+          value={showRutinaFavorites}
+          onValueChange={setShowRutinaFavorites}
           trackColor={{false: '#767577', true: '#FEF4C9'}}
-          thumbColor={showFavorites ? '#B0A462' : '#f4f3f4'}
+          thumbColor={showRutinaFavorites ? '#B0A462' : '#f4f3f4'}
         />
       </View>
       {filteredRutinas.length === 0 ? (
@@ -117,10 +161,54 @@ export default function WorkoutList() {
               title={item.nombre}
               subtitle={item.descripcion}
               accentColor='#14b8a6'
-              isFavorite={favorites.includes(item.ID)}
-              onFavoritePress={() => toggleFavorite(item.ID)}
+              isFavorite={rutinaFavorites.includes(item.ID)}
+              onFavoritePress={() => toggleRutinaFavorite(item.ID)}
               showFavoriteIcon={true}
-              onPress={() => setSelectedRutina(item)} // Abrir el modal con la rutina seleccionada
+              onPress={() => setSelectedRutina(item)}
+            />
+          )}
+          keyExtractor={(item) => item.ID}
+          numColumns={2}
+          columnWrapperStyle={styles.workoutRow}
+          contentContainerStyle={styles.workoutList}
+        />
+      )}
+    </View>
+  )
+
+  const MyWorkoutsContent = () => (
+    <View style={{flex: 1}}>
+      <SearchBar
+        onSearch={(query) => setSearchQuery(query)}
+        onClear={() => setSearchQuery('')}
+      />
+      <View style={styles.favoritesContainer}>
+        <Text style={styles.favoritesText}>Ver solo mis favoritos</Text>
+        <Switch
+          value={showProgramaFavorites}
+          onValueChange={setShowProgramaFavorites}
+          trackColor={{false: '#767577', true: '#FEF4C9'}}
+          thumbColor={showProgramaFavorites ? '#B0A462' : '#f4f3f4'}
+        />
+      </View>
+      {filteredProgramas.length === 0 ? (
+        <View style={styles.noWorkoutsContainer}>
+          <Text style={styles.noWorkoutsText}>
+            No hay programas disponibles
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          data={filteredProgramas}
+          renderItem={({item}) => (
+            <Card
+              title={item.nombre}
+              subtitle={item.descripcion}
+              accentColor='#14b8a6'
+              isFavorite={programaFavorites.includes(item.ID)}
+              onFavoritePress={() => toggleProgramaFavorite(item.ID)}
+              showFavoriteIcon={true}
+              onPress={() => setSelectedPrograma(item)}
             />
           )}
           keyExtractor={(item) => item.ID}
@@ -150,17 +238,8 @@ export default function WorkoutList() {
           tabTextStyle={styles.inactiveTabText}
           activeTabTextStyle={styles.activeTabText}
         />
-        {activeTab === 'rutinas' ? (
-          <RoutinesContent />
-        ) : (
-          <View style={styles.misEntrenamientosContent}>
-            <Text style={styles.misEntrenamientosText}>
-              Contenido de Mis Entrenamientos
-            </Text>
-          </View>
-        )}
-
-        {/* Modal */}
+        {activeTab === 'rutinas' ? <RoutinesContent /> : <MyWorkoutsContent />}
+        {/* Modal para Rutinas */}
         {selectedRutina && (
           <Modal
             visible={!!selectedRutina}
@@ -179,19 +258,11 @@ export default function WorkoutList() {
                   />
                 </TouchableOpacity>
                 <View>
-                  <Text
-                    style={styles.modalTitle}
-                    ellipsizeMode='tail'>
-                    {selectedRutina.nombre}
-                  </Text>
-                  <Text
-                    style={styles.modalDescription}
-                    ellipsizeMode='tail'>
+                  <Text style={styles.modalTitle}>{selectedRutina.nombre}</Text>
+                  <Text style={styles.modalDescription}>
                     {selectedRutina.descripcion}
                   </Text>
                 </View>
-
-                {/* Mostrar los ejercicios */}
                 {JSON.parse(selectedRutina.ejercicios).map(
                   (ejercicio: any, index: number) => (
                     <View
@@ -206,6 +277,52 @@ export default function WorkoutList() {
                         style={styles.exerciseValue}
                         ellipsizeMode='tail'>
                         {ejercicio.valor}
+                      </Text>
+                    </View>
+                  ),
+                )}
+              </View>
+            </View>
+          </Modal>
+        )}
+        {/* Modal para Programas */}
+        {selectedPrograma && (
+          <Modal
+            visible={!!selectedPrograma}
+            transparent
+            animationType='fade'
+            onRequestClose={() => setSelectedPrograma(null)}>
+            <View style={styles.modalContainer}>
+              <View style={styles.modalContent}>
+                <TouchableOpacity
+                  onPress={() => setSelectedPrograma(null)}
+                  style={styles.closeButton}>
+                  <MaterialIcons
+                    name='close'
+                    size={17}
+                    color='white'
+                  />
+                </TouchableOpacity>
+                <View>
+                  <Text style={styles.modalTitle}>
+                    {selectedPrograma.nombre}
+                  </Text>
+                  <Text style={styles.modalDescription}>
+                    {selectedPrograma.descripcion}
+                  </Text>
+                </View>
+                {JSON.parse(selectedPrograma.rutinas).map(
+                  (rutina: any, index: number) => (
+                    <View
+                      key={index}
+                      style={styles.exerciseItem}>
+                      <Text style={styles.exerciseType}>
+                        {rutina.tipo === 'texto' ? 'Información:' : 'Rutina:'}
+                      </Text>
+                      <Text
+                        style={styles.exerciseValue}
+                        ellipsizeMode='tail'>
+                        {rutina.valor}
                       </Text>
                     </View>
                   ),
@@ -267,15 +384,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     textAlign: 'center',
-  },
-  misEntrenamientosContent: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  misEntrenamientosText: {
-    color: '#fff',
-    fontSize: 18,
   },
   workoutRow: {
     justifyContent: 'space-between',
@@ -351,10 +459,5 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 3,
     right: 3,
-  },
-  closeButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    textAlign: 'center',
   },
 })
