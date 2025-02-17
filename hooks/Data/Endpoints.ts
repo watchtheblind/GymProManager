@@ -523,11 +523,11 @@ export const getProgramas = async (
   }
 }
 
-// Función para limpiar la caché de programas
-const clearProgramsCache = async (token: string) => {
-  const cacheKeyAll = `programas:${token}:all` // Clave para todos los programas
-  await AsyncStorage.removeItem(cacheKeyAll)
-  console.log('Caché de programas eliminada')
+// Función para limpiar la caché de un programa específico
+const clearProgramCache = async (token: string, programaid: number) => {
+  const cacheKey = `programas:${token}:${programaid}` // Clave específica del programa
+  await AsyncStorage.removeItem(cacheKey)
+  console.log(`Caché del programa ${programaid} eliminada`)
 }
 
 // Tipos para las acciones permitidas
@@ -537,7 +537,6 @@ type ApiResponse2 = {
   mensaje: string
   [key: string]: any // Permite propiedades adicionales
 }
-
 export const manageProgramEnrollment = async (
   token: string,
   programaid: number,
@@ -566,16 +565,16 @@ export const manageProgramEnrollment = async (
 
     console.log('Acción realizada:', response)
 
-    // Limpiar la caché de programas
-    await clearProgramsCache(token)
+    // Limpiar la caché del programa específico
+    await clearProgramCache(token, programaid)
 
-    // Obtener los programas actualizados desde el servidor
-    const updatedPrograms = await getProgramas(token, undefined, false) // Deshabilitamos caché
-    console.log('Datos actualizados:', updatedPrograms)
+    // Obtener el programa actualizado desde el servidor
+    const updatedProgram = await getProgramas(token, programaid, false) // Deshabilitamos caché
+    console.log('Programa actualizado:', updatedProgram)
 
     return {
       ...response,
-      updatedPrograms, // Incluimos los datos actualizados en la respuesta
+      updatedProgram, // Incluimos el programa actualizado en la respuesta
     }
   } catch (error) {
     console.error('Error al gestionar la inscripción:', error)
