@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
 } from 'react-native'
 import {useNavigation} from '@react-navigation/native'
-import {MaterialIcons} from '@expo/vector-icons' // Importar Material Icons
+import {MaterialIcons} from '@expo/vector-icons'
 import Tabs from '@/components/common/Tabs'
 import GenericCard from '@/components/common/GenericCard'
 import {useFilter} from '@/hooks/Common/useFilter'
@@ -162,14 +162,12 @@ export default function WorkoutList() {
               subtitle={item.descripcion}
               type='rutina'
               isFavorite={rutinaFavorites.includes(item.ID)}
-              isSignedUp={false} // Las rutinas no tienen inscripción
               onToggleFavorite={() => toggleRutinaFavorite(item.ID)}
-              onSignUpPress={() => setSelectedRutina(item)} // Ejemplo: abrir modal
-              badgeText='Comenzar'
+              onViewDetails={() => setSelectedRutina(item)} // Abrir modal
             />
           )}
           keyExtractor={(item) => item.ID}
-          numColumns={1} // Cambiar a una sola columna
+          numColumns={1}
           contentContainerStyle={styles.workoutList}
         />
       )}
@@ -206,14 +204,12 @@ export default function WorkoutList() {
               subtitle={item.descripcion}
               type='programa'
               isFavorite={programaFavorites.includes(item.ID)}
-              isSignedUp={item.isEnrolled} // Supongamos que esto viene del backend
               onToggleFavorite={() => toggleProgramaFavorite(item.ID)}
-              onSignUpPress={() => setSelectedPrograma(item)} // Ejemplo: abrir modal
-              badgeText={item.isEnrolled ? 'Desinscribirme' : 'Inscribirme'}
+              onViewDetails={() => setSelectedPrograma(item)} // Abrir modal
             />
           )}
           keyExtractor={(item) => item.ID}
-          numColumns={1} // Cambiar a una sola columna
+          numColumns={1}
           contentContainerStyle={styles.workoutList}
         />
       )}
@@ -226,7 +222,8 @@ export default function WorkoutList() {
         <View style={styles.header}>
           <Header
             title='RUTINAS'
-            onBackPress={handlePress}></Header>
+            onBackPress={handlePress}
+          />
         </View>
         <Tabs
           tabs={tabs}
@@ -327,6 +324,18 @@ export default function WorkoutList() {
                     </View>
                   ),
                 )}
+                <TouchableOpacity
+                  onPress={() => {
+                    // Lógica de inscripción/desinscripción
+                    setSelectedPrograma(null) // Cerrar modal después de la acción
+                  }}
+                  style={styles.signUpButton}>
+                  <Text style={styles.signUpButtonText}>
+                    {selectedPrograma.isEnrolled
+                      ? 'Desinscribirme'
+                      : 'Inscribirme'}
+                  </Text>
+                </TouchableOpacity>
               </View>
             </View>
           </Modal>
@@ -455,5 +464,17 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 3,
     right: 3,
+  },
+  signUpButton: {
+    backgroundColor: '#B0A462',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 20,
+    marginTop: 20,
+  },
+  signUpButtonText: {
+    color: '#fff',
+    fontFamily: 'MyriadPro',
+    textAlign: 'center',
   },
 })

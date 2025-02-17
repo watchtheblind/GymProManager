@@ -10,7 +10,7 @@ interface GenericCardProps {
   isFavorite: boolean // Indica si es favorito
   isSignedUp?: boolean // Indica si el usuario está inscrito/suscripto
   onToggleFavorite: () => void // Función para alternar favorito
-  onSignUpPress: () => void // Función para inscribirse/desinscribirse
+  onViewDetails: () => void // Función para abrir el modal
   badgeText?: string // Texto del botón de acción (ej.: "Anotarme" o "Salirme")
 }
 
@@ -22,7 +22,7 @@ export const GenericCard: React.FC<GenericCardProps> = ({
   isFavorite,
   isSignedUp,
   onToggleFavorite,
-  onSignUpPress,
+  onViewDetails,
   badgeText,
 }) => {
   return (
@@ -52,19 +52,11 @@ export const GenericCard: React.FC<GenericCardProps> = ({
           color={isFavorite ? '#fbbf24' : '#fff'}
         />
       </TouchableOpacity>
-      {badgeText && (
-        <TouchableOpacity
-          onPress={onSignUpPress}
-          style={[
-            styles.badgeContainer,
-            isSignedUp && styles.badgeContainerSignedUp,
-          ]}>
-          <Text
-            style={[styles.badgeText, isSignedUp && styles.badgeTextSignedUp]}>
-            {badgeText}
-          </Text>
-        </TouchableOpacity>
-      )}
+      <TouchableOpacity
+        onPress={onViewDetails}
+        style={styles.detailsButton}>
+        <Text style={styles.detailsButtonText}>Ver detalles</Text>
+      </TouchableOpacity>
     </View>
   )
 }
@@ -108,7 +100,7 @@ const styles = StyleSheet.create({
   favoriteButton: {
     paddingBottom: 65,
   },
-  badgeContainer: {
+  detailsButton: {
     position: 'absolute',
     bottom: 14,
     right: 15,
@@ -117,17 +109,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     borderRadius: 12,
   },
-  badgeContainerSignedUp: {
-    backgroundColor: '#ef4444',
-  },
-  badgeText: {
+  detailsButtonText: {
     color: 'white',
     fontSize: 12,
     fontWeight: '500',
     fontFamily: 'MyriadPro',
-  },
-  badgeTextSignedUp: {
-    color: 'white',
   },
 })
 
