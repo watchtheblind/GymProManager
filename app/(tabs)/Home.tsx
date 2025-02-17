@@ -127,7 +127,7 @@ export default function Home() {
           <Text style={styles.sectionTitle}>CLASES VIRTUALES</Text>
         </Animated.View>
 
-        {/* Sección de Actividades en Streaming */}
+        {/* Sección de Actividades */}
         <Animated.View
           entering={animations.fadeInDown(700)}
           style={styles.mt4}>
@@ -137,7 +137,7 @@ export default function Home() {
               source={require('@/assets/images/actividades.jpeg')}
             />
           </ButtonImage>
-          <Text style={styles.sectionTitle}>ACTIVIDADES EN STREAMING</Text>
+          <Text style={styles.sectionTitle}>ACTIVIDADES</Text>
         </Animated.View>
 
         {/* Sección de Entrenamientos */}
@@ -150,7 +150,7 @@ export default function Home() {
               source={require('@/assets/images/entrenamiento.jpeg')}
             />
           </ButtonImage>
-          <Text style={styles.sectionTitle}>ENTRENAMIENTOS</Text>
+          <Text style={styles.sectionTitle}>ENTRENAMIENTOS Y PROGRAMAS</Text>
         </Animated.View>
 
         {/* Sección de Cuestionarios */}
@@ -249,6 +249,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: 'Copperplate',
     textAlign: 'center',
+    lineHeight: 24,
   },
   mt4: {
     marginTop: 16,
