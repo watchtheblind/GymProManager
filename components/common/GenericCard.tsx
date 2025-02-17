@@ -90,12 +90,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '500',
     fontFamily: 'MyriadPro',
+    textTransform: 'uppercase',
     color: '#fff',
   },
   name: {
     color: 'white',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily: 'MyriadProBold',
     marginBottom: 4,
   },
   details: {

@@ -13,7 +13,7 @@ import {
 import {useNavigation} from '@react-navigation/native'
 import {MaterialIcons} from '@expo/vector-icons' // Importar Material Icons
 import Tabs from '@/components/common/Tabs'
-import Card from '@/components/ui/Card'
+import GenericCard from '@/components/common/GenericCard'
 import {useFilter} from '@/hooks/Common/useFilter'
 import Header from '@/components/common/Header'
 import useBackHandler from '@/hooks/Common/useBackHandler'
@@ -157,19 +157,19 @@ export default function WorkoutList() {
         <FlatList
           data={filteredRutinas}
           renderItem={({item}) => (
-            <Card
+            <GenericCard
               title={item.nombre}
               subtitle={item.descripcion}
-              accentColor='#14b8a6'
+              type='rutina'
               isFavorite={rutinaFavorites.includes(item.ID)}
-              onFavoritePress={() => toggleRutinaFavorite(item.ID)}
-              showFavoriteIcon={true}
-              onPress={() => setSelectedRutina(item)}
+              isSignedUp={false} // Las rutinas no tienen inscripción
+              onToggleFavorite={() => toggleRutinaFavorite(item.ID)}
+              onSignUpPress={() => setSelectedRutina(item)} // Ejemplo: abrir modal
+              badgeText='Comenzar'
             />
           )}
           keyExtractor={(item) => item.ID}
-          numColumns={2}
-          columnWrapperStyle={styles.workoutRow}
+          numColumns={1} // Cambiar a una sola columna
           contentContainerStyle={styles.workoutList}
         />
       )}
@@ -201,19 +201,19 @@ export default function WorkoutList() {
         <FlatList
           data={filteredProgramas}
           renderItem={({item}) => (
-            <Card
+            <GenericCard
               title={item.nombre}
               subtitle={item.descripcion}
-              accentColor='#14b8a6'
+              type='programa'
               isFavorite={programaFavorites.includes(item.ID)}
-              onFavoritePress={() => toggleProgramaFavorite(item.ID)}
-              showFavoriteIcon={true}
-              onPress={() => setSelectedPrograma(item)}
+              isSignedUp={item.isEnrolled} // Supongamos que esto viene del backend
+              onToggleFavorite={() => toggleProgramaFavorite(item.ID)}
+              onSignUpPress={() => setSelectedPrograma(item)} // Ejemplo: abrir modal
+              badgeText={item.isEnrolled ? 'Desinscribirme' : 'Inscribirme'}
             />
           )}
           keyExtractor={(item) => item.ID}
-          numColumns={2}
-          columnWrapperStyle={styles.workoutRow}
+          numColumns={1} // Cambiar a una sola columna
           contentContainerStyle={styles.workoutList}
         />
       )}
@@ -386,13 +386,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'MyriadPro',
   },
-  workoutRow: {
-    justifyContent: 'space-between',
-    paddingBottom: 15,
-  },
   workoutList: {
     paddingBottom: 5,
-    height: 'auto',
   },
   tabContainer: {
     backgroundColor: '#333333',
