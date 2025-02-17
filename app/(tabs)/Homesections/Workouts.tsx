@@ -384,6 +384,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     textAlign: 'center',
+    fontFamily: 'MyriadPro',
   },
   workoutRow: {
     justifyContent: 'space-between',
