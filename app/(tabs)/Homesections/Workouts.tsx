@@ -1,173 +1,215 @@
-import React, {useState, useCallback} from 'react'
+import React, {useState, useEffect} from 'react'
 import {
   View,
   Text,
-  Image,
-  TouchableOpacity,
   SafeAreaView,
   StyleSheet,
   FlatList,
-  BackHandler,
   Switch,
+  ActivityIndicator,
+  Modal,
+  TouchableOpacity,
 } from 'react-native'
-import {useFocusEffect, useNavigation} from '@react-navigation/native'
+import {useNavigation} from '@react-navigation/native'
 import {MaterialIcons} from '@expo/vector-icons'
 import Tabs from '@/components/common/Tabs'
+import GenericCard from '@/components/common/GenericCard'
+import {useFilter} from '@/hooks/Common/useFilter'
+import Header from '@/components/common/Header'
+import useBackHandler from '@/hooks/Common/useBackHandler'
+import {fetchRutinas, getProgramas} from '@/hooks/Data/Endpoints'
 import SearchBar from '@/components/common/SearchBar'
-import {Settingsicon} from '@/components/ui/Bottomnav/Icons'
-import UniversalCard from '@/components/ui/Card'
-import {useFavorites} from '@/hooks/Activities/useFavorites'
-import {useFilter} from '@/hooks/Common/useFilter' // Importamos el hook useFilter
 
-// Tu JSON de workouts
-const workouts = [
-  {
-    id: '1',
-    type: 'Pilates',
-    title: 'Entrenamiento de Core',
-    level: 'Experto',
-    duration: '32 min',
-    accentColor: '#4FD1C5',
-    image:
-      'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-  },
-  {
-    id: '2',
-    type: 'Boxeo',
-    title: 'Boxeo Cardio',
-    level: 'Intermedio',
-    duration: '45 min',
-    accentColor: '#ED8936',
-    image:
-      'https://images.unsplash.com/photo-1599058917212-d750089bc07e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-  },
-  {
-    id: '3',
-    type: 'HIIT',
-    title: 'Quema Grasa Intenso',
-    level: 'Principiante',
-    duration: '25 min',
-    accentColor: '#F06292',
-    image:
-      'https://images.unsplash.com/photo-1576678927484-cc907957088c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-  },
-  {
-    id: '4',
-    type: 'Yoga',
-    title: 'Yoga Flow',
-    level: 'Experto',
-    duration: '60 min',
-    accentColor: '#A0D2EB',
-    image:
-      'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-  },
-]
-
-type Workout = {
-  id: string
-  type: string
-  title: string
-  level: string
-  duration: string
-  accentColor: string
-  image: string
+// Interfaz para una rutina
+interface Rutina {
+  ID: string
+  modified: string
+  nombre: string
+  descripcion: string
+  ejercicios: string // JSON serializado
 }
 
 export default function WorkoutList() {
-  const [activeTab, setActiveTab] = useState('listado')
-  const [showFavorites, setShowFavorites] = useState(false)
-  const {favorites, toggleFavorite} = useFavorites()
+  const [activeTab, setActiveTab] = useState('rutinas')
   const [searchQuery, setSearchQuery] = useState('')
+  const [rutinas, setRutinas] = useState<Rutina[]>([])
+  const [programas, setProgramas] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [selectedRutina, setSelectedRutina] = useState<Rutina | null>(null)
+  const [selectedPrograma, setSelectedPrograma] = useState<any | null>(null)
+  const [rutinaFavorites, setRutinaFavorites] = useState<string[]>([])
+  const [programaFavorites, setProgramaFavorites] = useState<string[]>([])
+  const [showRutinaFavorites, setShowRutinaFavorites] = useState(false)
+  const [showProgramaFavorites, setShowProgramaFavorites] = useState(false)
   const navigation = useNavigation()
 
-  useFocusEffect(
-    useCallback(() => {
-      const onBackPress = () => {
-        navigation.navigate('Bottomnav' as never)
-        return true
-      }
-      BackHandler.addEventListener('hardwareBackPress', onBackPress)
+  const handlePress = () => {
+    navigation.goBack()
+  }
 
-      return () =>
-        BackHandler.removeEventListener('hardwareBackPress', onBackPress)
-    }, [navigation]),
-  )
-
-  // Usamos el hook useFilter para filtrar los workouts
-  const filteredWorkouts = useFilter({
-    searchQuery,
-    showFavorites,
-    favorites,
-    data: workouts,
-    searchKeys: ['title', 'type'], // Campos por los que se puede buscar
+  useBackHandler(() => {
+    navigation.goBack()
+    return true
   })
 
-  const onSearch = (text: string) => {
-    setSearchQuery(text)
+  // Cargar rutinas desde el endpoint
+  useEffect(() => {
+    const loadRutinas = async () => {
+      try {
+        const token = 'Contraseña...' // Reemplaza con tu token real
+        const data = await fetchRutinas(token)
+        setRutinas(Array.isArray(data) ? data : [data])
+      } catch (error) {
+        console.error('Error loading rutinas:', error)
+      }
+    }
+    loadRutinas()
+  }, [])
+
+  // Cargar programas desde el endpoint
+  useEffect(() => {
+    const loadProgramas = async () => {
+      try {
+        const token = 'Contraseña...' // Reemplaza con tu token real
+        const data = await getProgramas(token)
+        setProgramas(Array.isArray(data) ? data : [data])
+      } catch (error) {
+        console.error('Error loading programas:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadProgramas()
+  }, [])
+
+  // Funciones para alternar favoritos
+  const toggleRutinaFavorite = (id: string) => {
+    if (rutinaFavorites.includes(id)) {
+      setRutinaFavorites(rutinaFavorites.filter((favId) => favId !== id))
+    } else {
+      setRutinaFavorites([...rutinaFavorites, id])
+    }
   }
 
-  const onClear = () => {
-    setSearchQuery('')
+  const toggleProgramaFavorite = (id: string) => {
+    if (programaFavorites.includes(id)) {
+      setProgramaFavorites(programaFavorites.filter((favId) => favId !== id))
+    } else {
+      setProgramaFavorites([...programaFavorites, id])
+    }
   }
+
+  // Filtrar rutinas
+  const filteredRutinas = useFilter({
+    searchQuery,
+    showFavorites: showRutinaFavorites,
+    favorites: rutinaFavorites,
+    data: rutinas,
+    searchKeys: ['nombre', 'descripcion'],
+  })
+
+  // Filtrar programas
+  const filteredProgramas = useFilter({
+    searchQuery,
+    showFavorites: showProgramaFavorites,
+    favorites: programaFavorites,
+    data: programas,
+    searchKeys: ['nombre', 'descripcion'],
+  })
 
   const tabs = [
-    {id: 'listado', label: 'Listado'},
+    {id: 'rutinas', label: 'Rutinas'},
     {id: 'mis-entrenamientos', label: 'Mis entrenamientos'},
   ]
 
-  const ListadoContent = () => (
-    <View style={{flex: 1}}>
-      <View className='flex flex-row justify-center items-center'>
-        <View className='flex-3'>
-          <View className='w-11/12'>
-            <SearchBar
-              onSearch={onSearch}
-              onClear={onClear}
-            />
-          </View>
-        </View>
-        <View className='flex-1 flex items-center justify-center w-1/4'>
-          <TouchableOpacity className='h-12 w-12 p-2 rounded-xl mr-2'>
-            <Settingsicon size={24} />
-          </TouchableOpacity>
-        </View>
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator
+          size='large'
+          color='#B0A462'
+        />
+        <Text style={styles.loadingText}>Cargando...</Text>
       </View>
+    )
+  }
 
+  const RoutinesContent = () => (
+    <View style={{flex: 1}}>
+      <SearchBar
+        onSearch={(query) => setSearchQuery(query)}
+        onClear={() => setSearchQuery('')}
+      />
       <View style={styles.favoritesContainer}>
         <Text style={styles.favoritesText}>Ver solo mis favoritos</Text>
         <Switch
-          value={showFavorites}
-          onValueChange={setShowFavorites}
+          value={showRutinaFavorites}
+          onValueChange={setShowRutinaFavorites}
           trackColor={{false: '#767577', true: '#FEF4C9'}}
-          thumbColor={showFavorites ? '#B0A462' : '#f4f3f4'}
+          thumbColor={showRutinaFavorites ? '#B0A462' : '#f4f3f4'}
         />
       </View>
+      {filteredRutinas.length === 0 ? (
+        <View style={styles.noWorkoutsContainer}>
+          <Text style={styles.noWorkoutsText}>No hay rutinas disponibles</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={filteredRutinas}
+          renderItem={({item}) => (
+            <GenericCard
+              title={item.nombre}
+              subtitle={item.descripcion}
+              type='rutina'
+              isFavorite={rutinaFavorites.includes(item.ID)}
+              onToggleFavorite={() => toggleRutinaFavorite(item.ID)}
+              onViewDetails={() => setSelectedRutina(item)} // Abrir modal
+            />
+          )}
+          keyExtractor={(item) => item.ID}
+          numColumns={1}
+          contentContainerStyle={styles.workoutList}
+        />
+      )}
+    </View>
+  )
 
-      {filteredWorkouts.length === 0 ? (
+  const MyWorkoutsContent = () => (
+    <View style={{flex: 1}}>
+      <SearchBar
+        onSearch={(query) => setSearchQuery(query)}
+        onClear={() => setSearchQuery('')}
+      />
+      <View style={styles.favoritesContainer}>
+        <Text style={styles.favoritesText}>Ver solo mis favoritos</Text>
+        <Switch
+          value={showProgramaFavorites}
+          onValueChange={setShowProgramaFavorites}
+          trackColor={{false: '#767577', true: '#FEF4C9'}}
+          thumbColor={showProgramaFavorites ? '#B0A462' : '#f4f3f4'}
+        />
+      </View>
+      {filteredProgramas.length === 0 ? (
         <View style={styles.noWorkoutsContainer}>
           <Text style={styles.noWorkoutsText}>
-            No hay entrenamientos disponibles
+            No hay programas disponibles
           </Text>
         </View>
       ) : (
         <FlatList
-          data={filteredWorkouts}
+          data={filteredProgramas}
           renderItem={({item}) => (
-            <UniversalCard
-              image={item.image}
-              title={item.title}
-              type={item.type}
-              accentColor={item.accentColor}
-              level={item.level}
-              duration={item.duration}
-              isFavorite={favorites.includes(item.id)}
-              onFavoritePress={() => toggleFavorite(item.id)}
-              showFavoriteIcon={true}
+            <GenericCard
+              title={item.nombre}
+              subtitle={item.descripcion}
+              type='programa'
+              isFavorite={programaFavorites.includes(item.ID)}
+              onToggleFavorite={() => toggleProgramaFavorite(item.ID)}
+              onViewDetails={() => setSelectedPrograma(item)} // Abrir modal
             />
           )}
-          keyExtractor={(item) => item.id}
-          numColumns={2}
-          columnWrapperStyle={styles.workoutRow}
+          keyExtractor={(item) => item.ID}
+          numColumns={1}
           contentContainerStyle={styles.workoutList}
         />
       )}
@@ -178,29 +220,11 @@ export default function WorkoutList() {
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <View style={styles.header}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('Bottomnav' as never)}
-            style={styles.backButton}>
-            <MaterialIcons
-              name='arrow-back'
-              color='white'
-              size={24}
-            />
-          </TouchableOpacity>
-          <View style={styles.headerTextContainer}>
-            <Text
-              style={styles.headerText}
-              className='uppercase'>
-              Listado de
-            </Text>
-            <Text
-              style={styles.headerText}
-              className='uppercase'>
-              Entrenamientos
-            </Text>
-          </View>
+          <Header
+            title='RUTINAS'
+            onBackPress={handlePress}
+          />
         </View>
-
         <Tabs
           tabs={tabs}
           activeTab={activeTab}
@@ -211,15 +235,110 @@ export default function WorkoutList() {
           tabTextStyle={styles.inactiveTabText}
           activeTabTextStyle={styles.activeTabText}
         />
-
-        {activeTab === 'listado' ? (
-          <ListadoContent />
-        ) : (
-          <View style={styles.misEntrenamientosContent}>
-            <Text style={styles.misEntrenamientosText}>
-              Contenido de Mis Entrenamientos
-            </Text>
-          </View>
+        {activeTab === 'rutinas' ? <RoutinesContent /> : <MyWorkoutsContent />}
+        {/* Modal para Rutinas */}
+        {selectedRutina && (
+          <Modal
+            visible={!!selectedRutina}
+            transparent
+            animationType='fade'
+            onRequestClose={() => setSelectedRutina(null)}>
+            <View style={styles.modalContainer}>
+              <View style={styles.modalContent}>
+                <TouchableOpacity
+                  onPress={() => setSelectedRutina(null)}
+                  style={styles.closeButton}>
+                  <MaterialIcons
+                    name='close'
+                    size={17}
+                    color='white'
+                  />
+                </TouchableOpacity>
+                <View>
+                  <Text style={styles.modalTitle}>{selectedRutina.nombre}</Text>
+                  <Text style={styles.modalDescription}>
+                    {selectedRutina.descripcion}
+                  </Text>
+                </View>
+                {JSON.parse(selectedRutina.ejercicios).map(
+                  (ejercicio: any, index: number) => (
+                    <View
+                      key={index}
+                      style={styles.exerciseItem}>
+                      <Text style={styles.exerciseType}>
+                        {ejercicio.tipo === 'texto'
+                          ? 'Información:'
+                          : 'Ejercicio:'}
+                      </Text>
+                      <Text
+                        style={styles.exerciseValue}
+                        ellipsizeMode='tail'>
+                        {ejercicio.valor}
+                      </Text>
+                    </View>
+                  ),
+                )}
+              </View>
+            </View>
+          </Modal>
+        )}
+        {/* Modal para Programas */}
+        {selectedPrograma && (
+          <Modal
+            visible={!!selectedPrograma}
+            transparent
+            animationType='fade'
+            onRequestClose={() => setSelectedPrograma(null)}>
+            <View style={styles.modalContainer}>
+              <View style={styles.modalContent}>
+                <TouchableOpacity
+                  onPress={() => setSelectedPrograma(null)}
+                  style={styles.closeButton}>
+                  <MaterialIcons
+                    name='close'
+                    size={17}
+                    color='white'
+                  />
+                </TouchableOpacity>
+                <View>
+                  <Text style={styles.modalTitle}>
+                    {selectedPrograma.nombre}
+                  </Text>
+                  <Text style={styles.modalDescription}>
+                    {selectedPrograma.descripcion}
+                  </Text>
+                </View>
+                {JSON.parse(selectedPrograma.rutinas).map(
+                  (rutina: any, index: number) => (
+                    <View
+                      key={index}
+                      style={styles.exerciseItem}>
+                      <Text style={styles.exerciseType}>
+                        {rutina.tipo === 'texto' ? 'Información:' : 'Rutina:'}
+                      </Text>
+                      <Text
+                        style={styles.exerciseValue}
+                        ellipsizeMode='tail'>
+                        {rutina.valor}
+                      </Text>
+                    </View>
+                  ),
+                )}
+                <TouchableOpacity
+                  onPress={() => {
+                    // Lógica de inscripción/desinscripción
+                    setSelectedPrograma(null) // Cerrar modal después de la acción
+                  }}
+                  style={styles.signUpButton}>
+                  <Text style={styles.signUpButtonText}>
+                    {selectedPrograma.isEnrolled
+                      ? 'Desinscribirme'
+                      : 'Inscribirme'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
         )}
       </View>
     </SafeAreaView>
@@ -238,23 +357,46 @@ const styles = StyleSheet.create({
   },
   header: {
     marginTop: 50,
-    marginBottom: 16,
+    marginBottom: 19,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  headerTextContainer: {
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#1D1D1B',
+  },
+  loadingText: {
+    color: '#B0A462',
+    marginTop: 10,
+    fontFamily: 'MyriadPro',
+  },
+  favoritesContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  favoritesText: {
+    color: '#14b8a6',
+    marginRight: 8,
+    fontFamily: 'MyriadPro',
+    fontSize: 16,
+  },
+  noWorkoutsContainer: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  headerText: {
+  noWorkoutsText: {
     color: '#fff',
-    fontSize: 19,
+    fontSize: 18,
     textAlign: 'center',
-    fontFamily: 'Copperplate',
+    fontFamily: 'MyriadPro',
   },
-  backButton: {
-    position: 'absolute',
-    left: 0,
+  workoutList: {
+    paddingBottom: 5,
   },
   tabContainer: {
     backgroundColor: '#333333',
@@ -268,45 +410,71 @@ const styles = StyleSheet.create({
   activeTab: {
     backgroundColor: '#B5AD6F',
   },
-  activeTabText: {
-    color: '#fff',
-  },
   inactiveTabText: {
     color: '#9CA3AF',
   },
-  favoritesContainer: {
+  activeTabText: {
+    color: '#fff',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: '90%',
+    backgroundColor: '#1E1E1E',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontFamily: 'MyriadProBold',
+    marginTop: 10,
+    marginBottom: 10,
+    color: 'white',
+  },
+  modalDescription: {
+    fontSize: 16,
+    marginBottom: 20,
+    textAlign: 'center',
+    color: '#555',
+  },
+  exerciseItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 10,
   },
-  favoritesText: {
-    color: '#fff',
-    marginRight: 8,
+  exerciseType: {
+    fontFamily: 'MyriadProBold',
+    fontSize: 16,
+    marginRight: 5,
+    color: '#14b8a6',
   },
-  noWorkoutsContainer: {
+  exerciseValue: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    color: 'white',
+    fontSize: 16,
+    fontFamily: 'MyriadPro',
   },
-  noWorkoutsText: {
+  closeButton: {
+    padding: 8,
+    position: 'absolute',
+    top: 3,
+    right: 3,
+  },
+  signUpButton: {
+    backgroundColor: '#B0A462',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 20,
+    marginTop: 20,
+  },
+  signUpButtonText: {
     color: '#fff',
-    fontSize: 18,
+    fontFamily: 'MyriadPro',
     textAlign: 'center',
-  },
-  misEntrenamientosContent: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  misEntrenamientosText: {
-    color: '#fff',
-    fontSize: 18,
-  },
-  workoutRow: {
-    justifyContent: 'space-between',
-  },
-  workoutList: {
-    paddingBottom: 5,
-    height: 'auto',
   },
 })

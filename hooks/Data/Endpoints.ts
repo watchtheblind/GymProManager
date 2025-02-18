@@ -394,3 +394,190 @@ export const enviarRespuestasCuestionario = async (
     throw error
   }
 }
+
+// Tipo para una rutina
+export type Rutina = {
+  ID: string
+  modified: string
+  nombre: string
+  descripcion: string
+  ejercicios: string // JSON serializado
+}
+
+// Función para obtener las rutinas
+export const fetchRutinas = async (
+  token: string,
+  rutinaId?: number, // Opcional: ID de la rutina específica
+  useCache: boolean = true, // Habilitamos caché por defecto
+): Promise<Rutina[] | Rutina> => {
+  try {
+    // Construir la clave única para la caché
+    const cacheKey = `rutinas:${token}:${rutinaId || 'all'}`
+    if (useCache) {
+      // Intentar obtener los datos de la caché
+      const cachedData = await AsyncStorage.getItem(cacheKey)
+      if (cachedData) {
+        const {data, timestamp} = JSON.parse(cachedData)
+        // Verificar si han pasado menos de 10 minutos
+        const currentTime = Date.now()
+        const tenMinutesInMs = 10 * 60 * 1000 // 10 minutos en milisegundos
+        if (currentTime - timestamp < tenMinutesInMs) {
+          console.log('Rutinas obtenidas desde la caché')
+          return data
+        }
+        console.log('Caché expirada, realizando nueva solicitud...')
+      }
+    }
+
+    // Construir el body de la solicitud
+    const body: Record<string, any> = {
+      token,
+    }
+    // Si se proporciona un ID de rutina, agregarlo al body
+    if (rutinaId !== undefined) {
+      body.rutinaid = rutinaId
+    }
+
+    // Realizar la solicitud usando el cliente API
+    const rutinas = await apiClient<Rutina[] | Rutina>('/app-rutinas.php', {
+      method: 'POST',
+      headers: {},
+      body,
+      contentType: 'form-urlencoded', // El endpoint espera form-urlencoded
+    })
+
+    // Guardar los datos en la caché con un timestamp
+    if (useCache) {
+      const cacheData = {
+        data: rutinas,
+        timestamp: Date.now(), // Guardar el momento actual
+      }
+      await AsyncStorage.setItem(cacheKey, JSON.stringify(cacheData))
+      console.log('Rutinas guardadas en la caché')
+    }
+
+    return rutinas
+  } catch (error) {
+    console.error('Error al obtener las rutinas:', error)
+    throw error
+  }
+}
+
+// Función para obtener programas con manejo de caché
+export const getProgramas = async (
+  token: string,
+  programaid?: number, // ID del programa (opcional)
+  useCache: boolean = true, // Habilitamos caché por defecto
+): Promise<any> => {
+  try {
+    // Construir la clave única para la caché
+    const cacheKey = `programas:${token}:${programaid || 'all'}`
+
+    if (useCache) {
+      // Intentar obtener los datos de la caché
+      const cachedData = await AsyncStorage.getItem(cacheKey)
+      if (cachedData) {
+        const {data, timestamp} = JSON.parse(cachedData)
+
+        // Verificar si han pasado menos de 10 minutos
+        const currentTime = Date.now()
+        const tenMinutesInMs = 10 * 60 * 1000 // 10 minutos en milisegundos
+        if (currentTime - timestamp < tenMinutesInMs) {
+          console.log('Programas obtenidos desde la caché')
+          return data
+        }
+        console.log('Caché expirada, realizando nueva solicitud...')
+      }
+    }
+
+    // Construir el body de la solicitud
+    const body: Record<string, any> = {token}
+
+    // Si se proporciona un ID de programa, agregarlo al body
+    if (programaid !== undefined) {
+      body.programaid = programaid
+    }
+
+    // Realizar la solicitud usando el cliente API
+    const programas = await apiClient<any>('/app-programas.php', {
+      method: 'POST',
+      headers: {},
+      body,
+      contentType: 'form-urlencoded', // El endpoint espera form-urlencoded
+    })
+
+    // Guardar los datos en la caché con un timestamp
+    if (useCache) {
+      const cacheData = {
+        data: programas,
+        timestamp: Date.now(), // Guardar el momento actual
+      }
+      await AsyncStorage.setItem(cacheKey, JSON.stringify(cacheData))
+      console.log('Programas guardados en la caché')
+    }
+
+    return programas
+  } catch (error) {
+    console.error('Error al obtener los programas:', error)
+    throw error
+  }
+}
+
+// Función para limpiar la caché de un programa específico
+const clearProgramCache = async (token: string, programaid: number) => {
+  const cacheKey = `programas:${token}:${programaid}` // Clave específica del programa
+  await AsyncStorage.removeItem(cacheKey)
+  console.log(`Caché del programa ${programaid} eliminada`)
+}
+
+// Tipos para las acciones permitidas
+type EnrollmentAction = 'add' | 'delete'
+
+type ApiResponse2 = {
+  mensaje: string
+  [key: string]: any // Permite propiedades adicionales
+}
+export const manageProgramEnrollment = async (
+  token: string,
+  programaid: number,
+  userid: number,
+  action: EnrollmentAction,
+): Promise<any> => {
+  try {
+    // Construir el body de la solicitud
+    const body: Record<string, any> = {
+      token,
+      programaid,
+      userid,
+      action,
+    }
+
+    // Realizar la solicitud para inscribir/eliminar al usuario
+    const response = await apiClient<ApiResponse2>(
+      '/app-programas-enroll.php',
+      {
+        method: 'POST',
+        headers: {},
+        body,
+        contentType: 'form-urlencoded', // El endpoint espera form-urlencoded
+      },
+    )
+
+    console.log('Acción realizada:', response)
+
+    // Limpiar la caché del programa específico
+    await clearProgramCache(token, programaid)
+
+    // Obtener el programa actualizado desde el servidor
+    const updatedProgram = await getProgramas(token, programaid, false) // Deshabilitamos caché
+    console.log('Programa actualizado:', updatedProgram)
+
+    return {
+      ...response,
+      updatedProgram, // Incluimos el programa actualizado en la respuesta
+    }
+  } catch (error) {
+    console.error('Error al gestionar la inscripción:', error)
+    throw error
+  }
+}
