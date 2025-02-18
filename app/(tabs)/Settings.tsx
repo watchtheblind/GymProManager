@@ -67,12 +67,12 @@ function AccountInfo() {
 
   // Lógica de BackHandler usando el hook personalizado
   useBackHandler(() => {
-    navigation.navigate('Bottomnav' as never)
+    navigation.goBack()
     return true
   })
 
   const handlePress = () => {
-    navigation.navigate('Bottomnav' as never)
+    navigation.goBack()
   }
 
   // Datos para las tabs
