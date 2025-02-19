@@ -28,21 +28,6 @@ export const getUserById = async (
   })
 }
 
-export const updateUser = async (
-  userId: number,
-  name: string,
-  email: string,
-  role: string,
-  token: string,
-): Promise<ApiResponse<User>> => {
-  return apiClient<ApiResponse<User>>(`/users/${userId}`, {
-    method: 'PUT',
-    body: {param1: name, param2: email, param3: role, token},
-    contentType: 'json',
-    useCache: false, // No usar caché para operaciones PUT
-  })
-}
-
 // Nuevo endpoint: /app-ads.php
 type Ad = {
   titulo: string
@@ -578,6 +563,65 @@ export const manageProgramEnrollment = async (
     }
   } catch (error) {
     console.error('Error al gestionar la inscripción:', error)
+    throw error
+  }
+}
+
+type Altura = {
+  valor: number
+  unidad: string
+}
+
+type Peso = {
+  valor: number
+  unidad: string
+}
+
+type Imagen = {
+  nombre: string
+  contenido: string // Base64 encoded image
+}
+
+type Usuario = {
+  ID: string
+  nombre: string
+  apellido: string
+  nif?: string
+  direccion?: string
+  codigo_pais?: string
+  telefono?: string
+  correo_electronico?: string
+  genero?: 'hombre' | 'mujer' | 'otro'
+  fecha_de_nacimiento?: string
+  altura?: Altura
+  peso?: Peso
+  imagen?: Imagen
+}
+
+export const updateUser = async (
+  token: string,
+  usuario: Usuario,
+): Promise<{success: string}> => {
+  const endpoint = '/app-user-update.php'
+
+  const body = {
+    token,
+    usuario,
+  }
+
+  try {
+    const response = await apiClient<{success: string}>(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body,
+      contentType: 'json',
+    })
+
+    return response
+  } catch (error) {
+    console.error('Error al actualizar el usuario:', error)
     throw error
   }
 }
